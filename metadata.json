@@ -1,0 +1,6 @@
+{
+  "name": "Cartas: Reinos do Destino",
+  "description": "Jogo tático de batalha de cartas entre reinos medievais lendários com poderes elementais e estratégia dinastia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
