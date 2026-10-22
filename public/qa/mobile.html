@@ -35,6 +35,7 @@
   buttons[4].click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 2'),'Rival age e devolve turno');
   await drag(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-face'),rival);check(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-condition').textContent==='AGIU','Herói arrastado ataca');
   buttons[4].click();d.querySelector('[aria-label="Nova partida"]').click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 1')&&hp()===initialHp,'Reinício cancela ação pendente do rival');
+  buttons[3].click();await wait(80);buttons[3].click();await wait(80);check(cards().length===5,'Poder de compra respeita mão máxima de cinco cartas');
  }
  document.querySelector('#result').dataset.done='true';document.title='PASS — Newcard mobile';
 })().catch(e=>{document.querySelector('#result').textContent+='\nFAIL: '+e.message;document.title='FAIL — Newcard mobile'});

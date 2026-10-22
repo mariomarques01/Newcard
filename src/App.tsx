@@ -350,11 +350,12 @@ export default function App() {
     if (activePlayerHero.rank === 'K') {
       // King of Spades Ace: Draws 2 cards and gets +2 temporary ATQ
       particleCanvasRef.current?.triggerCardBurst(`hero-card-${activePlayerHero.id}`, 'gold_blast');
-      if (deck.length >= 2) {
-        const drawn = deck.slice(0, 2);
-        setPlayerHand((prev) => [...prev, ...drawn]);
-        setDeck((prev) => prev.slice(2));
-      }
+      const drawn = deck.slice(0, 2);
+      const nextHand = [...playerHand, ...drawn];
+      setPlayerHand(nextHand.slice(0,5));
+      setDiscardPile(prev=>[...nextHand.slice(5),...prev]);
+      setDeck(deck.slice(drawn.length));
+      if(nextHand.length>5) setHint('Mão cheia: as cartas excedentes foram para o descarte.');
       updatedPlayerHeroes = updatedPlayerHeroes.map((h) => {
         if (h.id === activePlayerHero.id) {
           return { ...h, atk: h.atk + 2 };
