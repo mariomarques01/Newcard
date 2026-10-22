@@ -11,6 +11,7 @@ export interface Hero {
   currentHp: number;
   atk: number;
   baseAtk: number;
+  temporaryAttack?: number;
   def: number;
   baseDef: number;
   shield: number;
@@ -29,6 +30,7 @@ export interface Hero {
 export type ActionCardType = 'attack' | 'defense' | 'heal' | 'ace' | 'joker' | 'tactics';
 
 export interface ActionCard {
+  templateId?: string;
   id: string;
   name: string;
   suit: Suit;

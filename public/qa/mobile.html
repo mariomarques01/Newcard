@@ -1,0 +1,41 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Newcard — testes mobile</title><style>body{background:#101822;color:#eee;font:14px system-ui}iframe{border:1px solid #777;display:block;margin:10px 0}pre{white-space:pre-wrap}.case{margin:20px 0}</style><h1>Verificação mobile</h1><pre id="result">Testando…</pre><div id="frames"></div><script>
+(async()=>{
+ const out=[];const check=(ok,label)=>{out.push({ok,label});document.querySelector('#result').textContent=JSON.stringify(out,null,2);if(!ok)throw Error(label)};
+ const wait=ms=>new Promise(r=>setTimeout(r,ms));
+ for(const [w,h] of [[393,680],[390,844],[320,568],[852,393],[740,320]]){
+  const wrap=document.createElement('div');wrap.className='case';wrap.textContent=w+' × '+h;
+  const frame=document.createElement('iframe');frame.width=w;frame.height=h;frame.src='../../?qa='+w;wrap.append(frame);document.querySelector('#frames').append(wrap);
+  await new Promise(r=>frame.onload=r);const d=frame.contentDocument;const win=frame.contentWindow;
+  for(let n=0;n<100&&!d.querySelector('.arena-actions');n++)await wait(100);
+  check(!!d.querySelector('.arena-actions'),w+': jogo iniciou');
+  check(d.documentElement.scrollHeight<=h&&d.documentElement.scrollWidth<=w,w+': sem scroll');
+  const buttons=[...d.querySelectorAll('.arena-actions button')];
+  check(buttons.length===5&&buttons.every(b=>{const r=b.getBoundingClientRect();return r.top>=0&&r.bottom<=h&&r.left>=0&&r.right<=w}),w+': cinco ações dentro da tela');
+  check([...d.querySelectorAll('.hero-face')].every(b=>b.getBoundingClientRect().height>=55),w+': seis heróis visíveis');
+  if(w!==393)continue;
+  async function drag(source,target,cancel=false){
+   const s=source.getBoundingClientRect(),t=target.getBoundingClientRect();const a={x:s.x+s.width/2,y:s.y+s.height/2},b={x:t.x+t.width/2,y:t.y+t.height/2};
+   // Synthetic pointer events cannot establish capture; tests override it only in this isolated frame.
+   source.setPointerCapture=()=>{};
+   const event=(type,pos)=>new win.PointerEvent(type,{bubbles:true,pointerId:1,pointerType:'touch',isPrimary:true,clientX:pos.x,clientY:pos.y,buttons:type==='pointerup'?0:1});
+   source.dispatchEvent(event('pointerdown',a));await wait(30);
+   source.dispatchEvent(event('pointermove',b));await wait(30);
+   source.dispatchEvent(event(cancel?'pointercancel':'pointerup',b));await wait(80);
+  }
+  const cards=()=>[...d.querySelectorAll('.hand-face')];
+  const rival=d.querySelector('[data-hero-id="r_valete_copas"] .hero-face');
+  const ally=d.querySelector('[data-hero-id="p_rainha_copas"] .hero-face');
+  const hp=()=>d.querySelector('[data-hero-id="r_valete_copas"] .hero-stats b').textContent;
+  const initialHp=hp();
+  await drag(cards()[1],ally);check(cards().length===3&&hp()===initialHp,'Ataque em aliado rejeitado sem consumir carta');
+  await drag(cards()[1],rival,true);check(cards().length===3&&hp()===initialHp,'Cancelar arraste não joga carta');
+  await drag(cards()[1],rival);check(cards().length===2&&hp()!==initialHp,'Arraste de ataque causa dano e consome uma carta');
+  await drag(cards()[1],ally);check(cards().length===1&&d.querySelector('[data-hero-id="p_rainha_copas"] .hero-stats').textContent.includes('⛨ 2'),'Apoio aplica escudo ao aliado escolhido');
+  const before=cards().length;await drag(cards()[0],ally);check(cards().length===before,'Energia insuficiente bloqueia carta');
+  buttons[4].click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 2'),'Rival age e devolve turno');
+  await drag(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-face'),rival);check(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-condition').textContent==='AGIU','Herói arrastado ataca');
+  buttons[4].click();d.querySelector('[aria-label="Nova partida"]').click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 1')&&hp()===initialHp,'Reinício cancela ação pendente do rival');
+ }
+ document.querySelector('#result').dataset.done='true';document.title='PASS — Newcard mobile';
+})().catch(e=>{document.querySelector('#result').textContent+='\nFAIL: '+e.message;document.title='FAIL — Newcard mobile'});
+</script></html>

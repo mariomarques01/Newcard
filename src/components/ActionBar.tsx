@@ -36,7 +36,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   return (
     <div className="w-full max-w-4xl mx-auto px-1 sm:px-2 py-1 sm:py-2">
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 sm:gap-2">
-        {/* USAR CARTA */}
+        {/* JOGAR */}
         <button
           type="button"
           onClick={onUseCard}
@@ -54,7 +54,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
         >
           <div className="flex items-center gap-1">
             <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current" />
-            <span>USAR CARTA</span>
+            <span>JOGAR</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
             {selectedCard ? `${selectedCard.cost} ⚡` : 'Selecione'}
@@ -136,7 +136,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           </span>
         </button>
 
-        {/* ENCERRAR TURNO */}
+        {/* ENCERRAR */}
         <button
           type="button"
           onClick={onEndTurn}
@@ -150,7 +150,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
         >
           <div className="flex items-center gap-1">
             <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            <span>ENCERRAR TURNO</span>
+            <span>ENCERRAR</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-80">
             {isPlayerTurn ? 'Vez do Rival' : 'Aguardando...'}
