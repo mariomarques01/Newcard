@@ -29,6 +29,11 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Check types and card abilities
+        run: |
+          npm run lint
+          node --import tsx --test tests/cards.test.ts
+
       - name: Build project
         run: npm run build
 

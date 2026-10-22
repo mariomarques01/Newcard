@@ -1,10 +1,10 @@
 import type { ActionCard, Hero } from '../types/game';
 
-export type Ability = { damage?: number; heal?: number; shield?: number; energy?: number; draw?: number; attack?: number; defense?: number; glory?: number; steal?: number; all?: boolean; weakest?: boolean };
+export type Ability = { damage?: number; heal?: number; shield?: number; energy?: number; draw?: number; attack?: number; defense?: number; glory?: number; steal?: number; all?: boolean; weakest?: boolean; temporary?: boolean };
 const abilities: Record<string, Ability[]> = {
-  espadas: [{damage:2},{shield:3},{draw:1,attack:1},{shield:4},{damage:3},{energy:2},{damage:4},{shield:5,defense:1},{draw:2},{damage:5}],
+  espadas: [{damage:2},{shield:3},{draw:1,attack:1,temporary:true},{shield:4},{damage:3},{energy:2},{damage:4},{shield:5,defense:1},{draw:2},{damage:5}],
   copas: [{heal:2,weakest:true},{heal:2,shield:2},{heal:2,all:true},{shield:3,heal:2},{heal:4},{heal:3,energy:1},{heal:4,draw:1},{shield:4,all:true},{heal:5},{heal:4,shield:3,all:true}],
-  paus: [{energy:1,attack:1},{shield:3},{energy:2},{shield:4},{damage:3},{damage:3,energy:1},{damage:4},{shield:5,defense:1},{energy:3},{damage:5,glory:1}],
+  paus: [{energy:1,attack:1,temporary:true},{shield:3},{energy:2},{shield:4},{damage:3},{damage:3,energy:1},{damage:4},{shield:5,defense:1},{energy:3},{damage:5,glory:1}],
 };
 export function abilityFor(card: ActionCard): Ability {
   const id = card.templateId || card.id;
@@ -28,7 +28,7 @@ export function resolveCard(card: ActionCard, allies: Hero[], enemies: Hero[], a
   if (a.weakest) targetId = allies.filter(h=>h.isAlive).sort((x,y)=>(y.maxHp-y.currentHp)-(x.maxHp-x.currentHp))[0]?.id;
   const nextAllies = allies.map(h=> !h.isAlive || (!a.all && h.id!==targetId) ? {...h} : ({...h,
     currentHp: Math.min(h.maxHp,h.currentHp+(a.heal||0)), shield:h.shield+(a.shield||0),
-    atk:h.atk+(a.attack||0), def:h.def+(a.defense||0), temporaryAttack:(h.temporaryAttack||0)+(a.attack||0),
+    atk:h.atk+(a.attack||0), def:h.def+(a.defense||0), temporaryAttack:(h.temporaryAttack||0)+(a.temporary?(a.attack||0):0),
   }));
   let killGlory=0;
   const nextEnemies = enemies.map(h=>{
