@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -18,7 +18,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div style="min-height:100dvh;display:grid;place-content:center;text-align:center;gap:16px;padding:24px;background:#050811;color:#e2e8f0;font-family:system-ui">
+        <h1 style="color:#e5c389">Reinos do Destino</h1>
+        <p id="loading-status" role="status">Carregando o jogo…</p>
+        <button id="retry-load" hidden style="padding:14px;border-radius:8px;cursor:pointer">Tentar novamente</button>
+      </div>
+    </div>
+    <script>
+      function showLoadError() {
+        var status = document.getElementById('loading-status');
+        var retry = document.getElementById('retry-load');
+        if (status) status.textContent = 'Não foi possível carregar o jogo. Verifique sua conexão e tente novamente.';
+        if (retry) retry.hidden = false;
+      }
+      document.getElementById('retry-load').addEventListener('click', function () {
+        var url = new URL(location.href);
+        url.searchParams.set('v', Date.now().toString());
+        location.replace(url.href);
+      });
+      window.addEventListener('error', showLoadError, true);
+      window.addEventListener('unhandledrejection', showLoadError);
+      setTimeout(showLoadError, 15000);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
