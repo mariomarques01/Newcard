@@ -24,6 +24,7 @@ import './arena-damage-v9.css';
 import './arena-performance-v10.css';
 import './arena-selection-v13.css';
 import './arena-actions-v14.css';
+import './arena-turn-energy-v15.css';
 
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
@@ -576,13 +577,13 @@ export default function App() {
         </nav>
       </header>
       <div className="arena-score" aria-label="Placar">
-        <div className="score-side score-player">
+        <div className="score-side score-player" data-energy={playerEnergy===0?'empty':playerEnergy<=2?'low':'ready'}>
           <div className="score-head"><span>VOCÊ</span><strong>{playerPg}<small>/12 PG</small></strong></div>
           <div className="pg-track" role="img" aria-label={`Glória ${playerPg} de 12`}>{Array.from({length:12},(_,i)=><i key={i} className={i<playerPg?'on':''}/>)}</div>
           <div className="energy-track" role="img" aria-label={`Energia ${playerEnergy} de ${maxEnergy}`}>{Array.from({length:maxEnergy},(_,i)=><i key={i} className={i<playerEnergy?'on':''}/>)}<b>{playerEnergy}/{maxEnergy}</b></div>
         </div>
-        <div className="score-turn"><small>RODADA</small><em>{round}</em><strong>{gameOver?'FIM':currentTurn==='player'?'SEU TURNO':'RIVAL'}</strong></div>
-        <div className="score-side score-rival">
+        <div className="score-turn" role="status" aria-label={`Rodada ${round}. ${gameOver ? 'Partida encerrada' : currentTurn === 'player' ? 'Sua vez de jogar' : 'Vez do adversário'}`}><small>RODADA</small><em>{round}</em><strong>{gameOver?'FIM':currentTurn==='player'?'SEU TURNO':'RIVAL'}</strong></div>
+        <div className="score-side score-rival" data-energy={rivalEnergy===0?'empty':rivalEnergy<=2?'low':'ready'}>
           <div className="score-head"><span>RIVAL</span><strong>{rivalPg}<small>/12 PG</small></strong></div>
           <div className="pg-track" role="img" aria-label={`Glória do rival ${rivalPg} de 12`}>{Array.from({length:12},(_,i)=><i key={i} className={i<rivalPg?'on':''}/>)}</div>
           <div className="energy-track" role="img" aria-label={`Energia do rival ${rivalEnergy} de ${maxEnergy}`}>{Array.from({length:maxEnergy},(_,i)=><i key={i} className={i<rivalEnergy?'on':''}/>)}<b>{rivalEnergy}/{maxEnergy}</b></div>
