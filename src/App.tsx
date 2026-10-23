@@ -34,6 +34,15 @@ const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
 const PROFILE_KEY = 'newcard-player-profile-v1';
 const CAMPAIGN_KEY = 'newcard-campaign-v1';
+const RELIC_KEY = 'newcard-campaign-relics-v1';
+const RELIC_NAMES = ['Escudo da Fronteira','Coração das Sombras','Lâmina de Ferro','Coroa do Destino'];
+const campaignPlayerHeroes = (relics:number[]):Hero[] => INITIAL_PLAYER_HEROES.map(hero=>({
+  ...hero,
+  shield:hero.shield+(relics.includes(1)?2:0),
+  maxHp:hero.maxHp+(relics.includes(2)?2:0),
+  currentHp:hero.currentHp+(relics.includes(2)?2:0),
+  atk:hero.atk+(relics.includes(3)?1:0)
+}));
 const CAMPAIGN_CHAPTERS = ['A Fronteira Esquecida','O Cerco das Sombras','A Coroa de Ferro','O Trono do Destino'];
 const CAMPAIGN_BOSSES = ['Sentinela da Fronteira','Guardião das Sombras','Regente de Ferro','Soberano do Destino'];
 const CAMPAIGN_BOSS_SKILLS = ['Bastião: inicia com +2 de escudo','Muralha Sombria: inicia com +4 de escudo','Armadura de Ferro: inicia com +6 de escudo','Trono Imortal: inicia com +8 de escudo'];
@@ -112,6 +121,10 @@ export default function App() {
   const [unlockedChapter,setUnlockedChapter] = useState(()=>{
     try { return Math.min(4,Math.max(1,Number(localStorage.getItem(CAMPAIGN_KEY))||1)); }
     catch { return 1; }
+  });
+  const [relics,setRelics] = useState<number[]>(()=>{
+    try { const v=JSON.parse(localStorage.getItem(RELIC_KEY)||'[]');return Array.isArray(v)?v.filter((n):n is number=>Number.isInteger(n)&&n>=1&&n<=4):[]; }
+    catch { return []; }
   });
   const [showCampaign,setShowCampaign] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -202,6 +215,17 @@ export default function App() {
     setUnlockedChapter(previous=>{
       if(next<=previous) return previous;
       try { localStorage.setItem(CAMPAIGN_KEY,String(next)); } catch { /* Local progress optional. */ }
+      return next;
+    });
+  },[gameOver,chapter]);
+
+  // Rewards are granted once per cleared chapter and apply to future battles.
+  useEffect(()=>{
+    if (!saveReady.current || gameOver!=='victory') return;
+    setRelics(previous=>{
+      if(previous.includes(chapter)) return previous;
+      const next=[...previous,chapter].sort((a,b)=>a-b);
+      try { localStorage.setItem(RELIC_KEY,JSON.stringify(next)); } catch { /* Local progress optional. */ }
       return next;
     });
   },[gameOver,chapter]);
@@ -653,15 +677,15 @@ export default function App() {
   };
 
   // 10. RESTART GAME
-  const handleRestartGame = (nextChapter = chapter) => {
-    if (!gameOver && !window.confirm('Iniciar uma nova partida? O progresso atual será perdido.')) return;
+  const handleRestartGame = (nextChapter = chapter):boolean => {
+    if (!gameOver && !window.confirm('Iniciar uma nova partida? O progresso atual será perdido.')) return false;
     try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(TURN_CHECKPOINT_KEY); } catch { /* Storage unavailable. */ }
     matchToken.current++;
     particleCanvasRef.current?.clear();
     setFloatingNumbers([]);
     clearDrag();
     sound.playClick();
-    setPlayerHeroes(JSON.parse(JSON.stringify(INITIAL_PLAYER_HEROES)));
+    setPlayerHeroes(campaignPlayerHeroes(relics));
     setRivalHeroes(campaignRivals(nextChapter));
     setChapter(nextChapter);
     setActivePlayerHeroId('p_rei_espadas');
