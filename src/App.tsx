@@ -50,7 +50,7 @@ export default function App() {
   const [deck, setDeck] = useState<ActionCard[]>(() => makeDeck(DECK_TEMPLATES).slice(3));
   const [showLog, setShowLog] = useState(false);
   const [hint, setHint] = useState('Arraste uma carta até o alvo ou selecione e toque em Jogar.');
-  const dragRef = useRef<{card?: ActionCard; hero?: Hero; x:number; y:number; moved:boolean} | null>(null);
+  const dragRef = useRef<{card?: ActionCard; hero?: Hero; x:number; y:number; moved:boolean; pointerId:number} | null>(null);
   const matchToken = useRef(0);
   const [discardPile, setDiscardPile] = useState<ActionCard[]>([]);
 
