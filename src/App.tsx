@@ -699,7 +699,7 @@ export default function App() {
           <button onClick={()=>setShowCompendium(true)} aria-label="Coleção de cartas">♛</button>
           <button onClick={()=>setShowLog(true)} aria-label="Histórico da batalha">≡</button>
           <button onClick={()=>setSoundEnabled(!soundEnabled)} aria-label={soundEnabled?'Desativar som':'Ativar som'}>{soundEnabled?'♫':'♪'}</button>
-          <button onClick={handleRestartGame} aria-label="Nova partida">↻</button>
+          <button onClick={()=>handleRestartGame()} aria-label="Nova partida">↻</button>
         </nav>
       </header>
       <div className="arena-score" aria-label="Placar">
@@ -743,8 +743,7 @@ export default function App() {
       {inspectingItem && <CardInspectModal item={inspectingItem} onClose={()=>setInspectingItem(null)}/>}
       {showCompendium && <CardCompendiumModal onClose={()=>setShowCompendium(false)} onInspect={item=>setInspectingItem(item)}/>}
       {showRules && <RulesModal onClose={()=>setShowRules(false)}/>}
-      {gameOver==='victory' && chapter<4 && <div className="campaign-next"><button onClick={()=>{setGameOver(null);handleRestartGame(chapter+1);}}>⚑ Avançar ao capítulo {chapter+1}</button></div>}
-      {gameOver && <VictoryModal status={gameOver} playerPg={playerPg} rivalPg={rivalPg} rounds={round} onPlayAgain={handleRestartGame}/>}
+      {gameOver && <VictoryModal status={gameOver} playerPg={playerPg} rivalPg={rivalPg} rounds={round} onPlayAgain={()=>handleRestartGame()}/>}
     </div>
   );
 }
