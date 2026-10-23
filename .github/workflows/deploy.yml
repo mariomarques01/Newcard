@@ -32,7 +32,7 @@ jobs:
       - name: Check types and card abilities
         run: |
           npm run lint
-          node --import tsx --test tests/cards.test.ts
+          node --import tsx --test tests/cards.test.ts tests/arena-layout.test.ts
 
       - name: Build project
         run: npm run build
