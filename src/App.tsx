@@ -55,6 +55,7 @@ import './arena-target-preview-v53.css';
 import './arena-medieval-combat-v54.css';
 import './arena-arcane-finish-v55.css';
 import './arena-hand-artwork-v59.css';
+import './arena-hand-suit-finish-v61.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
