@@ -1,15 +1,18 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type CSSProperties } from 'react';
 import './combat-effects.css';
+import {cueCharacter,attackFlavor} from '../game/characterMotion';
+import type {ActionCard,Hero} from '../types/game';
 
 export type ParticleEffectType = 'slash' | 'arcane' | 'gold_blast' | 'pierce' | 'heal' | 'shield';
 export interface CombatParticleCanvasRef {
   triggerBurst: (x:number,y:number,type:ParticleEffectType,label?:string)=>void;
   triggerCardBurst: (elementId:string,type:ParticleEffectType,label?:string)=>void;
   triggerAttack: (sourceId:string,targetId:string,type?:ParticleEffectType,label?:string)=>void;
+  revealCard: (card:ActionCard,casterId:string)=>void;
   clear: ()=>void;
 }
 type Point = {x:number;y:number};
-type Effect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean};
+type Effect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string};
 const labels:Record<ParticleEffectType,string>={slash:'ATAQUE',pierce:'PERFURAÇÃO',shield:'DEFESA',heal:'CURA',arcane:'MAGIA',gold_blast:'PODER REAL'};
 const center=(id:string):Point|null=>{
   const rect=document.getElementById(id)?.getBoundingClientRect();
@@ -17,35 +20,49 @@ const center=(id:string):Point|null=>{
 };
 export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function CombatEffects(_,ref){
   const [effects,setEffects]=useState<Effect[]>([]);
+  const [reveal,setReveal]=useState<ActionCard|null>(null);
   const sequence=useRef(0);
   const timers=useRef(new Set<ReturnType<typeof setTimeout>>());
-  const clear=()=>{timers.current.forEach(clearTimeout);timers.current.clear();setEffects([]);};
+  const clear=()=>{timers.current.forEach(clearTimeout);timers.current.clear();setEffects([]);setReveal(null);
+    document.querySelectorAll('[data-hero-id]').forEach(el=>cueCharacter(el.id,'idle'));};
   useEffect(()=>()=>{timers.current.forEach(clearTimeout);timers.current.clear();},[]);
   useImperativeHandle(ref,()=>{
-    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false)=>{
+    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string)=>{
       const id=++sequence.current;
-      setEffects(prev=>[...prev.slice(-15),{id,from,to,type,label:label||labels[type],travel}]);
+      setEffects(prev=>[...prev.slice(-15),{id,from,to,type,label:label||labels[type],travel,flavor}]);
       const timer=setTimeout(()=>{setEffects(prev=>prev.filter(e=>e.id!==id));timers.current.delete(timer);},1500);
       timers.current.add(timer);
     };
     return {
       clear,
+      revealCard:(card,casterId)=>{
+        cueCharacter(casterId,'cast');
+        if(card.type==='joker'||card.rank==='A'){
+          setReveal(card);
+          const timer=setTimeout(()=>{setReveal(null);timers.current.delete(timer);},1300);timers.current.add(timer);
+        }
+      },
       triggerBurst:(x,y,type,label)=>emit({x,y},{x,y},type,label),
-      triggerCardBurst:(id,type,label)=>{const p=center(id);if(p)emit(p,p,type,label);},
+      triggerCardBurst:(id,type,label)=>{const p=center(id);if(p){emit(p,p,type,label);if(type==='shield')cueCharacter(id,'guard');else if(type==='gold_blast'||type==='arcane'||type==='heal')cueCharacter(id,'cast');}},
       triggerAttack:(sourceId,targetId,type='slash',label)=>{
         const from=center(sourceId),to=center(targetId);if(!from||!to)return;
-        emit(from,to,type,label,true);
-        if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-          document.getElementById(sourceId)?.animate([{transform:'translate(0,0)'},{transform:`translate(${(to.x-from.x)*.09}px,${(to.y-from.y)*.09}px) scale(1.04)`,offset:.35},{transform:'translate(0,0)'}],{duration:430,easing:'ease-out'});
+        const source=document.getElementById(sourceId);
+        const suit=source?.dataset.suit as Hero['suit']|undefined;
+        const rank=source?.dataset.rank as Hero['rank']|undefined;
+        const flavor=suit&&rank?attackFlavor({suit,rank}):undefined;
+        emit(from,to,type,label,true,flavor);
+        cueCharacter(sourceId,type==='heal'||type==='arcane'?'cast':'attack');
+        if(type==='slash'||type==='pierce'){
+          const timer=setTimeout(()=>{cueCharacter(targetId,'hurt');timers.current.delete(timer);},580);timers.current.add(timer);
         }
       },
     };
   });
   return <div className="combat-effects" aria-hidden="true">{effects.map(e=>{
     const dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
-    const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?'380ms':'0ms'} as CSSProperties;
-    return <div key={e.id} className={`combat-fx fx-${e.type}`} data-effect={e.type} data-travel={e.travel} style={vars}>
-      {e.travel&&<div className="fx-flight" style={{left:e.from.x,top:e.from.y}}><div className="fx-bolt"><i/><b>✦</b></div></div>}
+    const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?'580ms':'0ms'} as CSSProperties;
+    return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"}`} data-effect={e.type} data-travel={e.travel} style={vars}>
+      {e.travel&&<div className="fx-flight" style={{left:e.from.x,top:e.from.y}}><div className="fx-bolt"><i/><b>{e.flavor==='heart'?'♥':e.flavor==='coin'?'◆':e.flavor==='flame'?'♨':e.flavor==='thorn'?'♣':e.flavor==='blade'?'⚔':'✦'}</b></div></div>}
       <div className="fx-impact" style={{left:e.to.x,top:e.to.y}}>
         <div className="fx-ring"/><div className="fx-ring fx-ring-second"/>
         {e.type==='shield'?<svg className="fx-symbol" viewBox="0 0 80 90"><path d="M40 5 72 17v27c0 20-17 33-32 41C25 77 8 64 8 44V17Z"/><path d="m23 43 12 12 23-27"/></svg>:e.type==='heal'?<span className="fx-symbol fx-plus">✚</span>:<span className="fx-symbol fx-star">{e.type==='slash'||e.type==='pierce'?'╱':'✦'}</span>}
@@ -53,5 +70,7 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         <strong className="fx-label">{e.label}</strong>
       </div>
     </div>;
-  })}</div>;
+  })}{reveal&&<div key={reveal.id} className={`special-reveal ${reveal.type==='joker'?'reveal-joker':'reveal-ace'}`} data-special={reveal.type}>
+    <img src={reveal.image} alt=""/><div><small>{reveal.type==='joker'?'CORINGA DESPERTADO':'PODER DE ÁS'}</small><strong>{reveal.skillName||reveal.name}</strong><span>{reveal.description}</span></div>
+  </div>}</div>;
 });

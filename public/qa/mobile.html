@@ -13,6 +13,7 @@
   const buttons=[...d.querySelectorAll('.arena-actions button')];
   check(buttons.length===5&&buttons.every(b=>{const r=b.getBoundingClientRect();return r.top>=0&&r.bottom<=h&&r.left>=0&&r.right<=w}),w+': cinco ações dentro da tela');
   check([...d.querySelectorAll('.hero-face')].every(b=>b.getBoundingClientRect().height>=55),w+': seis heróis visíveis');
+  check(await until(()=>d.querySelectorAll('.character-body').length===6),w+': seis personagens carregados');
   if(w!==393)continue;
   async function drag(source,target,cancel=false){
    const s=source.getBoundingClientRect(),t=target.getBoundingClientRect();const a={x:s.x+s.width/2,y:s.y+s.height/2},b={x:t.x+t.width/2,y:t.y+t.height/2};
@@ -31,6 +32,7 @@
   buttons[2].click();await wait(50);
   check(!!d.querySelector('[data-hero-id="p_rei_espadas"].protected .hero-barrier'),'Defesa deixa barreira visível no jogador');
   check(!!d.querySelector('[data-effect="shield"]'),'Defesa dispara animação de escudo');
+  check(d.querySelector('[data-character="p_rei_espadas"]').dataset.action==='guard','Personagem muda para postura defensiva');
   await drag(cards()[1],ally);check(cards().length===3&&hp()===initialHp,'Ataque em aliado rejeitado sem consumir carta');
   await drag(cards()[1],rival,true);check(cards().length===3&&hp()===initialHp,'Cancelar arraste não joga carta');
   await drag(cards()[1],rival);check(!!d.querySelector('[data-effect="pierce"][data-travel="true"] .fx-flight'),'Carta de ataque viaja até o rival');check(cards().length===2&&hp()!==initialHp,'Arraste de ataque causa dano e consome uma carta');
@@ -42,8 +44,13 @@
   check(!!d.querySelector('.enemy-row .protected .hero-barrier'),'Defesa do rival deixa barreira visível');
 
   await drag(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-face'),rival);check(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-condition').textContent==='AGIU','Herói arrastado ataca');check(!!d.querySelector('[data-effect="slash"][data-travel="true"] .fx-flight'),'Ataque do jogador tem rastro direcional');
+  check(d.querySelector('[data-character="p_rei_espadas"]').dataset.action==='attack','Personagem prepara e executa golpe dentro da carta');
   buttons[4].click();d.querySelector('[aria-label="Nova partida"]').click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 1')&&hp()===initialHp,'Reinício cancela ação pendente do rival');check(!d.querySelector('.combat-fx'),'Reinício limpa efeitos da partida anterior');
   buttons[3].click();await wait(80);buttons[3].click();await wait(80);check(cards().length===5,'Poder de compra respeita mão máxima de cinco cartas');
+  d.querySelector('[aria-label="Nova partida"]').click();await wait(100);
+  cards()[0].click();buttons[0].click();await wait(100);
+  check(!!d.querySelector('[data-special="joker"]'),'Coringa tem apresentação própria de habilidade');
+  check(d.querySelector('[data-character="p_rei_espadas"]').dataset.action!=='idle','Poder especial anima o personagem');
  }
  document.querySelector('#result').dataset.done='true';document.title='PASS — Newcard mobile';
 })().catch(e=>{document.querySelector('#result').textContent+='\nFAIL: '+e.message;document.title='FAIL — Newcard mobile'});

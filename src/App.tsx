@@ -190,7 +190,8 @@ export default function App() {
     setPlayerHeroes(result.allies); setRivalHeroes(result.enemies);
     setPlayerPg(pg); setRivalPg(rivalPg-stolen); setSelectedCardId(null);
     sound.playCardPlay();
-    const sourceId=`hand-card-${card.id}`;
+    const sourceId=`hero-card-${ally.id}`;
+    particleCanvasRef.current?.revealCard(card,sourceId);
     const fx=particleCanvasRef.current;
     if(a.damage&&enemy) fx?.triggerAttack(sourceId,`hero-card-${enemy.id}`,'pierce',`−${a.damage} VIDA`);
     result.allies.forEach((next,i)=>{
