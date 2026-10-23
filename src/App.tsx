@@ -46,6 +46,7 @@ import './arena-combat-readability-v43.css';
 import './arena-combat-outcomes-v44.css';
 import './arena-score-clip-fix-v46.css';
 import './arena-visual-polish-v47.css';
+import './arena-royal-reference-v48.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
