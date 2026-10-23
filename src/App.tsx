@@ -51,6 +51,7 @@ import './arena-atmosphere-v49.css';
 import './arena-hero-hierarchy-v50.css';
 import './arena-hand-actions-v51.css';
 import './arena-effect-preview-v52.css';
+import './arena-target-preview-v53.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
@@ -821,7 +822,7 @@ export default function App() {
         <div className="battle-atmosphere" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div>
         <section className="arena-row enemy-row" aria-label="Campo rival">
           <div className="row-caption"><span>REINO ADVERSÁRIO</span><small>Arraste seu herói para atacar</small></div>
-          <div className="hero-row">{rivalHeroes.map(hero=><div className={`arena-effect-target ${affectedRivals.includes(hero.id)?'will-hit':''}`} key={hero.id}><ArenaHero key={hero.id} hero={hero} targeted={hero.id===selectedRivalHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectRivalHero(hero)} onInspect={()=>setInspectingItem(hero)}/>{affectedRivals.includes(hero.id)&&<span className="arena-effect-marker">−{selectedAbility?.damage} VIDA</span>}</div>)}</div>
+          <div className="hero-row">{rivalHeroes.map(hero=><div className={`arena-effect-target ${affectedRivals.includes(hero.id)?'will-hit':''}`} key={hero.id}><ArenaHero key={hero.id} hero={hero} targeted={hero.id===selectedRivalHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectRivalHero(hero)} onInspect={()=>setInspectingItem(hero)}/>{!selectedCard && canAttack && hero.id===targetedRivalHero?.id && forecastDamage>0 && <span className="arena-attack-preview" aria-label={`Prévia: ${forecastShield} de dano no escudo, ${Math.min(forecastHp,hero.currentHp)} de dano na vida${forecastGlory>0?`, ${forecastGlory} pontos de glória`:''}`}><b>⚔ PRÉVIA</b><span>🛡 −{forecastShield} · ♥ −{Math.min(forecastHp,hero.currentHp)}</span>{forecastGlory>0&&<em>+{forecastGlory} PG</em>}</span>}{affectedRivals.includes(hero.id)&&<span className="arena-effect-marker">−{selectedAbility?.damage} VIDA</span>}</div>)}</div>
         </section>
         <div className={`battle-divider ${dragKind==='board'?'board-ready':''}`}><span className="pile">BARALHO <b>{deck.length}</b></span><p role="status">{dragKind ? dragKind==='enemy'?'SOLTE SOBRE UM RIVAL':dragKind==='ally'?'SOLTE SOBRE UM ALIADO':'SOLTE NO TABULEIRO' : 'ARENA DOS REINOS'}</p>{(cardCanPlay && !!effectSummary || forecastDamage>0 && !!targetedRivalHero) && <div className="arena-combat-hud" role="status" aria-label="Resumo da ação selecionada">{cardCanPlay && effectSummary && <div className="arena-combat-hud-effects"><b>✦ EFEITO</b><span>{selectedAbility?.all?'TODOS OS ALIADOS · ':selectedAbility?.weakest?'ALIADO MAIS FERIDO · ':''}{effectSummary}</span></div>}{forecastDamage>0 && targetedRivalHero && <div className="arena-combat-hud-forecast"><b>⚔ {targetedRivalHero.name}</b><span>🛡 −{forecastShield}</span><span>♥ −{Math.min(forecastHp,targetedRivalHero.currentHp)}</span>{forecastGlory>0&&<em>+{forecastGlory} PG</em>}</div>}</div>}<span className="pile">DESCARTE <b>{discardPile.length}</b></span></div>
         <section className="arena-row player-row" aria-label="Seu campo">
