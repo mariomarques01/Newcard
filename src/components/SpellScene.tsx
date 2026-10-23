@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import type {BattleEffect} from './CombatParticleCanvas';
-const palette=(e:BattleEffect)=>e.type==='heal'?['#56ffb7','#ddffef']:e.type==='shield'?['#48ceff','#d9f9ff']:e.flavor==='flame'?['#ff771e','#fff1a0']:e.flavor==='blade'?['#67cbff','#ecfaff']:e.type==='gold_blast'||e.flavor==='coin'?['#ffd34b','#fff6c4']:['#b967ff','#f4ddff'];
+const palette=(e:BattleEffect)=>e.school==='steel'?['#71cfff','#e7faff']:e.school==='nature'?['#62e9aa','#effff2']:e.school==='solar'?['#ffca5b','#fff6d2']:e.school==='storm'?['#b58aff','#f3e8ff']:e.school==='wild'?['#ff79c5','#ffe7f7']:e.type==='heal'?['#56ffb7','#ddffef']:e.type==='shield'?['#48ceff','#d9f9ff']:e.flavor==='flame'?['#ff771e','#fff1a0']:e.flavor==='blade'?['#67cbff','#ecfaff']:e.type==='gold_blast'||e.flavor==='coin'?['#ffd34b','#fff6c4']:['#b967ff','#f4ddff'];
 const noise=(n:number)=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v)};
 export function SpellScene({effects}:{effects:BattleEffect[]}){
  const canvas=useRef<HTMLCanvasElement>(null),live=useRef(effects),raf=useRef(0);
@@ -74,7 +74,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
       ctx.beginPath();for(let k=0;k<7;k++){const a=k*Math.PI/3;const px=hx+Math.cos(a)*12,py=hy+Math.sin(a)*12;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke();
      }ctx.restore();glow(x,y,65,color,fade*.22);
     }
-    const count=board?100:65;
+    const count=board?70:42;
     for(let i=0;i<count;i++){
      const seed=e.id*91+i,angle=noise(seed)*Math.PI*2,speed=(20+noise(seed+3)*radius*1.8),life=.45+noise(seed+9)*.65;
      if(age>life)continue;
