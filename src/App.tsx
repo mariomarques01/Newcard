@@ -40,6 +40,7 @@ import './arena-inline-selection-v37.css';
 import './arena-hand-states-v38.css';
 import './arena-turn-clarity-v39.css';
 import './arena-hand-vertical-fit-v40.css';
+import './arena-original-hand-v41.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
