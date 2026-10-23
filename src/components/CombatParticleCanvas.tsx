@@ -3,6 +3,7 @@ import './combat-effects.css';
 import './combat-polish-v2.css';
 import './combat-cinematic-v3.css';
 import './combat-target-focus-v45.css';
+import './combat-choreography.css';
 import {cueCharacter,attackFlavor} from '../game/characterMotion';
 import {BattleActor} from './BattleActor';
 import {spellPresentation,schoolForSuit} from '../game/spellPresentation';
@@ -21,7 +22,7 @@ export interface CombatParticleCanvasRef {
   clear: ()=>void;
 }
 type Point = {x:number;y:number};
-export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;school?:string;started:number;scope?:'board';actor?:{id:string;name:string}};
+export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;school?:string;started:number;scope?:'board';actor?:{id:string;name:string;casting?:boolean}};
 const MAX_ACTIVE_EFFECTS = 6;
 // Projectile travel (900ms) + impact animation (1350ms) + cleanup margin.
 const EFFECT_LIFETIME_MS = 2400;
@@ -70,15 +71,16 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         const flavor=card?({steel:'blade',nature:'heart',solar:'coin',storm:'thorn',wild:'spell'} as const)[spellPresentation(card).school]:suit&&rank?attackFlavor({suit,rank}):undefined;
         const royal=source?.dataset.heroId?CHARACTER_PERSONALITY[source.dataset.heroId]:undefined;
         const combatLabel=label||(type==='shield'?royal?.guard:type==='slash'||type==='pierce'?royal?.attack:undefined);
-        emit(from,to,type,combatLabel,sourceId!==targetId,flavor,undefined,actorFor(sourceId),card?spellPresentation(card).school:suit?schoolForSuit(suit):undefined);
-        cueCharacter(sourceId,type==='heal'||type==='arcane'?'cast':'attack');
+        const actor=actorFor(sourceId);
+        emit(from,to,type,combatLabel,sourceId!==targetId,flavor,undefined,actor?{...actor,casting:!!card}:undefined,card?spellPresentation(card).school:suit?schoolForSuit(suit):undefined);
+        cueCharacter(sourceId,card||type==='heal'||type==='arcane'?'cast':'attack');
         if(type==='slash'||type==='pierce'||type==='arcane'||type==='gold_blast'){
           const timer=setTimeout(()=>{cueCharacter(targetId,'hurt');timers.current.delete(timer);},PROJECTILE_IMPACT_MS);timers.current.add(timer);
         }
       },
     };
   });
-  return <div className="combat-effects" aria-hidden="true"><SpellScene effects={effects}/>{effects.filter(e=>e.actor && !e.travel).slice(-2).map(e=><BattleActor key={e.id} effect={e}/>)}{effects.map(e=>{
+  return <div className="combat-effects" aria-hidden="true"><SpellScene effects={effects}/>{effects.filter(e=>e.actor).slice(-1).map(e=><BattleActor key={e.id} effect={e}/>)}{effects.map(e=>{
     const dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
     const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?`${PROJECTILE_IMPACT_MS}ms`:'0ms'} as CSSProperties;
     return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"} ${e.scope==='board'?'fx-board':''}`} data-school={e.school} data-effect={e.type} data-travel={e.travel} data-scope={e.scope||'target'} style={vars}>

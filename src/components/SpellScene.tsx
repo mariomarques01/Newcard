@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
+import {spellFlight,SPELL_CHARGE_MS} from '../game/spellFlight';
 import type {BattleEffect} from './CombatParticleCanvas';
 const palette=(e:BattleEffect)=>e.school==='steel'?['#71cfff','#e7faff']:e.school==='nature'?['#62e9aa','#effff2']:e.school==='solar'?['#ffca5b','#fff6d2']:e.school==='storm'?['#b58aff','#f3e8ff']:e.school==='wild'?['#ff79c5','#ffe7f7']:e.type==='heal'?['#56ffb7','#ddffef']:e.type==='shield'?['#48ceff','#d9f9ff']:e.flavor==='flame'?['#ff771e','#fff1a0']:e.flavor==='blade'?['#67cbff','#ecfaff']:e.type==='gold_blast'||e.flavor==='coin'?['#ffd34b','#fff6c4']:['#b967ff','#f4ddff'];
 const noise=(n:number)=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v)};
@@ -26,30 +27,34 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
     const elapsed=now-e.started;if(elapsed<0||elapsed>2500)continue;
     const [color,light]=palette(e),delay=e.travel?PROJECTILE_IMPACT_MS:0,age=(elapsed-delay)/1000;
     const board=e.scope==='board',radius=board?Math.min(w*.38,h*.2):64;
-    // Charge at the caster, then a glowing projectile with an arcing particle wake.
-    if(e.travel&&!reduce&&elapsed<940){
-     const p=Math.max(0,Math.min(1,(elapsed-300)/580));const arc=Math.sin(p*Math.PI)*Math.min(45,Math.abs(e.to.x-e.from.x)*.12+18);
-     const x=e.from.x+(e.to.x-e.from.x)*p,y=e.from.y+(e.to.y-e.from.y)*p-arc;
-     glow(e.from.x,e.from.y,32+elapsed*.035,color,(1-p)*.7);
-     for(let j=15;j>=0;j--){const q=Math.max(0,p-j*.017),tx=e.from.x+(e.to.x-e.from.x)*q,ty=e.from.y+(e.to.y-e.from.y)*q-Math.sin(q*Math.PI)*Math.min(45,Math.abs(e.to.x-e.from.x)*.12+18);glow(tx,ty,3+(15-j)*.8,color,(1-j/16)*.55);}
-     glow(x,y,26,color,1);glow(x,y,8,light,1);
-     for(let j=0;j<5;j++){const a=elapsed*.017+j*1.256;glow(x+Math.cos(a)*17,y+Math.sin(a)*12,3,light,.9);}
-    }
-    if(e.travel&&!reduce&&elapsed>=300&&elapsed<1150){
-     const t=Math.min(1,(elapsed-300)/580),dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
-     ctx.save();ctx.translate(e.from.x+dx*t,e.from.y+dy*t);ctx.rotate(Math.atan2(dy,dx));ctx.globalAlpha=Math.min(1,(1150-elapsed)/250);
-     if(e.flavor==='blade'){
-      ctx.strokeStyle=light;ctx.lineWidth=5;ctx.shadowColor=color;ctx.shadowBlur=18;
-      for(let k=0;k<3;k++){ctx.beginPath();ctx.arc(-k*14,0,42+k*13,-1.2,1.2);ctx.stroke();}
-     }else if(e.flavor==='flame'){
-      for(let k=0;k<12;k++){const a=noise(e.id+k)*Math.PI*2;glow(-k*7,Math.sin(a+elapsed*.01)*(12+k),25-k,color,.8);}
-     }else if(e.flavor==='coin'){
-      for(let k=0;k<9;k++){const a=k*2.4+elapsed*.009;ctx.fillStyle='#ffdc56';ctx.strokeStyle='#fff3bd';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(Math.cos(a)*45-k*5,Math.sin(a)*35,9,12,elapsed*.005,0,Math.PI*2);ctx.fill();ctx.stroke();}
-     }else if(e.flavor==='heart'){
-      ctx.fillStyle='#ffa3ce';ctx.font='bold 32px Georgia';for(let k=0;k<5;k++){const a=k*1.25+elapsed*.008;ctx.fillText('♥',Math.cos(a)*36-16,Math.sin(a)*36+10);}
-     }else{
-      ctx.strokeStyle='#d69aff';ctx.lineWidth=3;for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(-70,k*12-18);for(let j=0;j<9;j++)ctx.lineTo(-70+j*12,(noise(e.id+k+j)*45-22)+k*8);ctx.stroke();}
-     }ctx.restore();
+    // Charge, release and wake use the same path, so energy never detaches from its projectile.
+    if(e.travel&&!reduce&&elapsed<PROJECTILE_IMPACT_MS){
+     const f=spellFlight(e.from,e.to,elapsed),charge=Math.min(1,elapsed/SPELL_CHARGE_MS);
+     const chargeFade=elapsed<SPELL_CHARGE_MS?charge:Math.max(0,1-f.progress*2);
+     ctx.save();ctx.translate(e.from.x,e.from.y);ctx.rotate(elapsed*.002);
+     ctx.globalAlpha=chargeFade*.8;ctx.strokeStyle=color;ctx.lineWidth=1.5;
+     for(const r of [22+charge*8,32+charge*8]){ctx.beginPath();ctx.ellipse(0,0,r,r*.6,0,0,Math.PI*2);ctx.stroke();}
+     for(let i=0;i<6;i++){const a=i*Math.PI/3;ctx.save();ctx.translate(Math.cos(a)*34,Math.sin(a)*20);ctx.rotate(a);ctx.strokeRect(-3,-3,6,6);ctx.restore();}
+     ctx.restore();glow(e.from.x,e.from.y,28+charge*18,color,chargeFade*.45);
+     if(elapsed>=SPELL_CHARGE_MS){
+      for(let j=10;j>=0;j--){const tail=spellFlight(e.from,e.to,elapsed-j*13);glow(tail.x,tail.y,3+(10-j)*.9,color,(1-j/11)*.5);}
+      glow(f.x,f.y,24,color,.95);glow(f.x,f.y,7,light,1);
+      ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.angle);ctx.globalAlpha=1;ctx.strokeStyle=light;ctx.fillStyle=color;ctx.lineWidth=2;
+      if(e.flavor==='blade'){
+       // A narrow cutting crescent, rather than a large ring over neighboring cards.
+       ctx.beginPath();ctx.moveTo(14,0);ctx.quadraticCurveTo(-10,-38,-24,-25);ctx.quadraticCurveTo(-4,0,-24,25);ctx.quadraticCurveTo(-10,38,14,0);ctx.fill();ctx.stroke();
+      }else if(e.flavor==='flame'){
+       for(let k=0;k<7;k++)glow(-k*7,Math.sin(k*2+elapsed*.025)*(3+k),18-k,color,.7);
+      }else if(e.flavor==='coin'){
+       for(let k=0;k<4;k++){const a=k*Math.PI/2+elapsed*.01;ctx.save();ctx.translate(Math.cos(a)*17-10,Math.sin(a)*17);ctx.rotate(Math.PI/4);ctx.fillRect(-5,-5,10,10);ctx.strokeRect(-5,-5,10,10);ctx.restore();}
+      }else if(e.flavor==='heart'){
+       for(let k=0;k<5;k++){const a=k*Math.PI*2/5+elapsed*.006;ctx.save();ctx.translate(Math.cos(a)*18,Math.sin(a)*18);ctx.rotate(a);ctx.beginPath();ctx.ellipse(0,0,9,3,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+      }else{
+       // Two braided arcs visibly converge at the spell core.
+       for(let k=0;k<2;k++){ctx.beginPath();for(let j=0;j<9;j++){const px=-48+j*7,py=Math.sin(j*1.4+elapsed*.025+k*Math.PI)*(8+j*.4);j?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();}
+      }
+      ctx.restore();
+     }
     }
     if(age<0||age>1.6)continue;
     const fade=Math.max(0,1-age/1.3),x=e.to.x,y=e.to.y;
@@ -72,6 +77,18 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
      ctx.rotate(-age);for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);ctx.strokeRect(22,-8,16,16);}ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
     }
     ctx.restore();
+    if(age<.65){
+     ctx.save();ctx.translate(x,y);ctx.globalAlpha=(1-age/.65)*.75;ctx.strokeStyle=color;ctx.lineWidth=2;
+     if(e.type==='shield'){
+      // Ripples visibly propagate around the barrier where the hit was absorbed.
+      for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(0,0,22+age*55+k*7,30+age*40+k*7,0,-Math.PI*.9,Math.PI*.7);ctx.stroke();}
+     }else if(e.school==='storm'){
+      for(let k=0;k<6;k++){ctx.save();ctx.rotate(k*Math.PI/3);ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(-6,-22);ctx.lineTo(4,-30);ctx.lineTo(0,-48-age*20);ctx.stroke();ctx.restore();}
+     }else if(e.school==='wild'){
+      for(let k=0;k<2;k++){ctx.beginPath();for(let j=0;j<35;j++){const a=j*.2+age*4+k*Math.PI,r=8+j*.9;const px=Math.cos(a)*r,py=Math.sin(a)*r;j?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();}
+     }
+     ctx.restore();
+    }
     const atlas=texture.current;
     if(atlas&&board&&age<1.45){
      const cellX=e.type==='shield'||e.flavor==='blade'?1:e.type==='gold_blast'||e.flavor==='coin'||e.type==='heal'?1:0;
