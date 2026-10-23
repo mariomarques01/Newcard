@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {spellPresentation,heroCombatState} from '../src/game/spellPresentation';
+import {spellPresentation,heroCombatState,schoolForSuit} from '../src/game/spellPresentation';
 import type {ActionCard,Hero} from '../src/types/game';
 const card=(suit:ActionCard['suit'],rank='5'):ActionCard=>({id:'test',name:'Carta',suit,rank,cost:2,type:'attack',badgeText:'',badgeColor:'',description:'',value:1});
 test('each suit has distinct spell presentation',()=>{
@@ -16,4 +16,12 @@ test('combat-state thresholds',()=>{
  assert.equal(heroCombatState(hero),'wounded');
  assert.equal(heroCombatState({...hero,currentHp:3}),'critical');
  assert.equal(heroCombatState({...hero,isAlive:false}),'fallen');
+});
+
+test('spell school follows the played card across every rank',()=>{
+ const expected={espadas:'steel',copas:'nature',ouros:'solar',paus:'storm',coringa:'wild'} as const;
+ for(const suit of Object.keys(expected) as ActionCard['suit'][]){
+  assert.equal(schoolForSuit(suit),expected[suit]);
+  for(const rank of ['A','2','5','10']) assert.equal(spellPresentation(card(suit,rank)).school,expected[suit]);
+ }
 });

@@ -24,7 +24,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
    for(const e of live.current){
     const elapsed=now-e.started;if(elapsed<0||elapsed>2500)continue;
     const [color,light]=palette(e),delay=e.travel?880:0,age=(elapsed-delay)/1000;
-    const board=e.scope==='board',radius=board?Math.min(w*.85,h*.5):115;
+    const board=e.scope==='board',radius=board?Math.min(w*.38,h*.2):64;
     // Charge at the caster, then a glowing projectile with an arcing particle wake.
     if(e.travel&&!reduce&&elapsed<940){
      const p=Math.max(0,Math.min(1,(elapsed-300)/580));const arc=Math.sin(p*Math.PI)*Math.min(45,Math.abs(e.to.x-e.from.x)*.12+18);
@@ -53,8 +53,26 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
     if(age<0||age>1.6)continue;
     const fade=Math.max(0,1-age/1.3),x=e.to.x,y=e.to.y;
     if(reduce){glow(x,y,board?radius:48,color,fade*.3);continue;}
+    // School-specific silhouettes stay around the recipient instead of washing out the arena.
+    ctx.save();ctx.translate(x,y);ctx.globalAlpha=fade;ctx.strokeStyle=light;ctx.fillStyle=color;ctx.lineWidth=2;
+    if(e.type==='shield'){
+     const r=42+Math.min(age*30,12);ctx.globalAlpha=fade*.35;
+     ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(r*.75,-r*.55);ctx.lineTo(r*.6,r*.4);ctx.quadraticCurveTo(0,r*1.2,-r*.6,r*.4);ctx.lineTo(-r*.75,-r*.55);ctx.closePath();ctx.fill();ctx.globalAlpha=fade;ctx.stroke();
+    }else if(e.school==='steel'||(!e.school&&(e.type==='slash'||e.type==='pierce'))){
+     ctx.rotate(-.6);for(let i=0;i<3;i++){ctx.globalAlpha=fade*(1-i*.2);ctx.lineWidth=5-i;ctx.beginPath();ctx.moveTo(-38+i*12,-35);ctx.quadraticCurveTo(-6+i*12,0,28+i*12,38);ctx.stroke();}
+    }else if(e.school==='nature'||e.type==='heal'){
+     for(let i=0;i<7;i++){const a=i*Math.PI*2/7+age*.8,r=25+age*18;ctx.save();ctx.translate(Math.cos(a)*r,Math.sin(a)*r-age*16);ctx.rotate(a);ctx.beginPath();ctx.ellipse(0,0,9,4,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+     ctx.fillStyle=light;ctx.fillRect(-3,-16,6,32);ctx.fillRect(-16,-3,32,6);
+    }else if(e.school==='solar'){
+     ctx.rotate(age*.5);for(let i=0;i<8;i++){ctx.rotate(Math.PI/4);ctx.beginPath();ctx.moveTo(20,0);ctx.lineTo(38+age*15,-4);ctx.lineTo(32+age*15,5);ctx.closePath();ctx.fill();}ctx.strokeRect(-15,-15,30,30);
+    }else if(e.school==='storm'){
+     for(let i=0;i<4;i++){ctx.save();ctx.rotate(i*Math.PI/2);ctx.beginPath();ctx.moveTo(-8,-60);for(let j=1;j<=6;j++)ctx.lineTo((noise(e.id+i*11+j+Math.floor(age*12))*2-1)*15,-60+j*10);ctx.stroke();ctx.restore();}
+    }else if(e.school==='wild'){
+     ctx.rotate(-age);for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);ctx.strokeRect(22,-8,16,16);}ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.restore();
     const atlas=texture.current;
-    if(atlas&&age<1.45){
+    if(atlas&&board&&age<1.45){
      const cellX=e.type==='shield'||e.flavor==='blade'?1:e.type==='gold_blast'||e.flavor==='coin'||e.type==='heal'?1:0;
      const cellY=e.type==='shield'||e.flavor==='blade'||e.flavor==='flame'?0:1;
      const halfW=atlas.naturalWidth/2,halfH=atlas.naturalHeight/2;
@@ -64,7 +82,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
     }
     // A brief local flash, expanding shock wave and drifting colored smoke.
     glow(x,y,(board?radius:95)*(1+age*.4),color,Math.max(0,1-age*4)*.7);
-    const ringR=10+age*radius*2.3;
+    const ringR=10+Math.min(age,.65)*radius*1.5;
     ctx.globalAlpha=fade*.8;ctx.strokeStyle=light;ctx.lineWidth=Math.max(.5,3*(1-age));ctx.beginPath();ctx.ellipse(x,y,ringR,ringR*(board?.48:.8),0,0,Math.PI*2);ctx.stroke();
     if(e.type==='shield'){
      ctx.save();ctx.translate(x,y);ctx.rotate(age*.2);ctx.globalAlpha=fade*.65;ctx.strokeStyle=color;ctx.lineWidth=1.5;
@@ -74,7 +92,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
       ctx.beginPath();for(let k=0;k<7;k++){const a=k*Math.PI/3;const px=hx+Math.cos(a)*12,py=hy+Math.sin(a)*12;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke();
      }ctx.restore();glow(x,y,65,color,fade*.22);
     }
-    const count=board?70:42;
+    const count=board?36:24;
     for(let i=0;i<count;i++){
      const seed=e.id*91+i,angle=noise(seed)*Math.PI*2,speed=(20+noise(seed+3)*radius*1.8),life=.45+noise(seed+9)*.65;
      if(age>life)continue;

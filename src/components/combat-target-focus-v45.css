@@ -12,3 +12,16 @@
 .combat-fx[data-travel="true"] .fx-label{font-size:10px!important;padding:3px 7px!important;letter-spacing:.2px!important;box-shadow:0 0 5px var(--fx-color)!important;top:28px!important}
 @keyframes target-spark-v45{from{transform:rotate(var(--spark-angle)) translateY(-7px);opacity:1}to{transform:rotate(var(--spark-angle)) translateY(-37px) scale(.2);opacity:0}}
 @media(prefers-reduced-motion:reduce){.combat-fx[data-travel="true"] .fx-flight,.combat-fx[data-travel="true"] .fx-impact::before,.combat-fx[data-travel="true"] .fx-impact::after{display:none!important}}
+
+/* The canvas owns projectile paths; DOM retains readable outcome labels. */
+.combat-fx[data-travel="true"] .fx-flight{display:none!important}
+.combat-fx[data-travel="true"] .fx-impact::before,
+.combat-fx[data-travel="true"] .fx-impact::after,
+.combat-fx[data-travel="true"] .fx-ring,
+.combat-fx[data-travel="true"] .fx-spark,
+.combat-fx[data-travel="true"] .fx-symbol{display:none!important}
+.combat-fx[data-school="steel"]{--fx-color:#8bdcff;--fx-light:#e7faff}
+.combat-fx[data-school="nature"]{--fx-color:#79efb4;--fx-light:#effff2}
+.combat-fx[data-school="solar"]{--fx-color:#ffcf68;--fx-light:#fff6d2}
+.combat-fx[data-school="storm"]{--fx-color:#bb93ff;--fx-light:#f3e8ff}
+.combat-fx[data-school="wild"]{--fx-color:#ff9edb;--fx-light:#ffe7f7}
