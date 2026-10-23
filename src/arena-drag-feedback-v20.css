@@ -1,0 +1,9 @@
+/* V20: drag target confirmation, lightweight and nonblocking */
+.drag-drop-feedback{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 86px);transform:translateX(-50%);z-index:45;pointer-events:none;white-space:nowrap;max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis;padding:7px 13px;border-radius:999px;font:900 10px/1.2 'Plus Jakarta Sans',sans-serif;letter-spacing:.5px;text-align:center;box-shadow:0 4px 14px #000b}
+.drag-drop-feedback.valid{color:#e2ffeb;background:#124332f2;border:1px solid #87f5ad}
+.drag-drop-feedback.invalid{color:#ffe8c4;background:#422b18f2;border:1px solid #edb775}
+.mobile-game[data-drag-state="valid"] .arena-hero.drop-target{outline:3px solid #b0ffd0!important;outline-offset:2px;box-shadow:0 0 0 5px #5de8a84a,0 0 20px #71ffc488!important}
+.mobile-game[data-drag-state="invalid"] .drag-card-ghost{filter:saturate(.65)}
+.mobile-game[data-drag-state="valid"] .drag-card-ghost{filter:drop-shadow(0 0 12px #8bffc477)}
+@media(orientation:portrait) and (max-height:720px){.drag-drop-feedback{bottom:calc(env(safe-area-inset-bottom) + 72px);padding:5px 9px;font-size:9px}}
+@media(prefers-reduced-motion:reduce){.drag-drop-feedback{animation:none!important}}
