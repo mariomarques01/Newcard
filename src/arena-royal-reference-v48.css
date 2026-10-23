@@ -1,0 +1,110 @@
+/* V48 — Royal arena visual direction from the approved concept.
+   Pure presentation: preserve the six grid rows, card art, rules and touch targets. */
+@media (orientation:portrait) and (max-width:600px){
+ .mobile-game{
+  --gold:#f7d795;--gold-dim:#c99c55a8;
+  background:radial-gradient(ellipse at 50% 25%,#412c1c38,transparent 45%),linear-gradient(#070d18,#060d19 55%,#03070e);
+  gap:3px;
+  padding-left:max(5px,env(safe-area-inset-left));
+  padding-right:max(5px,env(safe-area-inset-right));
+ }
+ .arena-header{
+  padding:0 5px 2px;
+  border:1px solid #d9ae68a3;border-radius:11px;
+  background:linear-gradient(180deg,#182b3c,#060f1e);
+  box-shadow:inset 0 1px #fff0c52b,0 2px 7px #0009;
+ }
+ .arena-brand{color:#ffe2a0;text-shadow:0 0 9px #eab9586b}
+ .arena-header nav{gap:3px;min-width:0}
+ .arena-header nav button{border-color:#d3b579a3;border-radius:8px;background:linear-gradient(#294258,#091a2c);box-shadow:inset 0 1px #ffffff33,0 2px 4px #0008}
+ .arena-score{
+  border:2px solid #cba464;border-radius:13px;
+  background:linear-gradient(90deg,#09253f,#081522 46%,#270e1b);
+  box-shadow:inset 0 0 0 1px #f6d58b35,0 2px 8px #000a;
+  padding:3px 5px;column-gap:3px;
+ }
+ .arena-score .score-player{border-right:1px solid #56d7ff44;padding-right:3px}
+ .arena-score .score-rival{border-left:1px solid #ff819d44;padding-left:3px}
+ .arena-score .score-head strong{font-size:clamp(18px,5vw,25px)}
+ .arena-score .pg-track i{border-radius:3px;box-shadow:inset 0 1px #ffffff12}
+ .arena-score .score-turn{
+  border:2px solid #d5ae6c;border-radius:12px;
+  background:linear-gradient(180deg,#172e36,#081c1c);
+  box-shadow:inset 0 0 12px #61edb41c,0 0 9px #43f5ae36;
+ }
+ .arena-score .score-turn strong{border-radius:6px;font-weight:900}
+ .arena-board{
+  padding:4px 5px;border:2px solid #bd8d49;border-radius:16px;
+  grid-template-rows:minmax(0,1fr) 33px minmax(0,1fr);
+  background:linear-gradient(180deg,#3d1018,#17151e 47%,#092d42 55%,#091d31);
+  box-shadow:inset 0 0 0 2px #e9c68b29,inset 0 0 35px #0009,0 0 0 1px #30200e;
+ }
+ .arena-board::before{
+  inset:3px;border-radius:11px;border-color:#d9b77455;
+  background:repeating-linear-gradient(110deg,#ffffff07 0 1px,transparent 1px 35px);
+ }
+ .arena-board::after{content:"";display:none}
+ .arena-row{padding:2px 3px 3px;gap:3px;grid-template-rows:17px minmax(0,1fr)}
+ .enemy-row{
+  background:radial-gradient(ellipse at 50% 0%,#ff73391c,transparent 65%),linear-gradient(180deg,#66172570,#160b18a0);
+  border-bottom:1px solid #d77e5e42;
+ }
+ .player-row{
+  background:radial-gradient(ellipse at 50% 100%,#1889bd29,transparent 65%),linear-gradient(0deg,#063954b0,#081a30a0);
+  border-top:1px solid #62c9e34d;
+ }
+ .enemy-row .row-caption>span{color:#ffb7b4}
+ .player-row .row-caption>span{color:#a5edff}
+ .arena-row .hero-row{gap:5px}
+ .arena-hero{
+  border:2px solid #d7ad66;border-radius:12px;
+  box-shadow:inset 0 1px #fff4c45c,0 0 0 1px #100b0c,0 4px 10px #000c;
+ }
+ .arena-hero::before{inset:2px;border-color:#f6d79a4d;border-radius:8px}
+ .arena-hero.active{border-color:#8aefff;box-shadow:0 0 0 1px #8aefff,0 0 14px #34ceffb5}
+ .arena-hero.targeted{border-color:#ff8b96;box-shadow:0 0 0 1px #ff869d,0 0 13px #fa547fbb}
+ .arena-hero.fallen{opacity:.72;filter:grayscale(.95)}
+ .arena-hero .hero-name{
+  bottom:26px;padding:9px 2px 3px;font-size:clamp(8px,2.35vw,11px);
+  background:linear-gradient(transparent,#060910f2 57%);
+ }
+ .arena-hero .hero-hp{font-size:clamp(11px,3.2vw,14px);padding:3px 5px}
+ .arena-hero .hero-condition{font-size:clamp(8px,2.3vw,10px);padding:3px 4px;border:1px solid #b8d8df66}
+ .arena-hero .hero-stats{gap:3px;bottom:6px;left:3px;right:3px}
+ .arena-hero .hero-stats>span{flex:1;min-width:0;padding:2px 2px;border-radius:7px;font-size:clamp(10px,3vw,13px)}
+ .battle-divider{
+  border:1px solid #e6b96b;border-radius:8px;
+  background:linear-gradient(90deg,#251408,#59401c 25%,#211a16 50%,#59401c 75%,#251408);
+  box-shadow:inset 0 1px #fff2bd50,0 0 9px #e0ac4540;
+  gap:3px;letter-spacing:.2px;
+ }
+ .battle-divider p{font-family:Cinzel,serif;font-size:clamp(8px,2.6vw,12px);letter-spacing:.5px;font-weight:900;white-space:nowrap}
+ .battle-divider .pile{padding:3px 4px;border-color:#d6a65e9c;background:#080d16eb;font-size:clamp(7px,2vw,9px);letter-spacing:0}
+ .battle-divider .pile b{font-size:clamp(9px,2.8vw,12px)}
+ .arena-hand{
+  border:1px solid #bd8c4c9e;border-radius:12px;padding:2px 5px 3px;
+  background:linear-gradient(180deg,#111a26f0,#070e19);
+  box-shadow:inset 0 1px #ffe5a128;
+ }
+ .arena-hand .row-caption{font-family:Cinzel,serif;color:#f2d39b;font-size:10px}
+ .arena-hand .hand-cards{gap:3px}
+ .arena-hand .arena-hand-card{border-color:#d6ad6b;border-radius:9px;box-shadow:0 3px 7px #000d}
+ .arena-hand .arena-hand-card.selected{border-color:#9deeff;box-shadow:0 0 0 2px #68ddff,0 0 14px #4fd5ff99}
+ .arena-hand .hand-name{background:linear-gradient(transparent,#070e19f5 44%);color:#fff2d8}
+ .arena-hint{border:1px solid #bc945a;border-left:3px solid #edc77d;border-radius:8px;background:#132034f5}
+ .arena-actions{border:1px solid #b68d52;border-radius:11px;padding:3px;background:linear-gradient(#172334,#060e1c);box-shadow:inset 0 1px #f9d79c30}
+ .arena-actions button{border-radius:10px!important;border-color:#b8a07caa!important}
+}
+@media(orientation:portrait) and (max-width:370px){
+ .arena-header nav button{width:27px;height:28px;font-size:16px}
+ .arena-brand{font-size:11px}
+ .arena-brand small{letter-spacing:1px}
+ .arena-score .score-head strong{font-size:17px}
+ .battle-divider p{font-size:8px}
+}
+@media(orientation:portrait) and (max-height:720px){
+ .arena-board{grid-template-rows:minmax(0,1fr) 26px minmax(0,1fr)}
+ .arena-row{grid-template-rows:14px minmax(0,1fr);gap:1px}
+ .arena-row .row-caption{font-size:8px}
+ .arena-hand{padding-top:1px;padding-bottom:1px}
+}
