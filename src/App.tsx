@@ -35,6 +35,7 @@ import './arena-damage-forecast-v31.css';
 import './arena-effect-targets-v32.css';
 import './arena-combat-hud-v33.css';
 import './arena-hand-grid-fix-v34.css';
+import './arena-hand-fit-v36.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
