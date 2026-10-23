@@ -1,0 +1,9 @@
+# Royal character animation
+
+`royal-actions.webp` is a shared sprite atlas for the six current battlefield heroes, generated with the built-in image generation tool from the original card artwork. The card art in the collection stays unchanged. Four poses per character: ready, windup, attack and spellcasting. Portraits use 2D pose changes plus secondary motion, not 3D skeletal animation.
+
+Reference order: King of Spades, Queen of Hearts, Jack of Clubs, King of Diamonds, Queen of Clubs, Jack of Hearts. The final atlas uses four equal columns with row boundaries at pixels 0, 245, 486, 726, 956, 1214, 1536. Export size: 1024 × 1536. The PNG master was encoded as WebP with alpha at quality 86 for mobile delivery.
+
+## Generation prompt
+
+Production game sprite atlas, four equal columns and six rows, 24 waist-up character poses. Preserve the original royal characters' identities, faces, hair, costumes, ornaments and painted medieval aesthetic. Remove card borders, text, labels and scenery; use a transparent background. Each row: relaxed ready pose, anticipation with weapon raised, forward attack with extended weapon or magic, and special spellcasting. Keep faces and scale consistent between poses. King of Spades: black beard, blue crown, black and gold armor, sword and blue magic. Queen of Hearts: light brown hair bun, heart crown, red dress, healing goblet. Jack of Clubs: short dark hair, trimmed beard, black gold armor, club staff and orange flame. King of Diamonds: gray beard, red gold robes, diamond crown, coin magic. Queen of Clubs: curly black hair, black gold dress, black gem crown, staff and purple magic. Jack of Hearts: young clean-shaven man with brown curls, red feather beret, embroidered doublet, heart goblet and rose charm magic. Keep all crowns and arms inside their own cell.
