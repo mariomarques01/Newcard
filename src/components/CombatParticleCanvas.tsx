@@ -19,7 +19,8 @@ export interface CombatParticleCanvasRef {
 type Point = {x:number;y:number};
 export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;started:number;scope?:'board';actor?:{id:string;name:string}};
 const MAX_ACTIVE_EFFECTS = 6;
-const EFFECT_LIFETIME_MS = 1800;
+// Projectile travel (900ms) + impact animation (1350ms) + cleanup margin.
+const EFFECT_LIFETIME_MS = 2400;
 const labels:Record<ParticleEffectType,string>={slash:'ATAQUE',pierce:'PERFURAÇÃO',shield:'DEFESA',heal:'CURA',arcane:'MAGIA',gold_blast:'PODER REAL'};
 const center=(id:string):Point|null=>{
   const rect=document.getElementById(id)?.getBoundingClientRect();
