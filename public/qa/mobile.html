@@ -48,7 +48,7 @@
   buttons[4].click();d.querySelector('[aria-label="Nova partida"]').click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 1')&&hp()===initialHp,'Reinício cancela ação pendente do rival');check(!d.querySelector('.combat-fx'),'Reinício limpa efeitos da partida anterior');
   buttons[3].click();await wait(80);buttons[3].click();await wait(80);check(cards().length===5,'Poder de compra respeita mão máxima de cinco cartas');
   d.querySelector('[aria-label="Nova partida"]').click();await wait(100);
-  cards()[0].click();buttons[0].click();await wait(100);
+  cards()[0].click();await until(()=>!buttons[0].disabled);buttons[0].click();await wait(100);
   check(!!d.querySelector('[data-special="joker"]'),'Coringa tem apresentação própria de habilidade');
   check(d.querySelector('[data-character="p_rei_espadas"]').dataset.action!=='idle','Poder especial anima o personagem');
  }
