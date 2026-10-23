@@ -1,0 +1,16 @@
+/* V46: keep the complete score/round header visible above the battlefield on iPhone.
+   The board previously painted over the bottom of the round panel. */
+@media(orientation:portrait) and (max-width:600px){
+ .mobile-game>.arena-header{position:relative;z-index:6;min-height:0}
+ .mobile-game>.arena-score{position:relative;z-index:5;min-height:0;box-sizing:border-box;overflow:hidden;isolation:isolate}
+ .mobile-game>.arena-board{position:relative;z-index:1;min-height:0;margin-top:0}
+ .arena-score .score-turn{min-height:0;max-height:100%;box-sizing:border-box;overflow:hidden;padding:1px 0;gap:0}
+ .arena-score .score-turn small{line-height:1.05!important}
+ .arena-score .score-turn .turn-owner-symbol{width:19px;height:19px;font-size:13px;flex-shrink:0}
+ .arena-score .score-turn strong{padding:2px 1px!important;line-height:1!important;margin-top:0}
+ .arena-score .score-side{min-height:0;overflow:hidden}
+}
+@media(orientation:portrait) and (max-width:390px){
+ .arena-score .score-turn .turn-owner-symbol{width:17px;height:17px;font-size:12px}
+ .arena-score .score-turn strong{font-size:9px!important;padding:1px!important}
+}
