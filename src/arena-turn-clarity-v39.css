@@ -1,0 +1,19 @@
+/* V39: unmistakable active turn on small phones, without extra grid rows. */
+.score-turn{position:relative;overflow:hidden;gap:2px;min-width:0}
+.score-turn small{font-size:clamp(8px,2vw,11px)!important;letter-spacing:.8px!important;font-weight:900!important;color:#f7e5c2!important}
+.score-turn .turn-owner-symbol{display:grid;place-items:center;width:clamp(21px,5.5vw,29px);height:clamp(21px,5.5vw,29px);border-radius:50%;font-size:clamp(14px,3.7vw,19px);font-weight:900;line-height:1}
+.score-turn strong{display:block!important;width:calc(100% - 6px);box-sizing:border-box;padding:4px 1px!important;border-radius:5px!important;letter-spacing:0!important;font-size:clamp(9px,2.6vw,13px)!important;font-weight:1000!important;line-height:1.1!important;white-space:nowrap}
+.mobile-game[data-turn="player"] .score-turn{background:linear-gradient(155deg,#0d624a,#073c36)!important;border:2px solid #7af6c5!important;box-shadow:0 0 0 2px #48dca42e,0 0 17px #4ae5aa88!important}
+.mobile-game[data-turn="player"] .score-turn .turn-owner-symbol{background:#c4ffe4;color:#06462e}
+.mobile-game[data-turn="player"] .score-turn strong{background:#9df8cb!important;color:#06452e!important}
+.mobile-game[data-turn="rival"] .score-turn{background:linear-gradient(155deg,#80213a,#3d1026)!important;border:2px solid #ff94a8!important;box-shadow:0 0 0 2px #ff628633,0 0 17px #ff6e9088!important}
+.mobile-game[data-turn="rival"] .score-turn .turn-owner-symbol{background:#ffe1e7;color:#812039}
+.mobile-game[data-turn="rival"] .score-turn strong{background:#ffadbf!important;color:#531228!important}
+.mobile-game[data-turn="over"] .score-turn .turn-owner-symbol{background:#f5e2aa;color:#4d3613}
+.mobile-game[data-turn="player"] .score-player{border:2px solid #78f0bf!important;background:linear-gradient(180deg,#0c423a,#0a1c2b)!important}
+.mobile-game[data-turn="rival"] .score-rival{border:2px solid #ff8ea7!important;background:linear-gradient(180deg,#562238,#181728)!important}
+.mobile-game[data-turn="player"] .player-row{box-shadow:inset 0 0 0 2px #70f3b233;background:linear-gradient(0deg,#1a8a6840,transparent 80%)}
+.mobile-game[data-turn="rival"] .enemy-row{box-shadow:inset 0 0 0 2px #ff799633;background:linear-gradient(180deg,#b72e5940,transparent 80%)}
+.mobile-game[data-turn="rival"] .score-player,.mobile-game[data-turn="player"] .score-rival{opacity:.68}
+@media(orientation:portrait) and (max-width:390px){.score-turn{gap:1px}.score-turn strong{font-size:9px!important}.score-turn small{font-size:8px!important}.score-turn .turn-owner-symbol{width:19px;height:19px;font-size:14px}}
+@media(prefers-reduced-motion:reduce){.score-turn{animation:none!important}}
