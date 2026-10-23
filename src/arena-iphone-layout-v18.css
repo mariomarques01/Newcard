@@ -1,0 +1,35 @@
+/* V18 iPhone layout guardrails: retain board space and protect bottom actions */
+@media(orientation:portrait) and (max-width:600px){
+ .mobile-game{min-height:0;grid-template-rows:34px 64px minmax(0,1fr) clamp(112px,17dvh,150px) 32px 76px;row-gap:4px}
+ .arena-board,.arena-hand,.arena-hint,.arena-actions{min-height:0;min-width:0}
+ .arena-hand{overflow:visible;isolation:isolate}
+ .hand-cards{min-height:0;max-height:100%;padding-top:2px;padding-bottom:3px}
+ .arena-hand-card{max-height:100%;height:100%}
+ .arena-hint{overflow:hidden;align-self:stretch;z-index:3}
+ .arena-hint span{max-height:100%;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+ .arena-actions{overflow:hidden;z-index:4}
+ .arena-actions>div,.arena-actions>div>div{min-height:0}
+}
+@media(orientation:portrait) and (max-width:390px){
+ .mobile-game{grid-template-rows:32px 60px minmax(0,1fr) clamp(104px,16dvh,136px) 30px 74px;row-gap:3px}
+ .arena-hand .row-caption small{font-size:9px}
+ .arena-hint{padding:2px 6px;font-size:10px}
+ .arena-actions>div>div{gap:3px}
+}
+@media(orientation:portrait) and (max-height:720px){
+ .mobile-game{grid-template-rows:30px 54px minmax(0,1fr) clamp(88px,15dvh,106px) 27px 66px;row-gap:3px}
+ .arena-hand .row-caption{min-height:0}
+ .arena-hint{font-size:9px}
+ .arena-actions button{padding:3px 1px!important}
+}
+@media(orientation:portrait) and (max-height:600px){
+ .mobile-game{grid-template-rows:27px 48px minmax(0,1fr) 80px 24px 60px;row-gap:2px}
+ .arena-hand .row-caption small{display:none}
+ .arena-hint span{-webkit-line-clamp:1}
+ .arena-actions button svg{width:18px!important;height:18px!important}
+}
+@media(orientation:landscape) and (min-width:600px){
+ .arena-hand{min-height:0;overflow:hidden}
+ .arena-hand .hand-cards{min-height:0;overflow:auto;overscroll-behavior:contain}
+ .arena-actions{min-height:0}
+}
