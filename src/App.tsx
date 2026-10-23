@@ -35,9 +35,12 @@ const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
 const PROFILE_KEY = 'newcard-player-profile-v1';
 const CAMPAIGN_KEY = 'newcard-campaign-v1';
 const CAMPAIGN_CHAPTERS = ['A Fronteira Esquecida','O Cerco das Sombras','A Coroa de Ferro','O Trono do Destino'];
+const CAMPAIGN_BOSSES = ['Sentinela da Fronteira','Guardião das Sombras','Regente de Ferro','Soberano do Destino'];
+const CAMPAIGN_BOSS_SKILLS = ['Bastião: inicia com +2 de escudo','Muralha Sombria: inicia com +4 de escudo','Armadura de Ferro: inicia com +6 de escudo','Trono Imortal: inicia com +8 de escudo'];
 const campaignRivals = (chapter:number):Hero[] => INITIAL_RIVAL_HEROES.map(hero=>({
   ...hero, maxHp:hero.maxHp+(chapter-1)*2,currentHp:hero.maxHp+(chapter-1)*2,
-  atk:hero.atk+Math.floor((chapter-1)/2)
+  atk:hero.atk+Math.floor((chapter-1)/2),
+  ...(hero.id==='r_rei_ouros'?{name:CAMPAIGN_BOSSES[chapter-1],shield:hero.shield+chapter*2,maxHp:hero.maxHp+(chapter-1)*2+chapter*2,currentHp:hero.maxHp+(chapter-1)*2+chapter*2}:{})
 }));
 const newMatchId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 type PlayerProfile = {wins:number; losses:number; bestRound:number; bestPg:number; matchIds:string[]};
@@ -555,7 +558,7 @@ export default function App() {
       localStorage.setItem(TURN_CHECKPOINT_KEY, JSON.stringify({
         version:1, matchId,playerHeroes,rivalHeroes,playerHand,deck,discardPile,
         activePlayerHeroId,selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,
-        round,currentTurn:'player',gameOver,combatLogs
+        round,chapter,currentTurn:'player',gameOver,combatLogs
       }));
     } catch { /* Safari storage may be unavailable. */ }
     setCurrentTurn('rival'); setSelectedCardId(null); sound.playTurnChange();
@@ -567,7 +570,9 @@ export default function App() {
       if (!livingRivals.length || !livingPlayers.length) return;
       const attacker=livingRivals[Math.floor(Math.random()*livingRivals.length)];
       const target=[...livingPlayers].sort((a,b)=>a.currentHp-b.currentHp)[0];
-      const damage=Math.max(1,attacker.atk-Math.floor(target.def/2));
+      const bossRival=attacker.id==='r_rei_ouros';
+      const bossBonus=bossRival&&chapter>=3?1:0;
+      const damage=Math.max(1,attacker.atk+bossBonus-Math.floor(target.def/2));
       const absorbed=Math.min(target.shield,damage);
       const hp=Math.max(0,target.currentHp-damage+absorbed);
       const gained=hp===0?2:damage-absorbed>=3?1:0;
@@ -579,7 +584,7 @@ export default function App() {
       particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${target.id}`,'slash');
       if(absorbed>0) particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield',`BLOQUEOU ${absorbed}`);
       if(attacker.id==='r_rei_ouros') particleCanvasRef.current?.triggerCardBurst(`hero-card-${attacker.id}`,'shield','COFRE RÉGIO');
-      addLog(attacker.name,`Atacou ${target.name}: ${damage-absorbed} de dano.`,'attack');
+      addLog(attacker.name,`Atacou ${target.name}: ${damage-absorbed} de dano.${bossBonus?' Poder do chefe: +1 ataque.':''}`,'attack');
       if(checkWinConditions(playerPg,pg,nextPlayers,nextRivals)) return;
       setTimeout(()=>{
         if(token!==matchToken.current) return;
@@ -737,7 +742,7 @@ export default function App() {
       {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragValid}/>}
       {dragKind && dragCurrent && <div className={`drag-drop-feedback ${dragValid?'valid':'invalid'}`} role="status" aria-live="off">{dragValid?'✓ SOLTE PARA EXECUTAR':dragKind==='enemy'?'MIRE EM UM RIVAL VIVO':dragKind==='ally'?'MIRE EM UM ALIADO VIVO':'MIRE NO TABULEIRO'}</div>}
       {draggingCard && dragCurrent && <div className="drag-card-ghost" style={{left:dragCurrent.x,top:dragCurrent.y}}><img src={draggingCard.image} alt=""/><span>{draggingCard.name}</span></div>}
-      {showCampaign && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Campanha"><div><button className="close-log" onClick={()=>setShowCampaign(false)}>Fechar ×</button><h2>⚑ Campanha dos Quatro Reinos</h2><p>Conquiste cada capítulo para desbloquear o próximo. Os rivais ganham vida e ataque conforme a campanha avança.</p>{CAMPAIGN_CHAPTERS.map((name,index)=><p key={name}><button disabled={index+1>unlockedChapter} onClick={()=>{handleRestartGame(index+1);setShowCampaign(false);}}>{index+1>unlockedChapter?'🔒':'⚔'} Capítulo {index+1}: {name}{chapter===index+1?' · ATUAL':''}</button></p>)}<small>Progresso salvo neste navegador.</small></div></div>}
+      {showCampaign && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Campanha"><div><button className="close-log" onClick={()=>setShowCampaign(false)}>Fechar ×</button><h2>⚑ Campanha dos Quatro Reinos</h2><p>Conquiste cada capítulo para desbloquear o próximo. Cada reino tem um chefe com resistência própria; os chefes dos capítulos 3 e 4 também causam +1 de dano quando atacam.</p>{CAMPAIGN_CHAPTERS.map((name,index)=><p key={name}><button disabled={index+1>unlockedChapter} onClick={()=>{handleRestartGame(index+1);setShowCampaign(false);}}>{index+1>unlockedChapter?'🔒':'⚔'} Capítulo {index+1}: {name}{chapter===index+1?' · ATUAL':''}</button><small>👑 {CAMPAIGN_BOSSES[index]} — {CAMPAIGN_BOSS_SKILLS[index]}</small></p>)}<small>Progresso salvo neste navegador.</small></div></div>}
       {showProfile && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Perfil do jogador"><div><button className="close-log" onClick={()=>setShowProfile(false)}>Fechar ×</button><h2>★ Crônicas do Reino</h2><p>Partidas concluídas: <b>{profile.wins+profile.losses}</b></p><p>Vitórias: <b>{profile.wins}</b> · Derrotas: <b>{profile.losses}</b></p><p>Taxa de vitória: <b>{profile.wins+profile.losses?Math.round(profile.wins/(profile.wins+profile.losses)*100):0}%</b></p><p>Maior rodada alcançada: <b>{profile.bestRound}</b></p><p>Recorde de glória: <b>{profile.bestPg} PG</b></p><h3>Conquistas</h3><p>{profile.wins>=1?'🏆':'🔒'} Primeira vitória</p><p>{profile.wins>=5?'🏆':'🔒'} Veterano — 5 vitórias</p><p>{profile.wins>=10?'🏆':'🔒'} Lenda — 10 vitórias</p><p>{profile.bestPg>=12?'🏆':'🔒'} Glória máxima — 12 PG</p><small>Estatísticas salvas somente neste navegador.</small></div></div>}
       {showLog && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Histórico da batalha"><div><button className="close-log" onClick={()=>setShowLog(false)}>Fechar ×</button><h2>Registro de batalha</h2>{combatLogs.map(log=><p key={log.id}><b>{log.speaker}</b> {log.text}</p>)}</div></div>}
       {inspectingItem && <CardInspectModal item={inspectingItem} onClose={()=>setInspectingItem(null)}/>}
