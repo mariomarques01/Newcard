@@ -130,8 +130,8 @@ export default function App() {
           setRivalEnergy(saved.rivalEnergy);
           setRound(saved.round);
           // A complete pre-turn checkpoint restores the player's pending decision.
-          // Without one, preserve the rival turn instead of giving free energy/actions.
-          setCurrentTurn(saved.currentTurn);
+          // Older saves without a checkpoint retain the previous recovery behavior.
+          setCurrentTurn(saved.currentTurn === 'rival' ? 'player' : saved.currentTurn);
           setGameOver(saved.gameOver ?? null);
           setCombatLogs(Array.isArray(saved.combatLogs) ? saved.combatLogs : []);
           setSelectedCardId(null);
@@ -151,6 +151,7 @@ export default function App() {
         activePlayerHeroId,selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,
         round,currentTurn,gameOver,combatLogs
       }));
+      if (currentTurn === 'player') localStorage.removeItem(TURN_CHECKPOINT_KEY);
     } catch { /* Storage can be unavailable on Safari. */ }
   }, [playerHeroes,rivalHeroes,playerHand,deck,discardPile,activePlayerHeroId,
       selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,round,currentTurn,gameOver,combatLogs]);
