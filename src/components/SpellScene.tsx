@@ -1,6 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
 import {spellFlight,SPELL_CHARGE_MS} from '../game/spellFlight';
+import {drawCombatImpact} from './impactDrawing';
 import type {BattleEffect} from './CombatParticleCanvas';
 const palette=(e:BattleEffect)=>e.school==='steel'?['#71cfff','#e7faff']:e.school==='nature'?['#62e9aa','#effff2']:e.school==='solar'?['#ffca5b','#fff6d2']:e.school==='storm'?['#b58aff','#f3e8ff']:e.school==='wild'?['#ff79c5','#ffe7f7']:e.type==='heal'?['#56ffb7','#ddffef']:e.type==='shield'?['#48ceff','#d9f9ff']:e.flavor==='flame'?['#ff771e','#fff1a0']:e.flavor==='blade'?['#67cbff','#ecfaff']:e.type==='gold_blast'||e.flavor==='coin'?['#ffd34b','#fff6c4']:['#b967ff','#f4ddff'];
 const noise=(n:number)=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v)};
@@ -25,8 +26,9 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
    ctx.clearRect(0,0,w,h);const now=performance.now();ctx.globalCompositeOperation='screen';
    for(const e of live.current){
     const elapsed=now-e.started;if(elapsed<0||elapsed>2500)continue;
+    if(e.impact){drawCombatImpact(ctx,e,elapsed,reduce);continue;}
     const [color,light]=palette(e),delay=e.travel?PROJECTILE_IMPACT_MS:0,age=(elapsed-delay)/1000;
-    const board=e.scope==='board',radius=board?Math.min(w*.38,h*.2):64;
+    const board=e.scope==='board',legendary=e.intensity==='legendary',radius=board?Math.min(w*.38,h*.2):legendary?82:64;
     // Charge, release and wake use the same path, so energy never detaches from its projectile.
     if(e.travel&&!reduce&&elapsed<PROJECTILE_IMPACT_MS){
      const f=spellFlight(e.from,e.to,elapsed),charge=Math.min(1,elapsed/SPELL_CHARGE_MS);
@@ -59,6 +61,13 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
     if(age<0||age>1.6)continue;
     const fade=Math.max(0,1-age/1.3),x=e.to.x,y=e.to.y;
     if(reduce){glow(x,y,board?radius:48,color,fade*.3);continue;}
+    if(legendary){
+     // A second rotating seal distinguishes rare powers without a full-screen flash.
+     ctx.save();ctx.translate(x,y);ctx.rotate(age*.55);ctx.strokeStyle=light;ctx.lineWidth=1.5;ctx.globalAlpha=fade*.65;
+     for(const r of [48,56]){ctx.beginPath();ctx.arc(0,0,r+Math.min(age,.4)*18,0,Math.PI*2);ctx.stroke();}
+     for(let i=0;i<8;i++){ctx.save();ctx.rotate(i*Math.PI/4);ctx.beginPath();ctx.moveTo(42,0);ctx.lineTo(54,-5);ctx.lineTo(64,0);ctx.lineTo(54,5);ctx.closePath();ctx.stroke();ctx.restore();}
+     ctx.restore();
+    }
     // School-specific silhouettes stay around the recipient instead of washing out the arena.
     ctx.save();ctx.translate(x,y);ctx.globalAlpha=fade;ctx.strokeStyle=light;ctx.fillStyle=color;ctx.lineWidth=2;
     if(e.type==='shield'){
@@ -110,7 +119,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
       ctx.beginPath();for(let k=0;k<7;k++){const a=k*Math.PI/3;const px=hx+Math.cos(a)*12,py=hy+Math.sin(a)*12;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke();
      }ctx.restore();glow(x,y,65,color,fade*.22);
     }
-    const count=board?36:24;
+    const count=legendary?40:board?36:24;
     for(let i=0;i<count;i++){
      const seed=e.id*91+i,angle=noise(seed)*Math.PI*2,speed=(20+noise(seed+3)*radius*1.8),life=.45+noise(seed+9)*.65;
      if(age>life)continue;
