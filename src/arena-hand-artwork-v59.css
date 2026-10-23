@@ -9,3 +9,11 @@
 .arena-hand .energy-cost,.arena-hand .hand-selected-indicator,.arena-hand .hand-lack{z-index:3}
 .arena-hand .hand-info{z-index:4}
 @media (prefers-reduced-motion:reduce){.arena-hand .hand-face img{transition:none}}
+
+/* V60 — Mask the upper printed heading without obscuring the central illustration. */
+.arena-hand .hand-face::after{
+ content:'';position:absolute;z-index:2;pointer-events:none;
+ left:0;right:0;top:0;height:clamp(12px,12%,23px);
+ background:linear-gradient(180deg,rgba(8,16,24,.96),rgba(8,16,24,.84) 70%,transparent);
+}
+.arena-hand .hand-face{position:relative}
