@@ -1,0 +1,10 @@
+/* V32: target silhouettes and exact ability preview; no gameplay changes. */
+.arena-effect-target{position:relative;min-width:0;flex:1;display:flex;align-items:stretch;justify-content:center}
+.arena-effect-target>.arena-hero{width:100%;min-width:0}
+.arena-effect-target.will-buff>.arena-hero{outline:2px solid #73f5bd;outline-offset:1px;box-shadow:0 0 0 3px #4cde9840,0 0 17px #5dffb080}
+.arena-effect-target.will-hit>.arena-hero{outline:2px solid #ff869a;outline-offset:1px;box-shadow:0 0 0 3px #f9537650,0 0 17px #ff6b8a80}
+.arena-effect-marker{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:8;white-space:nowrap;padding:2px 5px;border-radius:5px;border:1px solid #9af6c0;background:#083b32ef;color:#c7ffe1;font:900 9px/1.2 'Plus Jakarta Sans',sans-serif;pointer-events:none;text-shadow:0 1px 2px #000}
+.will-hit .arena-effect-marker{background:#591728ef;border-color:#ffa3b2;color:#ffe2e7}
+.arena-effect-summary{position:absolute;z-index:20;top:calc(env(safe-area-inset-top) + 140px);left:50%;transform:translateX(-50%);max-width:calc(100vw - 20px);padding:5px 9px;border:1px solid #8cddbfaa;border-radius:8px;background:#0c2c2bf2;color:#d7ffe8;font:800 10px/1.3 'Plus Jakarta Sans',sans-serif;text-align:center;pointer-events:none;box-shadow:0 4px 15px #0009}
+@media(max-width:390px){.arena-effect-marker{font-size:8px;padding:2px 3px}.arena-effect-summary{font-size:9px;top:calc(env(safe-area-inset-top) + 127px)}}
+@media(orientation:portrait) and (max-height:720px){.arena-effect-summary{top:calc(env(safe-area-inset-top) + 118px)}}
