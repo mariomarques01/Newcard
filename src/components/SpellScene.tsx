@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
 import type {BattleEffect} from './CombatParticleCanvas';
 const palette=(e:BattleEffect)=>e.school==='steel'?['#71cfff','#e7faff']:e.school==='nature'?['#62e9aa','#effff2']:e.school==='solar'?['#ffca5b','#fff6d2']:e.school==='storm'?['#b58aff','#f3e8ff']:e.school==='wild'?['#ff79c5','#ffe7f7']:e.type==='heal'?['#56ffb7','#ddffef']:e.type==='shield'?['#48ceff','#d9f9ff']:e.flavor==='flame'?['#ff771e','#fff1a0']:e.flavor==='blade'?['#67cbff','#ecfaff']:e.type==='gold_blast'||e.flavor==='coin'?['#ffd34b','#fff6c4']:['#b967ff','#f4ddff'];
 const noise=(n:number)=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v)};
@@ -23,7 +24,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
    ctx.clearRect(0,0,w,h);const now=performance.now();ctx.globalCompositeOperation='screen';
    for(const e of live.current){
     const elapsed=now-e.started;if(elapsed<0||elapsed>2500)continue;
-    const [color,light]=palette(e),delay=e.travel?880:0,age=(elapsed-delay)/1000;
+    const [color,light]=palette(e),delay=e.travel?PROJECTILE_IMPACT_MS:0,age=(elapsed-delay)/1000;
     const board=e.scope==='board',radius=board?Math.min(w*.38,h*.2):64;
     // Charge at the caster, then a glowing projectile with an arcing particle wake.
     if(e.travel&&!reduce&&elapsed<940){

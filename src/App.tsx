@@ -13,6 +13,7 @@ import { TargetingArrow } from './components/TargetingArrow';
 import { Crown } from 'lucide-react';
 import { targetFor, makeDeck, resolveCard, abilityFor } from './game/cards';
 import { ArenaHero, ArenaHand } from './components/MobileArena';
+import { PROJECTILE_IMPACT_MS, HIT_REACTION_MS } from './game/combatTiming';
 import './arena.css';
 import './arena-royal-v3.css';
 import './arena-mobile-v4.css';
@@ -135,11 +136,27 @@ export default function App() {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [hitHeroId, setHitHeroId] = useState<string | null>(null);
 
+  const [combatResolving,setCombatResolving]=useState(false);
+  const combatBusy=useRef(false);
+  const impactTimers = useRef(new Set<ReturnType<typeof setTimeout>>());
+  useEffect(()=>()=>{impactTimers.current.forEach(clearTimeout);impactTimers.current.clear();},[]);
+  const atImpact = (callback:()=>void, delay=PROJECTILE_IMPACT_MS) => {
+    const token=matchToken.current;
+    const timer=setTimeout(()=>{
+      impactTimers.current.delete(timer);
+      if(token===matchToken.current) callback();
+    },delay);
+    impactTimers.current.add(timer);
+  };
+  const beginCombat = () => {
+    combatBusy.current=true;setCombatResolving(true);
+    atImpact(()=>{combatBusy.current=false;setCombatResolving(false);},PROJECTILE_IMPACT_MS+180);
+  };
   const triggerHeroDamageHit = (heroId: string) => {
-    setHitHeroId(heroId);
-    setTimeout(() => {
-      setHitHeroId((current) => (current === heroId ? null : current));
-    }, 420);
+    atImpact(()=>{
+      setHitHeroId(heroId);
+      atImpact(()=>setHitHeroId(current=>current===heroId?null:current),HIT_REACTION_MS);
+    });
   };
 
   // Modals
@@ -147,6 +164,14 @@ export default function App() {
   const [showCompendium, setShowCompendium] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<'victory' | 'defeat' | null>(null);
+  const [resultVisible,setResultVisible]=useState(false);
+  useEffect(()=>{
+    setResultVisible(false);
+    if(!gameOver)return;
+    // Let the final projectile and card shatter finish before covering the arena.
+    const timer=setTimeout(()=>setResultVisible(true),PROJECTILE_IMPACT_MS+800);
+    return()=>clearTimeout(timer);
+  },[gameOver]);
   const [matchId,setMatchId] = useState(newMatchId);
   const [chapter,setChapter] = useState(1);
   const [unlockedChapter,setUnlockedChapter] = useState(()=>{
@@ -294,14 +319,16 @@ export default function App() {
   };
 
   // Show the actual shield/HP outcome at the card that received the hit.
-  const showCombatOutcome = (heroId: string, shieldLost: number, hpLost: number, defeated: boolean) => {
-    const rect = document.getElementById(`hero-card-${heroId}`)?.getBoundingClientRect();
-    if (!rect) return;
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
-    if (shieldLost > 0) addFloatingNumber(x, y - 20, `⛨ -${shieldLost} ESCUDO`, 'shield');
-    if (hpLost > 0) addFloatingNumber(x, y + (shieldLost > 0 ? 20 : 0), `♥ -${hpLost} VIDA`, hpLost >= 3 ? 'crit' : 'damage');
-    if (defeated) addFloatingNumber(x, y + 40, 'DERROTADO!', 'crit');
+  const showCombatOutcome = (heroId: string, shieldLost: number, hpLost: number, defeated: boolean, shieldBroken=false) => {
+    atImpact(()=>{
+      const rect = document.getElementById(`hero-card-${heroId}`)?.getBoundingClientRect();
+      if (!rect) return;
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      if (shieldLost > 0) addFloatingNumber(x, y - 20, `⛨ −${shieldLost} ESCUDO`, 'shield');
+      if (hpLost > 0) addFloatingNumber(x, y + (shieldLost > 0 ? 16 : 0), `♥ −${hpLost} VIDA`, hpLost >= 3 ? 'crit' : 'damage');
+      if (defeated || shieldBroken) atImpact(()=>addFloatingNumber(x,y+34,defeated?'DERROTADO!':'ESCUDO QUEBRADO',defeated?'crit':'shield'),180);
+    });
   };
 
   // Helper to trigger screen shake
@@ -343,14 +370,14 @@ export default function App() {
 
     if (currentPglayer >= 12 || allRivalsDead) {
       setGameOver('victory');
-      sound.playVictory();
+      atImpact(()=>sound.playVictory(),PROJECTILE_IMPACT_MS+800);
       addLog('Vitória!', 'Seu Reino consagrou o triunfo supremo dos Reinos do Destino!', 'victory');
       return true;
     }
 
     if (currentPgRival >= 12 || allPlayersDead) {
       setGameOver('defeat');
-      sound.playDefeat();
+      atImpact(()=>sound.playDefeat(),PROJECTILE_IMPACT_MS+800);
       addLog('Derrota!', 'Suas forças sucumbiram ao poderio do reino adversário.', 'defeat');
       return true;
     }
@@ -384,10 +411,11 @@ export default function App() {
 
   // 4. EXECUTE CARD PLAY (via click or Hearthstone drag-and-drop)
   const executeCardPlay = (card: ActionCard, enemy = targetedRivalHero, ally = activePlayerHero) => {
-    if (gameOver || currentTurn !== 'player' || playerEnergy < card.cost || !ally?.isAlive || !playerHand.some(c=>c.id===card.id)) return;
+    if (combatBusy.current || gameOver || currentTurn !== 'player' || playerEnergy < card.cost || !ally?.isAlive || !playerHand.some(c=>c.id===card.id)) return;
     if (targetFor(card) === 'enemy' && !enemy?.isAlive) return;
     const result = resolveCard(card, playerHeroes, rivalHeroes, ally.id, enemy?.id);
     const a = result.ability;
+    if(a.damage) beginCombat();
     const stolen = Math.min(rivalPg, a.steal || 0);
     const pg = Math.min(12,playerPg+(a.glory||0)+stolen+result.killGlory);
     const draws = deck.slice(0,a.draw||0);
@@ -411,7 +439,10 @@ export default function App() {
       if(next.atk>before.atk||next.def>before.def) fx?.triggerCardBurst(id,'gold_blast',next.atk>before.atk?`+${next.atk-before.atk} ATQ`:`+${next.def-before.def} DEF`,card);
     });
     if(!a.damage&&!a.heal&&!a.shield&&!a.attack&&!a.defense) fx?.triggerCardBurst(`hero-card-${ally.id}`,'arcane',a.energy?`+${a.energy} ENERGIA`:a.draw?`+${a.draw} CARTAS`:'GLÓRIA',card);
-    if (a.damage && enemy) { triggerHeroDamageHit(enemy.id); triggerScreenShake(); }
+    if (a.damage && enemy) {
+      triggerHeroDamageHit(enemy.id);
+      showCombatOutcome(enemy.id,0,Math.min(enemy.currentHp,a.damage),enemy.currentHp<=a.damage);
+    }
     setHint(`${card.name} • ${card.description}`);
     addLog(card.name,card.description,'card');
     checkWinConditions(pg,rivalPg-stolen,result.allies,result.enemies);
@@ -428,17 +459,17 @@ export default function App() {
     const attacker = attackerParam || activePlayerHero;
     const target = targetRivalParam || targetedRivalHero;
 
-    if (gameOver || !attacker || !attacker.isAlive || attacker.hasAttacked || !target || !target.isAlive || currentTurn !== 'player') {
+    if (combatBusy.current || gameOver || !attacker || !attacker.isAlive || attacker.hasAttacked || !target || !target.isAlive || currentTurn !== 'player') {
       return;
     }
 
+    beginCombat();
     sound.playAttack();
-    triggerScreenShake();
     triggerHeroDamageHit(target.id);
 
     // Trigger visual particles on targeted rival and attacker
     particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${target.id}`,'slash');
-    if(target.shield>0) particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield','BLOQUEIO');
+    if(target.shield>0) atImpact(()=>particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield','BLOQUEIO'));
 
     // Calculate base damage: ATQ - floor(DEF / 2)
     let damage = Math.max(1, attacker.atk - Math.floor(target.def / 2));
@@ -487,7 +518,7 @@ export default function App() {
     const newPlayerPg = Math.min(12, playerPg + gainedPg);
 
     // Floating damage numbers
-    showCombatOutcome(target.id, shieldDmg, Math.min(target.currentHp, hpDmg), isDead);
+    showCombatOutcome(target.id, shieldDmg, Math.min(target.currentHp, hpDmg), isDead, target.shield>0 && remainingShield===0);
     if (gainedPg > 0) {
       setTimeout(() => {
         addFloatingNumber(window.innerWidth / 2, 140, `+${gainedPg} PG`, 'pg');
@@ -515,7 +546,7 @@ export default function App() {
 
   // 6. DEFEND ACTION
   const handleDefend = () => {
-    if (gameOver || !activePlayerHero || !activePlayerHero.isAlive || activePlayerHero.isDefending || currentTurn !== 'player') {
+    if (combatBusy.current || gameOver || !activePlayerHero || !activePlayerHero.isAlive || activePlayerHero.isDefending || currentTurn !== 'player') {
       return;
     }
 
@@ -555,7 +586,7 @@ export default function App() {
 
   // 7. USE ACE SPECIAL POWER (COSTS 2 ENERGY)
   const handleUseAce = () => {
-    if (gameOver || !activePlayerHero || !activePlayerHero.isAlive || playerEnergy < 2 || currentTurn !== 'player') {
+    if (combatBusy.current || gameOver || !activePlayerHero || !activePlayerHero.isAlive || playerEnergy < 2 || currentTurn !== 'player') {
       return;
     }
 
@@ -603,6 +634,7 @@ export default function App() {
       // Jack of Clubs Ace: 5 direct damage + 1 energy
       particleCanvasRef.current?.triggerCardBurst(`hero-card-${activePlayerHero.id}`, 'slash');
       if (targetedRivalHero && targetedRivalHero.isAlive) {
+        beginCombat();
         triggerHeroDamageHit(targetedRivalHero.id);
         particleCanvasRef.current?.triggerAttack(`hero-card-${activePlayerHero.id}`,`hero-card-${targetedRivalHero.id}`, 'pierce', '−5 INVESTIDA');
         const dmg = 5;
@@ -617,7 +649,7 @@ export default function App() {
         });
 
         setPlayerEnergy((e) => Math.min(maxEnergy, e + 1));
-        addFloatingNumber(window.innerWidth / 2, 200, '-5 INVESTIDA', 'crit');
+        showCombatOutcome(targetedRivalHero.id,0,Math.min(targetedRivalHero.currentHp,5),isDead);
 
         if (isDead) {
           newPlayerPg = Math.min(12, newPlayerPg + 2);
@@ -637,7 +669,7 @@ export default function App() {
 
   // 8. END TURN & AI RIVAL AUTOMATED PLAY
   const handleEndTurn = () => {
-    if (gameOver || currentTurn !== 'player') return;
+    if (combatBusy.current || gameOver || currentTurn !== 'player') return;
     const token=matchToken.current;
     try {
       localStorage.setItem(TURN_CHECKPOINT_KEY, JSON.stringify({
@@ -665,10 +697,10 @@ export default function App() {
       const nextRivals=rivalHeroes.map(h=>({...h,isDefending:false,def:h.def-(h.isDefending?1:0),shield:h.shield+(h.id===attacker.id&&h.id==='r_rei_ouros'?1:0)}));
       const pg=Math.min(12,rivalPg+gained);
       setPlayerHeroes(nextPlayers);setRivalHeroes(nextRivals);setRivalPg(pg);
-      showCombatOutcome(target.id, absorbed, Math.min(target.currentHp, damage-absorbed), hp===0);
-      sound.playAttack();triggerHeroDamageHit(target.id);triggerScreenShake();
+      showCombatOutcome(target.id, absorbed, Math.min(target.currentHp, damage-absorbed), hp===0, target.shield>0 && absorbed===target.shield);
+      sound.playAttack();triggerHeroDamageHit(target.id);
       particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${target.id}`,'slash');
-      if(absorbed>0) particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield',`BLOQUEOU ${absorbed}`);
+      if(absorbed>0) atImpact(()=>particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield',`BLOQUEOU ${absorbed}`));
       if(attacker.id==='r_rei_ouros') particleCanvasRef.current?.triggerCardBurst(`hero-card-${attacker.id}`,'shield','COFRE RÉGIO');
       addLog(attacker.name,`Atacou ${target.name}: ${damage-absorbed} de dano.${bossBonus?' Poder do chefe: +1 ataque.':''}`,'attack');
       if(checkWinConditions(playerPg,pg,nextPlayers,nextRivals)) return;
@@ -701,7 +733,8 @@ export default function App() {
     setDraggingCard(null); setDraggingHero(null); setDragOrigin(null); setDragCurrent(null); setHoveredHeroId(null);
   };
   const startDrag = (e: React.PointerEvent, card?: ActionCard, hero?: Hero) => {
-    if (gameOver || currentTurn !== 'player') return;
+    if(combatBusy.current)return;
+    if (combatBusy.current || gameOver || currentTurn !== 'player') return;
     if (card) {
       setSelectedCardId(card.id); setHint(card.description);
       if (playerEnergy < card.cost) { setHint('Energia insuficiente para esta carta.'); return; }
@@ -743,6 +776,9 @@ export default function App() {
     if (!gameOver && !window.confirm('Iniciar uma nova partida? O progresso atual será perdido.')) return false;
     try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(TURN_CHECKPOINT_KEY); } catch { /* Storage unavailable. */ }
     matchToken.current++;
+    impactTimers.current.forEach(clearTimeout);impactTimers.current.clear();
+    setHitHeroId(null);
+    combatBusy.current=false;setCombatResolving(false);
     particleCanvasRef.current?.clear();
     setFloatingNumbers([]);
     clearDrag();
@@ -838,8 +874,8 @@ export default function App() {
         <div className="row-caption"><span>SUA MÃO · {playerHand.length}/5</span><small>Toque para escolher · arraste para jogar</small></div>
         <div className="hand-cards" data-count={playerHand.length}>{playerHand.map((card,index)=><ArenaHand key={card.id} card={card} index={index} count={playerHand.length} missingEnergy={Math.max(0,card.cost-playerEnergy)} selected={card.id===selectedCardId} affordable={playerEnergy>=card.cost} onSelect={()=>{setSelectedCardId(card.id);setHint(card.description);}} onInspect={()=>setInspectingItem(card)} onStart={e=>startDrag(e,card)}/>)}</div>
       </section>
-      <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''} ${selectedCard?'has-card-selection':''}`} role="status">{selectedCard?<div className="arena-inline-selection"><strong>{selectedCard.name} · ⚡{selectedCard.cost}</strong><span className={cardCanPlay?'can-play':'cannot-play'} title={[effectSummary,cardInstruction].filter(Boolean).join(' · ')}>{cardCanPlay&&effectSummary ? `${effectSummary} · ${cardInstruction}` : cardInstruction}</span><button type="button" onClick={()=>setInspectingItem(selectedCard)} aria-label={`Ampliar ${selectedCard.name}`}>⤢</button><button type="button" onClick={()=>setSelectedCardId(null)} aria-label="Cancelar seleção">×</button></div>:<span>{hint}</span>}</div>
-      <div className="arena-actions"><ActionBar selectedCard={selectedCard} activeHero={activePlayerHero} targetedRival={targetedRivalHero} playerEnergy={playerEnergy} currentTurn={gameOver?'rival':currentTurn} onUseCard={handleUseCard} onAttack={handleAttack} onDefend={handleDefend} onUseAce={handleUseAce} onEndTurn={handleEndTurn}/></div>
+      <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''} ${selectedCard?'has-card-selection':''}`} role="status">{selectedCard?<div className="arena-inline-selection"><strong>{selectedCard.name} · ⚡{selectedCard.cost}</strong><span className={cardCanPlay?'can-play':'cannot-play'} title={[effectSummary,cardInstruction].filter(Boolean).join(' · ')}>{cardCanPlay&&effectSummary ? `${effectSummary} · ${cardInstruction}` : cardInstruction}</span><button type="button" onClick={()=>setInspectingItem(selectedCard)} aria-label={`Ampliar ${selectedCard.name}`}>⤢</button><button type="button" onClick={()=>setSelectedCardId(null)} aria-label="Cancelar seleção">×</button></div>:<span>{combatResolving?'⚔ Golpe em curso…':hint}</span>}</div>
+      <div className="arena-actions"><ActionBar resolving={combatResolving} selectedCard={selectedCard} activeHero={activePlayerHero} targetedRival={targetedRivalHero} playerEnergy={playerEnergy} currentTurn={gameOver?'rival':currentTurn} onUseCard={handleUseCard} onAttack={handleAttack} onDefend={handleDefend} onUseAce={handleUseAce} onEndTurn={handleEndTurn}/></div>
       <CombatParticleCanvas ref={particleCanvasRef}/><FloatingNumberOverlay items={floatingNumbers}/>
       {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragValid}/>}
       {dragKind && dragCurrent && <div className={`drag-drop-feedback ${dragValid?'valid':'invalid'}`} role="status" aria-live="off">{dragValid?'✓ SOLTE PARA EXECUTAR':dragKind==='enemy'?'MIRE EM UM RIVAL VIVO':dragKind==='ally'?'MIRE EM UM ALIADO VIVO':'MIRE NO TABULEIRO'}</div>}
@@ -851,7 +887,7 @@ export default function App() {
       {inspectingItem && <CardInspectModal item={inspectingItem} onClose={()=>setInspectingItem(null)}/>}
       {showCompendium && <CardCompendiumModal onClose={()=>setShowCompendium(false)} onInspect={item=>setInspectingItem(item)}/>}
       {showRules && <RulesModal onClose={()=>setShowRules(false)}/>}
-      {gameOver && <VictoryModal status={gameOver} playerPg={playerPg} rivalPg={rivalPg} rounds={round} onPlayAgain={()=>handleRestartGame()}/>}
+      {gameOver && resultVisible && <VictoryModal status={gameOver} playerPg={playerPg} rivalPg={rivalPg} rounds={round} onPlayAgain={()=>handleRestartGame()}/>}
     </div>
   );
 }

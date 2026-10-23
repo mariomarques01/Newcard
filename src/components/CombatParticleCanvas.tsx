@@ -7,6 +7,7 @@ import {cueCharacter,attackFlavor} from '../game/characterMotion';
 import {BattleActor} from './BattleActor';
 import {spellPresentation,schoolForSuit} from '../game/spellPresentation';
 import {CHARACTER_PERSONALITY} from '../game/characterMotion';
+import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
 import {SpellScene} from './SpellScene';
 import type {ActionCard,Hero} from '../types/game';
 
@@ -72,14 +73,14 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         emit(from,to,type,combatLabel,sourceId!==targetId,flavor,undefined,actorFor(sourceId),card?spellPresentation(card).school:suit?schoolForSuit(suit):undefined);
         cueCharacter(sourceId,type==='heal'||type==='arcane'?'cast':'attack');
         if(type==='slash'||type==='pierce'||type==='arcane'||type==='gold_blast'){
-          const timer=setTimeout(()=>{cueCharacter(targetId,'hurt');timers.current.delete(timer);},880);timers.current.add(timer);
+          const timer=setTimeout(()=>{cueCharacter(targetId,'hurt');timers.current.delete(timer);},PROJECTILE_IMPACT_MS);timers.current.add(timer);
         }
       },
     };
   });
   return <div className="combat-effects" aria-hidden="true"><SpellScene effects={effects}/>{effects.filter(e=>e.actor && !e.travel).slice(-2).map(e=><BattleActor key={e.id} effect={e}/>)}{effects.map(e=>{
     const dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
-    const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?'880ms':'0ms'} as CSSProperties;
+    const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?`${PROJECTILE_IMPACT_MS}ms`:'0ms'} as CSSProperties;
     return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"} ${e.scope==='board'?'fx-board':''}`} data-school={e.school} data-effect={e.type} data-travel={e.travel} data-scope={e.scope||'target'} style={vars}>
       <div className="scene-light" style={{left:e.to.x,top:e.to.y}}/>
       {e.travel&&<div className="casting-seal" style={{left:e.from.x,top:e.from.y}}><i/><span>✧</span></div>}

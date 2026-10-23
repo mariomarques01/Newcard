@@ -5,7 +5,8 @@
 .arena-hero.hero-under-attack:not(.fallen) .hero-face::before{background:radial-gradient(circle at 50% 42%,#fff9d2c9 0%,#ffb06770 26%,transparent 68%);animation:hit-flare-v42 .52s ease-out both}
 .arena-hero.protected.hero-under-attack:not(.fallen) .hero-face::before{background:radial-gradient(circle at 50% 42%,#d7faffd9 0%,#57c9ff7b 34%,transparent 70%)}
 .arena-hero.protected.hero-under-attack:not(.fallen){box-shadow:0 0 0 2px #b5efff,0 0 23px #45cbff9c}
-.arena-hero.fallen{animation:hero-defeat-v42 .8s ease-out both}
+.arena-hero.fallen{animation:none}
+.arena-hero.fallen.defeat-fresh{animation:hero-defeat-v42 .8s ease-out both}
 .hero-defeat-burst{position:absolute;inset:-15%;z-index:12;pointer-events:none;overflow:visible}
 .hero-defeat-burst .defeat-flash{position:absolute;inset:7%;border-radius:50%;background:radial-gradient(circle,#fff9d7 0%,#ffc966dd 20%,#ff664c88 39%,transparent 72%);animation:defeat-flash-v42 .85s ease-out both}
 .hero-defeat-burst i{--angle:calc(var(--piece) * 36deg);position:absolute;left:50%;top:48%;width:clamp(6px,1.5vw,12px);height:clamp(12px,3vw,23px);background:linear-gradient(135deg,#fff6c2,#ee9e4d 45%,#9b2a35);border:1px solid #ffe9ab;border-radius:2px;box-shadow:0 0 7px #ffca77;transform:translate(-50%,-50%) rotate(var(--angle));animation:defeat-shard-v42 .95s cubic-bezier(.18,.65,.3,1) both}

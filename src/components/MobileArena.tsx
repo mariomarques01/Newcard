@@ -1,15 +1,33 @@
+import {useEffect,useRef,useState} from 'react';
+import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
 import { CharacterPortrait } from './CharacterPortrait';
 import type { CSSProperties, PointerEvent } from 'react';
 import type { Hero, ActionCard } from '../types/game';
 
-export function ArenaHero({hero, active, targeted, valid, hovered, hit, onSelect, onInspect, onStart}: {
+export function ArenaHero({hero:liveHero, active, targeted, valid, hovered, hit, onSelect, onInspect, onStart}: {
   hero:Hero; active?:boolean; targeted?:boolean; valid?:boolean; hovered?:boolean; hit?:boolean;
   onSelect:()=>void; onInspect:()=>void; onStart?:(e:PointerEvent)=>void;
 }) {
+  // Keep target vitals visible during flight; gameplay still resolves immediately.
+  const [vitals,setVitals]=useState(()=>({currentHp:liveHero.currentHp,shield:liveHero.shield,isAlive:liveHero.isAlive}));
+  const shown=useRef(vitals);
+  const [defeatBurst,setDefeatBurst]=useState(false);
+  useEffect(()=>{
+    const next={currentHp:liveHero.currentHp,shield:liveHero.shield,isAlive:liveHero.isAlive};
+    const damaged=next.currentHp<shown.current.currentHp||next.shield<shown.current.shield;
+    const apply=()=>{
+      setDefeatBurst(shown.current.isAlive&&!next.isAlive);
+      shown.current=next;setVitals(next);
+    };
+    if(!damaged){apply();return;}
+    const timer=setTimeout(apply,PROJECTILE_IMPACT_MS);
+    return()=>clearTimeout(timer);
+  },[liveHero.currentHp,liveHero.shield,liveHero.isAlive]);
+  const hero={...liveHero,...vitals};
   const ratio=hero.maxHp>0?hero.currentHp/hero.maxHp:0;
   const hpState=ratio<=.34?'low':ratio<=.67?'mid':'high';
-  return <div id={`hero-card-${hero.id}`} data-hero-id={hero.id} data-suit={hero.suit} data-rank={hero.rank} data-hp={hpState} className={`arena-hero ${active?'active':''} ${targeted?'targeted':''} ${valid?'valid-target':''} ${hovered&&valid?'drop-target':''} ${!hero.isAlive?'fallen':''} ${hero.shield>0&&hero.isAlive?'protected':''} ${hit?'hero-under-attack':''}`}>
-    <button className="hero-face" aria-label={`Selecionar ${hero.name}`} onClick={onSelect} onPointerDown={onStart} disabled={!hero.isAlive}>
+  return <div id={`hero-card-${hero.id}`} data-hero-id={hero.id} data-suit={hero.suit} data-rank={hero.rank} data-hp={hpState} className={`arena-hero ${active?'active':''} ${targeted?'targeted':''} ${valid?'valid-target':''} ${hovered&&valid?'drop-target':''} ${!hero.isAlive?'fallen':''} ${defeatBurst?'defeat-fresh':''} ${hero.shield>0&&hero.isAlive?'protected':''} ${hit?'hero-under-attack':''}`}>
+    <button className="hero-face" aria-label={`Selecionar ${hero.name}`} onClick={onSelect} onPointerDown={onStart} disabled={!liveHero.isAlive}>
       <CharacterPortrait hero={hero}/>
       {hero.shield>0&&hero.isAlive&&<span className="hero-barrier" aria-label={`Protegido por ${hero.shield} de escudo`}><span>⛨</span></span>}
       <span className="hero-hp" aria-label={`Vida ${hero.currentHp} de ${hero.maxHp}`}>♥ {hero.currentHp}<small>/{hero.maxHp}</small></span>
@@ -18,7 +36,7 @@ export function ArenaHero({hero, active, targeted, valid, hovered, hit, onSelect
       <span className="hero-stats"><span className="atk-stat" aria-label={`Ataque ${hero.atk}`}>⚔ {hero.atk}</span><span className="shield-stat" aria-label={`Escudo ${hero.shield}`}>⛨ {hero.shield}</span></span>
       <span className="hero-health"><i style={{width:`${ratio*100}%`}}/></span>
     </button>
-    {!hero.isAlive&&<div className="hero-defeat-burst" aria-hidden="true"><span className="defeat-flash"/>{Array.from({length:10},(_,i)=><i key={i} style={{'--piece':i} as CSSProperties}/>)}</div>}
+    {defeatBurst&&<div className="hero-defeat-burst" aria-hidden="true"><span className="defeat-flash"/>{Array.from({length:10},(_,i)=><i key={i} style={{'--piece':i} as CSSProperties}/>)}</div>}
     <button className="hero-info" aria-label={`Habilidade de ${hero.name}`} onClick={onInspect}>i</button>
   </div>;
 }

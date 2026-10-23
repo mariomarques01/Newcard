@@ -3,6 +3,7 @@ import { Swords, Shield, Zap, Sparkles, ArrowRight, Play } from 'lucide-react';
 import { ActionCard, Hero } from '../types/game';
 
 interface ActionBarProps {
+  resolving?: boolean;
   selectedCard: ActionCard | null;
   activeHero: Hero | undefined;
   targetedRival: Hero | undefined;
@@ -16,6 +17,7 @@ interface ActionBarProps {
 }
 
 export const ActionBar: React.FC<ActionBarProps> = ({
+  resolving=false,
   selectedCard,
   activeHero,
   targetedRival,
@@ -27,7 +29,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   onUseAce,
   onEndTurn,
 }) => {
-  const isPlayerTurn = currentTurn === 'player';
+  const isPlayerTurn = currentTurn === 'player' && !resolving;
   const canUseCard = isPlayerTurn && selectedCard !== null && playerEnergy >= selectedCard.cost;
   const canAttack = isPlayerTurn && activeHero?.isAlive && !activeHero?.hasAttacked && targetedRival?.isAlive;
   const canDefend = isPlayerTurn && activeHero?.isAlive && !activeHero?.isDefending;
@@ -58,7 +60,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>JOGAR</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
-            {!isPlayerTurn ? 'Aguarde' : !selectedCard ? 'Selecione' : playerEnergy < selectedCard.cost ? 'Sem energia' : `${selectedCard.cost} ⚡ · Pronto`}
+            {resolving ? 'Em combate' : !isPlayerTurn ? 'Aguarde' : !selectedCard ? 'Selecione' : playerEnergy < selectedCard.cost ? 'Sem energia' : `${selectedCard.cost} ⚡ · Pronto`}
           </span>
         </button>
 
@@ -88,7 +90,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>ATACAR</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
-            {!isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Herói abatido' : activeHero.hasAttacked ? 'Já atacou' : !targetedRival?.isAlive ? 'Escolha alvo' : `Alvo: ${targetedRival.name.split(' ')[0]}`}
+            {resolving ? 'Em combate' : !isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Herói abatido' : activeHero.hasAttacked ? 'Já atacou' : !targetedRival?.isAlive ? 'Escolha alvo' : `Alvo: ${targetedRival.name.split(' ')[0]}`}
           </span>
         </button>
 
@@ -110,7 +112,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>DEFENDER</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90">
-            {!isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : activeHero.isDefending ? 'Em Guarda' : '+3 Escudo'}
+            {resolving ? 'Em combate' : !isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : activeHero.isDefending ? 'Em Guarda' : '+3 Escudo'}
           </span>
         </button>
 
@@ -136,7 +138,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>ÁS (2 ⚡)</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
-            {!isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : playerEnergy < 2 ? 'Sem energia' : activeHero.rank === 'K' ? 'Compra 2' : activeHero.rank === 'Q' ? 'Cura 4' : 'Ataque 5'}
+            {resolving ? 'Em combate' : !isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : playerEnergy < 2 ? 'Sem energia' : activeHero.rank === 'K' ? 'Compra 2' : activeHero.rank === 'Q' ? 'Cura 4' : 'Ataque 5'}
           </span>
         </button>
 
@@ -158,7 +160,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>ENCERRAR</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-80">
-            {isPlayerTurn ? 'Vez do Rival' : 'Aguardando...'}
+            {resolving ? 'Em combate' : isPlayerTurn ? 'Vez do Rival' : 'Aguardando...'}
           </span>
         </button>
       </div>
