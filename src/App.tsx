@@ -559,9 +559,10 @@ export default function App() {
   };
 
   const dragKind = draggingCard ? targetFor(draggingCard) : draggingHero ? 'enemy' : null;
+  const selectionTarget = !gameOver && currentTurn === 'player' && selectedCard && playerEnergy >= selectedCard.cost ? targetFor(selectedCard) : null;
   const validHero = (hero: Hero) => !!dragKind && hero.isAlive && (dragKind==='enemy' ? hero.id.startsWith('r_') : dragKind==='ally' && hero.id.startsWith('p_'));
   return (
-    <div className={`mobile-game ${screenShake ? 'animate-screen-shake' : ''}`} data-turn={gameOver?'over':currentTurn} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
+    <div className={`mobile-game ${screenShake ? 'animate-screen-shake' : ''}`} data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
       <header className="arena-header">
         <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
         <nav aria-label="Menu do jogo">
@@ -597,7 +598,7 @@ export default function App() {
           <div className="hero-row">{playerHeroes.map(hero=><ArenaHero key={hero.id} hero={hero} active={hero.id===activePlayerHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectPlayerHero(hero)} onInspect={()=>setInspectingItem(hero)} onStart={e=>startDrag(e,undefined,hero)}/>)}</div>
         </section>
       </main>
-      <section className="arena-hand" aria-label="Cartas na mão">
+      <section className="arena-hand" data-has-selection={!!selectedCard} aria-label="Cartas na mão">
         <div className="row-caption"><span>SUA MÃO · {playerHand.length}/5</span><small>Toque para escolher · arraste para jogar</small></div>
         <div className="hand-cards" data-count={playerHand.length}>{playerHand.map((card,index)=><ArenaHand key={card.id} card={card} index={index} count={playerHand.length} missingEnergy={Math.max(0,card.cost-playerEnergy)} selected={card.id===selectedCardId} affordable={playerEnergy>=card.cost} onSelect={()=>{setSelectedCardId(card.id);setHint(card.description);}} onInspect={()=>setInspectingItem(card)} onStart={e=>startDrag(e,card)}/>)}</div>
       </section>
