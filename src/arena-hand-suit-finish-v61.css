@@ -1,0 +1,10 @@
+/* V61: premium hand artwork frames, differentiated by suit, no rules changes. */
+.arena-hand-card[data-suit='espadas']{--hand-glow:#79caff;--hand-edge:#b9e9ff}
+.arena-hand-card[data-suit='copas']{--hand-glow:#f07c9b;--hand-edge:#ffcad7}
+.arena-hand-card[data-suit='ouros']{--hand-glow:#ffd16a;--hand-edge:#fff1ae}
+.arena-hand-card[data-suit='paus']{--hand-glow:#83e6ac;--hand-edge:#cbffe0}
+.arena-hand-card[data-type='joker']{--hand-glow:#cc83ff;--hand-edge:#f0cbff}
+.arena-hand .arena-hand-card .hand-face{border-color:var(--hand-edge,#e5c77d);box-shadow:inset 0 0 0 1px #ffffff35,0 3px 14px #0009,0 0 12px color-mix(in srgb,var(--hand-glow,#e5c77d) 30%,transparent)}
+.arena-hand .arena-hand-card.selected .hand-face{box-shadow:inset 0 0 0 2px var(--hand-edge,#fff),0 0 18px var(--hand-glow,#e5c77d),0 8px 22px #000b}
+.arena-hand .arena-hand-card.unaffordable .hand-face{box-shadow:inset 0 0 0 1px #ffffff20,0 2px 8px #0009}
+@media(prefers-reduced-motion:reduce){.arena-hand .arena-hand-card .hand-face{animation:none!important;transition:none!important}}
