@@ -1,0 +1,21 @@
+/* Newcard combat polish v2 — lightweight mobile-first visual feedback. */
+.combat-effects { isolation:isolate; }
+.fx-impact { filter:drop-shadow(0 0 12px var(--fx-color)); }
+.fx-impact::before { content:""; position:absolute; inset:-42px; border-radius:50%; pointer-events:none; background:radial-gradient(circle, var(--fx-light) 0%,var(--fx-color) 12%,transparent 65%); mix-blend-mode:screen; animation:newcard-hit-flash 650ms var(--fx-delay) both; }
+.fx-impact::after { content:""; position:absolute; inset:-64px; border:2px solid var(--fx-color); border-radius:50%; box-shadow:0 0 20px var(--fx-color),inset 0 0 18px var(--fx-color); pointer-events:none; animation:newcard-shockwave 850ms var(--fx-delay) both; }
+.fx-shield .fx-impact::before { inset:-75px; background:radial-gradient(circle,#ffffff99 0%,#73e6ff66 20%,#218aff22 48%,transparent 72%); }
+.fx-shield .fx-impact::after { border:4px solid #b5f8ff; border-radius:44% 44% 48% 48%; box-shadow:0 0 25px #59dbff,inset 0 0 24px #59dbff; animation:newcard-shield-pulse 950ms var(--fx-delay) both; }
+.fx-pierce .fx-impact::after,.fx-slash .fx-impact::after { border-color:#fff4d4; }
+.fx-heal .fx-impact::after { border-color:#8bffc3; }
+.fx-spark { width:4px; height:22px; box-shadow:0 0 8px var(--fx-light),0 0 16px var(--fx-color); }
+.fx-label { font-weight:900; text-transform:uppercase; box-shadow:0 3px 12px #000a,0 0 15px var(--fx-color); }
+.hero-under-attack .hero-face { animation:newcard-card-hit 380ms cubic-bezier(.15,.8,.2,1) both; }
+.arena-hero.protected .hero-barrier { animation:newcard-barrier-breathe 2200ms ease-in-out infinite alternate; }
+.arena-hero.protected.hero-under-attack .hero-barrier { animation:newcard-shield-pulse 500ms ease-out both; }
+@keyframes newcard-hit-flash { 0%,5%{opacity:0;transform:scale(.15)} 16%{opacity:.95;transform:scale(.75)} 30%{opacity:.45;transform:scale(1.05)} 100%{opacity:0;transform:scale(1.5)} }
+@keyframes newcard-shockwave { 0%,8%{opacity:0;transform:scale(.2) rotate(-12deg)} 20%{opacity:.95} 100%{opacity:0;transform:scale(1.8) rotate(12deg)} }
+@keyframes newcard-shield-pulse { 0%{opacity:0;transform:scale(.65)} 20%{opacity:1;transform:scale(1.06)} 42%{opacity:.9;transform:scale(.92)} 100%{opacity:0;transform:scale(1.3)} }
+@keyframes newcard-card-hit { 0%,100%{transform:translate3d(0,0,0)} 20%{transform:translate3d(-5px,2px,0) rotate(-2deg);filter:brightness(1.55)} 42%{transform:translate3d(5px,-2px,0) rotate(1.5deg)} 65%{transform:translate3d(-2px,0,0)} }
+@keyframes newcard-barrier-breathe { from{filter:brightness(.9);opacity:.65}to{filter:brightness(1.35);opacity:1} }
+@media(max-width:600px){ .fx-impact::after{inset:-45px}.fx-impact::before{inset:-32px}.fx-shield .fx-impact::after{inset:-50px}.fx-spark{height:15px} }
+@media(prefers-reduced-motion:reduce){.fx-impact::before,.fx-impact::after{animation:none!important;display:none}.hero-under-attack .hero-face,.arena-hero.protected .hero-barrier{animation:none!important}}
