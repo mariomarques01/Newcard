@@ -1,0 +1,61 @@
+/* V29 — iPhone arena: visual hierarchy, full hero identities and reachable controls.
+   Presentation only; no card, combat or campaign mechanics are changed. */
+@media (orientation:portrait) and (max-width:600px) {
+  .mobile-game {
+    --arena-edge:clamp(5px,1.4vw,10px);
+    padding-left:max(var(--arena-edge),env(safe-area-inset-left));
+    padding-right:max(var(--arena-edge),env(safe-area-inset-right));
+    row-gap:clamp(3px,.55dvh,6px);
+  }
+  .arena-header {gap:5px;overflow:hidden;min-width:0}
+  .arena-brand {flex:0 0 auto;max-width:25%;font-size:clamp(9px,2.7vw,13px);gap:3px;line-height:1}
+  .arena-brand svg {width:clamp(13px,3.8vw,18px);flex-shrink:0}
+  .arena-brand small {font-size:clamp(6px,1.55vw,8px);letter-spacing:clamp(1px,.5vw,2.5px)}
+  .arena-header nav {flex:1 1 auto;min-width:0;display:flex;justify-content:flex-end;gap:clamp(2px,.6vw,5px);overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+  .arena-header nav::-webkit-scrollbar {display:none}
+  .arena-header nav button {flex:0 0 clamp(25px,7vw,34px);width:clamp(25px,7vw,34px);height:clamp(27px,7.4vw,34px);border-radius:8px;font-size:clamp(15px,4.4vw,20px);touch-action:manipulation}
+  .arena-header nav button:focus-visible {outline:2px solid #ffe4a2;outline-offset:-2px}
+  .arena-board {padding:clamp(4px,1vw,8px);border-color:#c7a56d88}
+  .arena-row {padding:2px 2px 4px;gap:3px}
+  .hero-row {gap:clamp(4px,1.3vw,9px)}
+  .arena-hero {border-radius:clamp(9px,2.5vw,13px);overflow:visible}
+  .arena-hero .hero-face {border-radius:inherit}
+  .arena-hero .hero-name {
+    bottom:29px;left:0;right:0;min-height:25px;
+    display:flex;align-items:flex-end;justify-content:center;
+    white-space:normal;overflow:hidden;text-overflow:clip;
+    overflow-wrap:anywhere;word-break:normal;
+    font-size:clamp(8px,2.3vw,11px);line-height:1.06;
+    padding:12px 3px 3px;text-align:center;
+    background:linear-gradient(transparent,#030a13b8 28%,#020610fa 90%);
+  }
+  .arena-hero .hero-stats {bottom:7px;gap:3px}
+  .arena-hero .hero-stats>span {font-variant-numeric:tabular-nums}
+  .arena-hero .hero-info {width:clamp(22px,6vw,27px);height:clamp(22px,6vw,27px)}
+  .arena-hero .hero-hp {font-variant-numeric:tabular-nums}
+  .arena-hero.active {transform:none}
+  .arena-hero.targeted {box-shadow:0 0 0 2px #ff7fa7,0 0 13px #ff4f8880}
+  .arena-hand {padding:0 2px;isolation:isolate}
+  .arena-hand .row-caption {letter-spacing:.4px}
+  .arena-hand .row-caption small {max-width:55%;text-align:right}
+  .arena-hand-card {transition:transform .14s ease,box-shadow .14s ease}
+  .arena-hand-card.selected {z-index:6}
+  .arena-hint {border-radius:8px}
+  .arena-actions {padding-bottom:1px}
+  .arena-actions button {touch-action:manipulation}
+  .arena-actions button:active:not(:disabled) {filter:brightness(1.17)}
+}
+@media (orientation:portrait) and (max-width:390px) {
+  .arena-brand {max-width:22%}
+  .arena-header nav button {flex-basis:25px;width:25px;height:27px;font-size:15px}
+  .arena-hero .hero-name {font-size:8px;line-height:1.04;bottom:26px;min-height:23px}
+  .arena-hero .hero-stats {gap:2px}
+  .arena-hand .row-caption small {max-width:48%}
+}
+@media (orientation:portrait) and (max-height:720px) {
+  .arena-hero .hero-name {min-height:20px;padding-top:6px;bottom:25px}
+  .arena-header nav button {height:26px}
+}
+@media (prefers-reduced-motion:reduce) {
+  .arena-hand-card {transition:none}
+}
