@@ -1,0 +1,42 @@
+/* Mobile V5 — action bar legibility and safe touch targets.
+   Pure presentation; existing button callbacks and disabled logic remain intact. */
+.arena-actions{min-height:0;overflow:visible;isolation:isolate}
+.arena-actions>div{height:100%;min-height:0;padding:0!important}
+.arena-actions>div>div{height:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;align-items:stretch}
+.arena-actions button{
+ display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;
+ gap:3px!important;min-width:0!important;min-height:0!important;height:100%!important;
+ padding:6px 2px!important;border-radius:12px!important;overflow:hidden!important;
+ font-size:10px!important;line-height:1.1!important;letter-spacing:0!important;text-align:center!important;
+ -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.arena-actions button>div{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;min-width:0;width:100%;flex-shrink:0}
+.arena-actions button>div>span{display:block;max-width:100%;font-size:10px!important;font-weight:800;line-height:1.15;white-space:normal;overflow-wrap:normal}
+.arena-actions button svg{display:block;flex-shrink:0;width:23px!important;height:23px!important}
+.arena-actions button>span{display:block;max-width:100%!important;min-width:0;min-height:12px;font:600 9px/1.15 'Plus Jakarta Sans',sans-serif!important;white-space:normal!important;overflow:hidden!important;text-overflow:ellipsis}
+.arena-actions button:disabled{opacity:.48}
+.arena-actions button:not(:disabled):focus-visible{outline:3px solid #fff0bd;outline-offset:2px}
+@media(orientation:portrait){
+ .mobile-game{grid-template-rows:34px 64px minmax(0,1fr) clamp(120px,18dvh,160px) 30px 76px;gap:4px}
+ .arena-actions button{min-height:0!important}
+}
+@media(orientation:portrait) and (max-width:390px){
+ .arena-actions>div>div{gap:4px}
+ .arena-actions button{padding:5px 1px!important;font-size:9px!important}
+ .arena-actions button>div>span{font-size:9px!important}
+ .arena-actions button>span{font-size:8px!important}
+ .arena-actions button svg{width:21px!important;height:21px!important}
+}
+@media(orientation:portrait) and (max-height:720px){
+ .mobile-game{grid-template-rows:30px 55px minmax(0,1fr) 108px 26px 67px;gap:3px}
+ .arena-actions button svg{width:19px!important;height:19px!important}
+ .arena-actions button>span{font-size:8px!important}
+}
+@media(orientation:landscape) and (min-width:600px){
+ .mobile-game{grid-template-rows:30px 52px minmax(0,1fr) 24px 54px}
+ .arena-actions{height:54px}
+ .arena-actions button{flex-direction:row!important;gap:6px!important}
+ .arena-actions button>div{width:auto;flex-direction:row!important;gap:4px!important}
+ .arena-actions button>span{font-size:9px!important}
+ .arena-actions button svg{width:19px!important;height:19px!important}
+}
