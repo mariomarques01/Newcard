@@ -2,6 +2,7 @@
 (async()=>{
  const out=[];const check=(ok,label)=>{out.push({ok,label});document.querySelector('#result').textContent=JSON.stringify(out,null,2);if(!ok)throw Error(label)};
  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+ const until=async(fn)=>{for(let i=0;i<100&&!fn();i++)await wait(100);return fn()};
  for(const [w,h] of [[393,680],[390,844],[320,568],[852,393],[740,320]]){
   const wrap=document.createElement('div');wrap.className='case';wrap.textContent=w+' × '+h;
   const frame=document.createElement('iframe');frame.width=w;frame.height=h;frame.src='../?qa='+w;wrap.append(frame);document.querySelector('#frames').append(wrap);
@@ -35,9 +36,11 @@
   await drag(cards()[1],rival);check(!!d.querySelector('[data-effect="pierce"][data-travel="true"] .fx-flight'),'Carta de ataque viaja até o rival');check(cards().length===2&&hp()!==initialHp,'Arraste de ataque causa dano e consome uma carta');
   await drag(cards()[1],ally);check(cards().length===1&&d.querySelector('[data-hero-id="p_rainha_copas"] .hero-stats').textContent.includes('⛨ 2'),'Apoio aplica escudo ao aliado escolhido');
   const before=cards().length;await drag(cards()[0],ally);check(cards().length===before,'Energia insuficiente bloqueia carta');
-  buttons[4].click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 2'),'Rival age e devolve turno');
+  buttons[4].click();
+  check(await until(()=>!!d.querySelector('[data-effect="slash"][data-travel="true"]')),'Ataque do rival viaja até o jogador');
+  check(await until(()=>d.querySelector('.score-turn').textContent.includes('RODADA 2')),'Rival age e devolve turno');
   check(!!d.querySelector('.enemy-row .protected .hero-barrier'),'Defesa do rival deixa barreira visível');
-  check(!!d.querySelector('[data-effect="slash"][data-travel="true"]'),'Ataque do rival viaja até o jogador');
+
   await drag(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-face'),rival);check(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-condition').textContent==='AGIU','Herói arrastado ataca');check(!!d.querySelector('[data-effect="slash"][data-travel="true"] .fx-flight'),'Ataque do jogador tem rastro direcional');
   buttons[4].click();d.querySelector('[aria-label="Nova partida"]').click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 1')&&hp()===initialHp,'Reinício cancela ação pendente do rival');check(!d.querySelector('.combat-fx'),'Reinício limpa efeitos da partida anterior');
   buttons[3].click();await wait(80);buttons[3].click();await wait(80);check(cards().length===5,'Poder de compra respeita mão máxima de cinco cartas');
