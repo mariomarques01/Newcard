@@ -18,6 +18,7 @@ export function ArenaHero({hero, active, targeted, valid, hovered, hit, onSelect
       <span className="hero-stats"><span className="atk-stat" aria-label={`Ataque ${hero.atk}`}>⚔ {hero.atk}</span><span className="shield-stat" aria-label={`Escudo ${hero.shield}`}>⛨ {hero.shield}</span></span>
       <span className="hero-health"><i style={{width:`${ratio*100}%`}}/></span>
     </button>
+    {!hero.isAlive&&<div className="hero-defeat-burst" aria-hidden="true"><span className="defeat-flash"/>{Array.from({length:10},(_,i)=><i key={i} style={{'--piece':i} as CSSProperties}/>)}</div>}
     <button className="hero-info" aria-label={`Habilidade de ${hero.name}`} onClick={onInspect}>i</button>
   </div>;
 }
