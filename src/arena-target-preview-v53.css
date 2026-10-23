@@ -1,0 +1,20 @@
+/* V53: small non-interactive attack forecast on the chosen enemy card. */
+@media(orientation:portrait) and (max-width:600px){
+ .enemy-row .arena-effect-target{position:relative;min-width:0;min-height:0}
+ .arena-attack-preview{
+  position:absolute;z-index:12;left:4px;right:4px;bottom:35px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:4px 2px;border:1px solid #f6d58a;border-radius:7px;
+  background:linear-gradient(#0d1b2af2,#07101cf7);
+  box-shadow:0 0 0 1px #050a11,0 3px 12px #000c,0 0 10px #f0c57955;
+  color:#f7e8ca;font-size:clamp(8px,2.25vw,10px);line-height:1.15;
+  font-weight:800;text-align:center;pointer-events:none;
+ }
+ .arena-attack-preview b{font-size:clamp(8px,2.3vw,10px);color:#ffe2a0;letter-spacing:.2px}
+ .arena-attack-preview span{white-space:nowrap;color:#e8f3ff;font-variant-numeric:tabular-nums}
+ .arena-attack-preview em{font-style:normal;color:#9af4c7}
+}
+@media(orientation:portrait) and (max-height:720px){
+ .arena-attack-preview{bottom:30px;gap:1px;padding:2px 1px}
+ .arena-attack-preview b{font-size:8px}
+}
