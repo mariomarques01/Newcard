@@ -32,10 +32,12 @@
   buttons[2].click();await wait(50);
   check(!!d.querySelector('[data-hero-id="p_rei_espadas"].protected .hero-barrier'),'Defesa deixa barreira visível no jogador');
   check(!!d.querySelector('[data-effect="shield"]'),'Defesa dispara animação de escudo');
+  const painted=()=>{const c=d.querySelector('.spell-scene');return c&&c.getContext('2d').getImageData(0,0,c.width,c.height).data.some((v,i)=>i%4===3&&v>0)};
+  check(await until(painted),'Defesa desenha barreira e partículas no cenário');
   check(d.querySelector('[data-character="p_rei_espadas"]').dataset.action==='guard','Personagem muda para postura defensiva');
   await drag(cards()[1],ally);check(cards().length===3&&hp()===initialHp,'Ataque em aliado rejeitado sem consumir carta');
   await drag(cards()[1],rival,true);check(cards().length===3&&hp()===initialHp,'Cancelar arraste não joga carta');
-  await drag(cards()[1],rival);check(!!d.querySelector('[data-effect="pierce"][data-travel="true"] .fx-flight'),'Carta de ataque viaja até o rival');check(cards().length===2&&hp()!==initialHp,'Arraste de ataque causa dano e consome uma carta');
+  await drag(cards()[1],rival);check(!!d.querySelector('[data-effect="pierce"][data-travel="true"] .fx-flight'),'Carta de ataque viaja até o rival');check(!!d.querySelector('.casting-seal'),'Ataque concentra energia no conjurador');check(cards().length===2&&hp()!==initialHp,'Arraste de ataque causa dano e consome uma carta');
   await drag(cards()[1],ally);check(cards().length===1&&d.querySelector('[data-hero-id="p_rainha_copas"] .hero-stats').textContent.includes('⛨ 2'),'Apoio aplica escudo ao aliado escolhido');
   const before=cards().length;await drag(cards()[0],ally);check(cards().length===before,'Energia insuficiente bloqueia carta');
   buttons[4].click();
@@ -50,6 +52,7 @@
   d.querySelector('[aria-label="Nova partida"]').click();await wait(100);
   cards()[0].click();await until(()=>!buttons[0].disabled);buttons[0].click();await wait(100);
   check(!!d.querySelector('[data-special="joker"]'),'Coringa tem apresentação própria de habilidade');
+  check(!!d.querySelector('[data-scope="board"] .scene-light'),'Poder especial ilumina e reage no tabuleiro');
   check(d.querySelector('[data-character="p_rei_espadas"]').dataset.action!=='idle','Poder especial anima o personagem');
  }
  document.querySelector('#result').dataset.done='true';document.title='PASS — Newcard mobile';

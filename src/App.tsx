@@ -193,6 +193,7 @@ export default function App() {
     const sourceId=`hero-card-${ally.id}`;
     particleCanvasRef.current?.revealCard(card,sourceId);
     const fx=particleCanvasRef.current;
+    if(a.all) fx?.triggerBoard(a.heal?'heal':a.shield?'shield':'arcane',card.skillName||card.name);
     if(a.damage&&enemy) fx?.triggerAttack(sourceId,`hero-card-${enemy.id}`,'pierce',`−${a.damage} VIDA`);
     result.allies.forEach((next,i)=>{
       const before=playerHeroes[i],id=`hero-card-${next.id}`;
@@ -349,6 +350,7 @@ export default function App() {
     }
 
     sound.playAcePower();
+    particleCanvasRef.current?.triggerBoard(activePlayerHero.rank==='Q'?'heal':activePlayerHero.rank==='J'?'pierce':'gold_blast',activePlayerHero.passiveName+' · PODER DE ÁS');
     triggerScreenShake();
     setPlayerEnergy((e) => e - 2);
 
@@ -568,6 +570,7 @@ export default function App() {
         <div className="score-rival"><span>RIVAL</span><strong>{rivalPg}<small>/12 PG</small></strong><b>⚡ {rivalEnergy}</b></div>
       </div>
       <main className="arena-board" data-battlefield="true">
+        <div className="battle-atmosphere" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div>
         <section className="arena-row enemy-row" aria-label="Campo rival">
           <div className="row-caption"><span>REINO ADVERSÁRIO</span><small>Arraste seu herói para atacar</small></div>
           <div className="hero-row">{rivalHeroes.map(hero=><ArenaHero key={hero.id} hero={hero} targeted={hero.id===selectedRivalHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectRivalHero(hero)} onInspect={()=>setInspectingItem(hero)}/>)}</div>
