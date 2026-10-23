@@ -1,0 +1,48 @@
+/* V54 — Medieval gold, ruby and sapphire combat feedback. Visual only. */
+@media(orientation:portrait) and (max-width:600px){
+ .arena-hero.hero-under-attack:not(.fallen){animation:hero-hit-v42 .34s cubic-bezier(.22,.75,.25,1) both}
+ .arena-hero.hero-under-attack:not(.fallen) .hero-face::before{
+  background:radial-gradient(circle at 50% 45%,#fff2bbd9 0%,#eeb65c99 20%,#bd453b77 45%,transparent 72%);
+  animation:hit-flare-v42 .44s ease-out both;
+ }
+ .arena-hero.protected.hero-under-attack:not(.fallen) .hero-face::before{
+  background:radial-gradient(circle at 50% 45%,#d9faffd9,#7ac5f89c 24%,#3463a46b 47%,transparent 72%);
+ }
+ .arena-hero.protected.hero-under-attack:not(.fallen) .hero-face::after{
+  border-color:#a8eaff;border-width:2px;
+  box-shadow:inset 0 0 12px #5bb9f99c,0 0 12px #80d9ff9c;
+ }
+ .arena-hero.fallen{animation:hero-defeat-v42 .7s ease-out both}
+ .arena-hero.fallen .hero-condition{
+  background:#421726!important;border:1px solid #e6bb86!important;
+  color:#ffead0!important;box-shadow:0 0 8px #000b;
+ }
+ .arena-hero .hero-defeat-burst .defeat-flash{
+  background:radial-gradient(circle,#fff1c4 0%,#d8a64cce 18%,#a54a4288 43%,transparent 70%);
+  animation-duration:.65s;
+ }
+ .arena-hero .hero-defeat-burst i{
+  width:clamp(4px,1.2vw,9px);height:clamp(8px,2.3vw,16px);
+  background:linear-gradient(135deg,#ffedb2,#bf914a 50%,#713b2f);
+  border-color:#ffe0a0;box-shadow:0 0 5px #e4b96c;
+  animation-duration:.7s;
+ }
+ .damage-float[data-type="shield"]{
+  border:2px solid #94dcff;border-radius:9px;
+  background:linear-gradient(#184b76f7,#0a203ff7);
+  color:#e5faff;box-shadow:0 0 12px #3aabf899,0 3px 9px #000b;
+ }
+ .damage-float[data-type="damage"],.damage-float[data-type="crit"]{
+  border:2px solid #e7b57b;border-radius:9px;
+  background:linear-gradient(#7a2633f7,#370e1ff7);
+  color:#fff0d4;box-shadow:0 0 12px #c75c5899,0 3px 9px #000b;
+ }
+ .combat-fx[data-travel="true"] .fx-impact::before{opacity:.45!important}
+ .combat-fx[data-travel="true"] .fx-ring{box-shadow:0 0 6px var(--fx-color)!important}
+ .combat-fx[data-travel="true"] .fx-spark{box-shadow:0 0 3px var(--fx-color)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .arena-hero.hero-under-attack:not(.fallen),.arena-hero.fallen,
+ .arena-hero .hero-defeat-burst .defeat-flash,.arena-hero .hero-defeat-burst i{animation:none!important}
+ .arena-hero .hero-defeat-burst{display:none!important}
+}

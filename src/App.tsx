@@ -52,6 +52,7 @@ import './arena-hero-hierarchy-v50.css';
 import './arena-hand-actions-v51.css';
 import './arena-effect-preview-v52.css';
 import './arena-target-preview-v53.css';
+import './arena-medieval-combat-v54.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
