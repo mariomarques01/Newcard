@@ -1,0 +1,11 @@
+/* V37: selection details share the existing hint track, never overlay the hand. */
+.arena-hint.has-card-selection{padding:2px 5px;border-left-color:#83d9c5;overflow:hidden;z-index:3}
+.arena-inline-selection{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;height:100%;min-width:0}
+.arena-inline-selection strong{flex:0 1 auto;min-width:0;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#ffe5a8;font-size:10px}
+.arena-inline-selection>span{flex:1;min-width:0;display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px;color:#8ff2c3}
+.arena-inline-selection>span.cannot-play{color:#ffaeae}
+.arena-inline-selection button{flex:0 0 25px;width:25px;height:24px;padding:0;border-radius:6px;border:1px solid #c9a86c88;background:#152c3b;color:#ffe6b3;font-size:17px;touch-action:manipulation}
+.arena-inline-selection button:focus-visible{outline:2px solid #fff1b8}
+@media(orientation:portrait) and (max-width:390px){.arena-inline-selection{gap:3px}.arena-inline-selection strong{max-width:36%;font-size:9px}.arena-inline-selection>span{font-size:8px}.arena-inline-selection button{flex-basis:22px;width:22px;height:22px}}
+/* Remove obsolete floating selection tray, including its shadow. */
+.arena-card-context{display:none!important}
