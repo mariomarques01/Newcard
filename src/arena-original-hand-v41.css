@@ -1,0 +1,37 @@
+/* V41: prioritize original playing-card artwork and readable hand on phones.
+   Inspired by the hand emphasis of card battlers, without adding card types or rules. */
+@media (orientation:portrait) and (max-width:600px){
+ .mobile-game{
+   --hand-track-height:clamp(150px,22dvh,194px);
+   grid-template-rows:34px 64px minmax(0,1fr) var(--hand-track-height) 32px 76px;
+ }
+ .mobile-game>.arena-hand{overflow:hidden}
+ .arena-hand>.hand-cards{padding:2px 2px 3px}
+ .arena-hand .arena-hand-card{
+   width:min(calc((100vw - 24px) / max(3,var(--n,3))),calc((var(--hand-track-height) - 21px) * 5 / 7));
+   aspect-ratio:5/7;max-height:100%;margin-left:0;transform:none;
+ }
+ .arena-hand .arena-hand-card.selected{transform:translateY(-2px)}
+ .arena-hand .hand-face img{object-fit:cover;object-position:center 20%}
+ .arena-hand .hand-name{padding:10px 2px 3px;background:linear-gradient(transparent,#030914e8 45%,#030914fa);text-shadow:0 1px 3px #000,0 0 4px #000}
+ .arena-hand .hand-info{width:21px;height:21px;font-size:12px}
+}
+@media (orientation:portrait) and (max-width:390px){
+ .mobile-game{
+   --hand-track-height:clamp(142px,21dvh,182px);
+   grid-template-rows:32px 60px minmax(0,1fr) var(--hand-track-height) 30px 74px;
+ }
+ .arena-hand .arena-hand-card{width:min(calc((100vw - 16px) / max(3,var(--n,3))),calc((var(--hand-track-height) - 21px) * 5 / 7))}
+}
+@media (orientation:portrait) and (max-height:720px){
+ .mobile-game{
+   --hand-track-height:clamp(112px,20dvh,145px);
+   grid-template-rows:30px 54px minmax(0,1fr) var(--hand-track-height) 27px 66px;
+ }
+}
+@media (orientation:portrait) and (max-height:600px){
+ .mobile-game{
+   --hand-track-height:100px;
+   grid-template-rows:27px 48px minmax(0,1fr) var(--hand-track-height) 24px 60px;
+ }
+}
