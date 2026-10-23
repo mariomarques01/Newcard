@@ -1,0 +1,52 @@
+/* V50: improve hierarchy of the original hero card states and combat stats. */
+@media(orientation:portrait) and (max-width:600px){
+ .arena-hero .hero-hp{
+  top:4px;left:4px;z-index:7;border-radius:9px;
+  padding:3px 6px;font-size:clamp(12px,3.5vw,16px);
+  background:linear-gradient(#612039,#270b1a);border:1px solid #ffa4ae;
+  box-shadow:0 2px 7px #000b,inset 0 1px #ffffff25;
+  font-variant-numeric:tabular-nums;
+ }
+ .arena-hero .hero-hp small{font-size:clamp(9px,2.5vw,11px);opacity:.9}
+ .arena-hero .hero-condition{
+  top:31px;left:4px;z-index:7;max-width:calc(100% - 8px);
+  box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:clamp(8px,2.45vw,11px);line-height:1.2;
+  padding:3px 5px;border:1px solid #88dff4;border-radius:6px;
+  background:#0b3446ed;color:#d7faff;
+  text-shadow:0 1px 2px #000;box-shadow:0 1px 5px #0009;
+ }
+ .arena-hero.protected .hero-condition{
+  border-color:#ff9cbd;background:#671936f2;color:#fff1f5;
+ }
+ .arena-hero.fallen .hero-condition{
+  border-color:#b4adb4!important;background:#34303beb!important;color:#f2e9ee!important;
+ }
+ .arena-hero .hero-name{
+  z-index:6;bottom:28px;line-height:1.05;
+  padding:13px 2px 4px;
+  background:linear-gradient(transparent,#02070cbd 38%,#02070cf5 75%);
+ }
+ .arena-hero .hero-stats{
+  z-index:7;bottom:7px;left:4px;right:4px;gap:4px;
+ }
+ .arena-hero .hero-stats>span{
+  display:flex;justify-content:center;align-items:center;gap:2px;
+  min-width:0;padding:3px 1px;
+  background:linear-gradient(#192638f5,#080f1bf5);
+  border:1px solid #cba974a6;border-radius:7px;
+  font-weight:900;line-height:1.1;
+ }
+ .arena-hero .hero-stats .atk-stat{color:#ffe3a7;border-color:#e7b76a}
+ .arena-hero .hero-stats .shield-stat{color:#a6efff;border-color:#6dd6f5}
+ .arena-hero .hero-health{height:5px;z-index:8}
+ .arena-hero.fallen .hero-face img{filter:grayscale(1) brightness(.42)}
+ .arena-hero.fallen .hero-name{color:#e4d4d7}
+ .arena-hero.fallen .hero-hp{color:#bcb5bc;background:#2a2430;border-color:#706574}
+ .arena-hero.active:not(.fallen){outline:2px solid #78e8fa;outline-offset:1px}
+ .arena-hero.targeted:not(.fallen){outline:2px solid #ff849d;outline-offset:1px}
+}
+@media(orientation:portrait) and (max-width:370px){
+ .arena-hero .hero-condition{font-size:8px;padding:2px 3px}
+ .arena-hero .hero-hp{padding:2px 4px}
+}

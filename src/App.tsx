@@ -48,6 +48,7 @@ import './arena-score-clip-fix-v46.css';
 import './arena-visual-polish-v47.css';
 import './arena-royal-reference-v48.css';
 import './arena-atmosphere-v49.css';
+import './arena-hero-hierarchy-v50.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
