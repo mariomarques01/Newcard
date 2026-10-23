@@ -1,0 +1,11 @@
+/* V33: combat HUD occupies document flow rather than covering hero portraits. */
+.arena-combat-hud{position:relative;z-index:2;display:flex;flex-direction:column;gap:2px;max-width:100%;min-width:0;margin:2px 8px 0;padding:5px 9px;border:1px solid #a7c6bb88;border-radius:9px;background:linear-gradient(90deg,#09212be8,#0d1c2ae8);box-shadow:inset 0 1px #ffffff14;color:#e5f7ee;font:700 10px/1.25 'Plus Jakarta Sans',sans-serif;box-sizing:border-box}
+.arena-combat-hud-effects,.arena-combat-hud-forecast{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;flex-wrap:wrap}
+.arena-combat-hud b{color:#ffe2a0;font-size:9px;white-space:nowrap}
+.arena-combat-hud-effects>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#bbf3da}
+.arena-combat-hud-forecast>span{white-space:nowrap}
+.arena-combat-hud-forecast>em{font-style:normal;color:#8cf3b4}
+.arena-combat-hud-effects+.arena-combat-hud-forecast{border-top:1px solid #ffffff24;padding-top:3px}
+@media(orientation:portrait) and (max-width:390px){.arena-combat-hud{margin:1px 4px 0;padding:4px 6px;font-size:9px}.arena-combat-hud-effects,.arena-combat-hud-forecast{gap:5px}}
+/* Legacy overlays are disabled; the new in-flow HUD owns these readouts. */
+.arena-effect-summary,.arena-damage-forecast{display:none!important}
