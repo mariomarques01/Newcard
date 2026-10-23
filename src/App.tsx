@@ -33,6 +33,12 @@ import './arena-drag-feedback-v20.css';
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
 const PROFILE_KEY = 'newcard-player-profile-v1';
+const CAMPAIGN_KEY = 'newcard-campaign-v1';
+const CAMPAIGN_CHAPTERS = ['A Fronteira Esquecida','O Cerco das Sombras','A Coroa de Ferro','O Trono do Destino'];
+const campaignRivals = (chapter:number):Hero[] => INITIAL_RIVAL_HEROES.map(hero=>({
+  ...hero, maxHp:hero.maxHp+(chapter-1)*2,currentHp:hero.maxHp+(chapter-1)*2,
+  atk:hero.atk+Math.floor((chapter-1)/2)
+}));
 const newMatchId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 type PlayerProfile = {wins:number; losses:number; bestRound:number; bestPg:number; matchIds:string[]};
 const emptyProfile = ():PlayerProfile => ({wins:0,losses:0,bestRound:0,bestPg:0,matchIds:[]});
@@ -99,6 +105,12 @@ export default function App() {
   const [showRules, setShowRules] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<'victory' | 'defeat' | null>(null);
   const [matchId,setMatchId] = useState(newMatchId);
+  const [chapter,setChapter] = useState(1);
+  const [unlockedChapter,setUnlockedChapter] = useState(()=>{
+    try { return Math.min(4,Math.max(1,Number(localStorage.getItem(CAMPAIGN_KEY))||1)); }
+    catch { return 1; }
+  });
+  const [showCampaign,setShowCampaign] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
   const [profile,setProfile] = useState<PlayerProfile>(()=>{
     try { const p=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null'); return p&&typeof p.wins==='number'&&typeof p.losses==='number'&&Array.isArray(p.matchIds)?p:emptyProfile(); }
@@ -129,6 +141,7 @@ export default function App() {
             (saved.currentTurn === 'player' || saved.currentTurn === 'rival')) {
           matchToken.current++;
           if (typeof saved.matchId==='string') setMatchId(saved.matchId);
+          if (Number.isInteger(saved.chapter) && saved.chapter>=1 && saved.chapter<=4) setChapter(saved.chapter);
           setPlayerHeroes(saved.playerHeroes);
           setRivalHeroes(saved.rivalHeroes);
           setPlayerHand(saved.playerHand);
@@ -159,13 +172,13 @@ export default function App() {
     if (skipInitialSave.current) { skipInitialSave.current = false; return; }
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({
-        version:1, matchId,playerHeroes,rivalHeroes,playerHand,deck,discardPile,
+        version:1, chapter,matchId,playerHeroes,rivalHeroes,playerHand,deck,discardPile,
         activePlayerHeroId,selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,
         round,currentTurn,gameOver,combatLogs
       }));
       if (currentTurn === 'player') localStorage.removeItem(TURN_CHECKPOINT_KEY);
     } catch { /* Storage can be unavailable on Safari. */ }
-  }, [matchId,playerHeroes,rivalHeroes,playerHand,deck,discardPile,activePlayerHeroId,
+  }, [chapter,matchId,playerHeroes,rivalHeroes,playerHand,deck,discardPile,activePlayerHeroId,
       selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,round,currentTurn,gameOver,combatLogs]);
 
   // Record each completed match only once, including across reloads.
@@ -178,6 +191,17 @@ export default function App() {
       return next;
     });
   },[gameOver,matchId,round,playerPg]);
+
+  // Completing a campaign chapter unlocks the next one, once per victory.
+  useEffect(()=>{
+    if (!saveReady.current || gameOver!=='victory') return;
+    const next=Math.min(4,chapter+1);
+    setUnlockedChapter(previous=>{
+      if(next<=previous) return previous;
+      try { localStorage.setItem(CAMPAIGN_KEY,String(next)); } catch { /* Local progress optional. */ }
+      return next;
+    });
+  },[gameOver,chapter]);
 
   // Sync sound manager enabled state
   useEffect(() => {
@@ -624,7 +648,7 @@ export default function App() {
   };
 
   // 10. RESTART GAME
-  const handleRestartGame = () => {
+  const handleRestartGame = (nextChapter = chapter) => {
     if (!gameOver && !window.confirm('Iniciar uma nova partida? O progresso atual será perdido.')) return;
     try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(TURN_CHECKPOINT_KEY); } catch { /* Storage unavailable. */ }
     matchToken.current++;
@@ -633,7 +657,8 @@ export default function App() {
     clearDrag();
     sound.playClick();
     setPlayerHeroes(JSON.parse(JSON.stringify(INITIAL_PLAYER_HEROES)));
-    setRivalHeroes(JSON.parse(JSON.stringify(INITIAL_RIVAL_HEROES)));
+    setRivalHeroes(campaignRivals(nextChapter));
+    setChapter(nextChapter);
     setActivePlayerHeroId('p_rei_espadas');
     setSelectedRivalHeroId('r_valete_copas');
     setPlayerHand(makeDeck(DECK_TEMPLATES).slice(0,3));
@@ -668,12 +693,13 @@ export default function App() {
       <header className="arena-header">
         <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
         <nav aria-label="Menu do jogo">
+          <button onClick={()=>setShowCampaign(true)} aria-label="Campanha">⚑</button>
           <button onClick={()=>setShowProfile(true)} aria-label="Perfil e estatísticas">★</button>
           <button onClick={()=>setShowRules(true)} aria-label="Regras">?</button>
           <button onClick={()=>setShowCompendium(true)} aria-label="Coleção de cartas">♛</button>
           <button onClick={()=>setShowLog(true)} aria-label="Histórico da batalha">≡</button>
           <button onClick={()=>setSoundEnabled(!soundEnabled)} aria-label={soundEnabled?'Desativar som':'Ativar som'}>{soundEnabled?'♫':'♪'}</button>
-          <button onClick={handleRestartGame} aria-label="Nova partida">↻</button>
+          <button onClick={()=>handleRestartGame()} aria-label="Nova partida">↻</button>
         </nav>
       </header>
       <div className="arena-score" aria-label="Placar">
@@ -711,12 +737,13 @@ export default function App() {
       {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragValid}/>}
       {dragKind && dragCurrent && <div className={`drag-drop-feedback ${dragValid?'valid':'invalid'}`} role="status" aria-live="off">{dragValid?'✓ SOLTE PARA EXECUTAR':dragKind==='enemy'?'MIRE EM UM RIVAL VIVO':dragKind==='ally'?'MIRE EM UM ALIADO VIVO':'MIRE NO TABULEIRO'}</div>}
       {draggingCard && dragCurrent && <div className="drag-card-ghost" style={{left:dragCurrent.x,top:dragCurrent.y}}><img src={draggingCard.image} alt=""/><span>{draggingCard.name}</span></div>}
+      {showCampaign && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Campanha"><div><button className="close-log" onClick={()=>setShowCampaign(false)}>Fechar ×</button><h2>⚑ Campanha dos Quatro Reinos</h2><p>Conquiste cada capítulo para desbloquear o próximo. Os rivais ganham vida e ataque conforme a campanha avança.</p>{CAMPAIGN_CHAPTERS.map((name,index)=><p key={name}><button disabled={index+1>unlockedChapter} onClick={()=>{handleRestartGame(index+1);setShowCampaign(false);}}>{index+1>unlockedChapter?'🔒':'⚔'} Capítulo {index+1}: {name}{chapter===index+1?' · ATUAL':''}</button></p>)}<small>Progresso salvo neste navegador.</small></div></div>}
       {showProfile && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Perfil do jogador"><div><button className="close-log" onClick={()=>setShowProfile(false)}>Fechar ×</button><h2>★ Crônicas do Reino</h2><p>Partidas concluídas: <b>{profile.wins+profile.losses}</b></p><p>Vitórias: <b>{profile.wins}</b> · Derrotas: <b>{profile.losses}</b></p><p>Taxa de vitória: <b>{profile.wins+profile.losses?Math.round(profile.wins/(profile.wins+profile.losses)*100):0}%</b></p><p>Maior rodada alcançada: <b>{profile.bestRound}</b></p><p>Recorde de glória: <b>{profile.bestPg} PG</b></p><h3>Conquistas</h3><p>{profile.wins>=1?'🏆':'🔒'} Primeira vitória</p><p>{profile.wins>=5?'🏆':'🔒'} Veterano — 5 vitórias</p><p>{profile.wins>=10?'🏆':'🔒'} Lenda — 10 vitórias</p><p>{profile.bestPg>=12?'🏆':'🔒'} Glória máxima — 12 PG</p><small>Estatísticas salvas somente neste navegador.</small></div></div>}
       {showLog && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Histórico da batalha"><div><button className="close-log" onClick={()=>setShowLog(false)}>Fechar ×</button><h2>Registro de batalha</h2>{combatLogs.map(log=><p key={log.id}><b>{log.speaker}</b> {log.text}</p>)}</div></div>}
       {inspectingItem && <CardInspectModal item={inspectingItem} onClose={()=>setInspectingItem(null)}/>}
       {showCompendium && <CardCompendiumModal onClose={()=>setShowCompendium(false)} onInspect={item=>setInspectingItem(item)}/>}
       {showRules && <RulesModal onClose={()=>setShowRules(false)}/>}
-      {gameOver && <VictoryModal status={gameOver} playerPg={playerPg} rivalPg={rivalPg} rounds={round} onPlayAgain={handleRestartGame}/>}
+      {gameOver && <VictoryModal status={gameOver} playerPg={playerPg} rivalPg={rivalPg} rounds={round} onPlayAgain={()=>handleRestartGame()}/>}
     </div>
   );
 }
