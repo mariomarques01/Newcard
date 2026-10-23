@@ -50,6 +50,7 @@ import './arena-royal-reference-v48.css';
 import './arena-atmosphere-v49.css';
 import './arena-hero-hierarchy-v50.css';
 import './arena-hand-actions-v51.css';
+import './arena-effect-preview-v52.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
@@ -832,7 +833,7 @@ export default function App() {
         <div className="row-caption"><span>SUA MÃO · {playerHand.length}/5</span><small>Toque para escolher · arraste para jogar</small></div>
         <div className="hand-cards" data-count={playerHand.length}>{playerHand.map((card,index)=><ArenaHand key={card.id} card={card} index={index} count={playerHand.length} missingEnergy={Math.max(0,card.cost-playerEnergy)} selected={card.id===selectedCardId} affordable={playerEnergy>=card.cost} onSelect={()=>{setSelectedCardId(card.id);setHint(card.description);}} onInspect={()=>setInspectingItem(card)} onStart={e=>startDrag(e,card)}/>)}</div>
       </section>
-      <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''} ${selectedCard?'has-card-selection':''}`} role="status">{selectedCard?<div className="arena-inline-selection"><strong>{selectedCard.name} · ⚡{selectedCard.cost}</strong><span className={cardCanPlay?'can-play':'cannot-play'}>{cardInstruction}</span><button type="button" onClick={()=>setInspectingItem(selectedCard)} aria-label={`Ampliar ${selectedCard.name}`}>⤢</button><button type="button" onClick={()=>setSelectedCardId(null)} aria-label="Cancelar seleção">×</button></div>:<span>{hint}</span>}</div>
+      <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''} ${selectedCard?'has-card-selection':''}`} role="status">{selectedCard?<div className="arena-inline-selection"><strong>{selectedCard.name} · ⚡{selectedCard.cost}</strong><span className={cardCanPlay?'can-play':'cannot-play'} title={[effectSummary,cardInstruction].filter(Boolean).join(' · ')}>{cardCanPlay&&effectSummary ? `${effectSummary} · ${cardInstruction}` : cardInstruction}</span><button type="button" onClick={()=>setInspectingItem(selectedCard)} aria-label={`Ampliar ${selectedCard.name}`}>⤢</button><button type="button" onClick={()=>setSelectedCardId(null)} aria-label="Cancelar seleção">×</button></div>:<span>{hint}</span>}</div>
       <div className="arena-actions"><ActionBar selectedCard={selectedCard} activeHero={activePlayerHero} targetedRival={targetedRivalHero} playerEnergy={playerEnergy} currentTurn={gameOver?'rival':currentTurn} onUseCard={handleUseCard} onAttack={handleAttack} onDefend={handleDefend} onUseAce={handleUseAce} onEndTurn={handleEndTurn}/></div>
       <CombatParticleCanvas ref={particleCanvasRef}/><FloatingNumberOverlay items={floatingNumbers}/>
       {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragValid}/>}
