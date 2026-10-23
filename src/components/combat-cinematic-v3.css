@@ -1,0 +1,24 @@
+/* Cinematic combat V3 — visual-only. Overlay follows existing combat triggers. */
+.combat-fx[data-travel="true"] .fx-flight{animation:cinematic-projectile 900ms cubic-bezier(.15,.65,.55,1) both!important;filter:drop-shadow(0 0 18px var(--fx-color))}
+.combat-fx[data-travel="true"] .fx-bolt{width:145px;height:12px;left:-135px;top:-6px;background:linear-gradient(90deg,transparent 0%,var(--fx-color) 45%,#fff 94%);box-shadow:0 0 18px var(--fx-color),0 0 38px var(--fx-color)}
+.combat-fx[data-travel="true"] .casting-seal{animation:cinematic-charge 850ms ease-out both!important}
+.combat-fx .fx-impact{animation:cinematic-impact-window 1350ms var(--fx-delay) both!important}
+.combat-fx .fx-impact::before{content:"";position:absolute;width:260px;height:260px;left:-130px;top:-130px;border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--fx-light) 7%,var(--fx-color) 20%,transparent 65%);mix-blend-mode:screen;animation:cinematic-detonation 800ms var(--fx-delay) both;pointer-events:none}
+.combat-fx .fx-impact::after{content:"";position:absolute;left:-110px;top:-110px;width:220px;height:220px;border:5px solid var(--fx-light);border-radius:50%;box-shadow:0 0 18px var(--fx-color),inset 0 0 20px var(--fx-color);animation:cinematic-shockwave 900ms var(--fx-delay) both;pointer-events:none}
+.combat-fx .fx-label{font-size:15px;font-weight:1000;letter-spacing:1.3px;padding:7px 15px;border-width:2px;box-shadow:0 0 16px var(--fx-color),0 5px 15px #000a}
+.combat-fx .fx-spark{width:7px;height:24px;box-shadow:0 0 12px var(--fx-color),0 0 22px var(--fx-color)}
+.combat-fx.fx-shield .fx-impact::before{background:radial-gradient(circle,#fff 0%,#d4faff 9%,#3dcfff88 30%,transparent 70%)}
+.combat-fx.fx-shield .fx-impact::after{border-color:#b6f7ff;border-style:double;border-width:10px}
+.arena-hero.hero-under-attack{animation:cinematic-card-shudder 500ms ease-out both;z-index:5}
+.arena-hero.hero-under-attack .hero-face{animation:cinematic-hit-tint 500ms ease-out}
+.arena-hero.protected .hero-barrier{animation:cinematic-shield-breathe 2.4s ease-in-out infinite}
+@keyframes cinematic-projectile{0%{transform:translate(0,0) scale(.4);opacity:0}10%{opacity:1}78%{opacity:1}100%{transform:translate(var(--fx-x),var(--fx-y)) scale(1.3);opacity:0}}
+@keyframes cinematic-charge{0%{opacity:0;transform:scale(.3) rotate(-50deg)}25%{opacity:1;transform:scale(1.15) rotate(0)}70%{opacity:1;transform:scale(.85) rotate(45deg)}100%{opacity:0;transform:scale(.2) rotate(95deg)}}
+@keyframes cinematic-impact-window{0%,1%{opacity:0}2%,65%{opacity:1}100%{opacity:0}}
+@keyframes cinematic-detonation{0%{transform:scale(.1);opacity:0}12%{opacity:.95}38%{transform:scale(.8);opacity:.75}100%{transform:scale(1.8);opacity:0}}
+@keyframes cinematic-shockwave{0%{transform:scale(.12);opacity:1}100%{transform:scale(2.2);opacity:0}}
+@keyframes cinematic-card-shudder{0%,100%{transform:translate(0,0) rotate(0)}15%{transform:translate(-7px,2px) rotate(-2deg)}30%{transform:translate(7px,-2px) rotate(2deg)}50%{transform:translate(-4px,1px) rotate(-1deg)}75%{transform:translate(2px,0) rotate(.5deg)}}
+@keyframes cinematic-hit-tint{0%,100%{filter:none}20%{filter:brightness(1.65) saturate(1.3)}55%{filter:brightness(.75) sepia(.3)}}
+@keyframes cinematic-shield-breathe{0%,100%{box-shadow:inset 0 0 14px #5adcff55,0 0 5px #5adcff33}50%{box-shadow:inset 0 0 28px #8eefff99,0 0 18px #56d7ff99}}
+@media(max-width:600px){.combat-fx .fx-impact::before{width:190px;height:190px;left:-95px;top:-95px}.combat-fx .fx-impact::after{width:160px;height:160px;left:-80px;top:-80px}.combat-fx .fx-label{font-size:12px;padding:5px 10px}}
+@media(prefers-reduced-motion:reduce){.combat-fx[data-travel="true"] .fx-flight,.combat-fx[data-travel="true"] .casting-seal,.combat-fx .fx-impact::before,.combat-fx .fx-impact::after{animation:none!important;display:none!important}.arena-hero.hero-under-attack,.arena-hero.hero-under-attack .hero-face,.arena-hero.protected .hero-barrier{animation:none!important}}
