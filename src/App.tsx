@@ -529,7 +529,7 @@ export default function App() {
     const token=matchToken.current;
     try {
       localStorage.setItem(TURN_CHECKPOINT_KEY, JSON.stringify({
-        version:1, playerHeroes,rivalHeroes,playerHand,deck,discardPile,
+        version:1, matchId,playerHeroes,rivalHeroes,playerHand,deck,discardPile,
         activePlayerHeroId,selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,
         round,currentTurn:'player',gameOver,combatLogs
       }));
