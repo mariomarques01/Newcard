@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type CSSP
 import './combat-effects.css';
 import './combat-polish-v2.css';
 import './combat-cinematic-v3.css';
+import './combat-target-focus-v45.css';
 import {cueCharacter,attackFlavor} from '../game/characterMotion';
 import {BattleActor} from './BattleActor';
 import {SpellScene} from './SpellScene';
@@ -72,7 +73,7 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
       },
     };
   });
-  return <div className="combat-effects" aria-hidden="true"><SpellScene effects={effects}/>{effects.filter(e=>e.actor).slice(-2).map(e=><BattleActor key={e.id} effect={e}/>)}{effects.map(e=>{
+  return <div className="combat-effects" aria-hidden="true"><SpellScene effects={effects.filter(e=>!e.travel && e.scope==='board')}/>{effects.filter(e=>e.actor && !e.travel).slice(-2).map(e=><BattleActor key={e.id} effect={e}/>)}{effects.map(e=>{
     const dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
     const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?'880ms':'0ms'} as CSSProperties;
     return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"} ${e.scope==='board'?'fx-board':''}`} data-effect={e.type} data-travel={e.travel} data-scope={e.scope||'target'} style={vars}>
