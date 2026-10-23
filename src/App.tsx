@@ -31,6 +31,7 @@ import './arena-iphone-layout-v18.css';
 import './arena-drag-feedback-v20.css';
 
 const SAVE_KEY = 'newcard-match-v1';
+const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
 
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
