@@ -4,6 +4,7 @@ import './combat-polish-v2.css';
 import './combat-cinematic-v3.css';
 import './combat-target-focus-v45.css';
 import {cueCharacter,attackFlavor} from '../game/characterMotion';
+import {spellPresentation} from '../game/spellPresentation';
 import {BattleActor} from './BattleActor';
 import {SpellScene} from './SpellScene';
 import type {ActionCard,Hero} from '../types/game';
@@ -18,7 +19,7 @@ export interface CombatParticleCanvasRef {
   clear: ()=>void;
 }
 type Point = {x:number;y:number};
-export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;started:number;scope?:'board';actor?:{id:string;name:string}};
+export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;school?:string;started:number;scope?:'board';actor?:{id:string;name:string}};
 const MAX_ACTIVE_EFFECTS = 6;
 // Projectile travel (900ms) + impact animation (1350ms) + cleanup margin.
 const EFFECT_LIFETIME_MS = 2400;
@@ -36,16 +37,16 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
     document.querySelectorAll('[data-hero-id]').forEach(el=>cueCharacter(el.id,'idle'));};
   useEffect(()=>()=>{timers.current.forEach(clearTimeout);timers.current.clear();},[]);
   useImperativeHandle(ref,()=>{
-    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string,scope?:'board',actor?:BattleEffect['actor'])=>{
+    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string,scope?:'board',actor?:BattleEffect['actor'],school?:string)=>{
       const id=++sequence.current;
-      setEffects(prev=>[...prev.slice(-(MAX_ACTIVE_EFFECTS - 1)),{id,from,to,type,label:label||labels[type],travel,flavor,scope,actor,started:performance.now()}]);
+      setEffects(prev=>[...prev.slice(-(MAX_ACTIVE_EFFECTS - 1)),{id,from,to,type,label:label||labels[type],travel,flavor,scope,actor,school,started:performance.now()}]);
       const timer=setTimeout(()=>{setEffects(prev=>prev.filter(e=>e.id!==id));timers.current.delete(timer);},EFFECT_LIFETIME_MS);
       timers.current.add(timer);
     };
     const actorFor=(id:string)=>{const el=document.getElementById(id);const heroId=el?.dataset.heroId;return heroId?{id:heroId,name:el?.querySelector('.hero-name')?.textContent||''}:undefined;};
-    const board=(type:ParticleEffectType,label:string)=>{
+    const board=(type:ParticleEffectType,label:string,school?:string)=>{
       const rect=document.querySelector('[data-battlefield]')?.getBoundingClientRect();
-      if(rect){const p={x:rect.left+rect.width/2,y:rect.top+rect.height/2};emit(p,p,type,label,false,undefined,'board');}
+      if(rect){const p={x:rect.left+rect.width/2,y:rect.top+rect.height/2};emit(p,p,type,label,false,undefined,'board',undefined,school);}
     };
     return {
       clear,
@@ -53,7 +54,7 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
       revealCard:(card,casterId)=>{
         cueCharacter(casterId,'cast');
         if(card.type==='joker'||card.rank==='A'){
-          setReveal(card);board(card.type==='joker'?'arcane':'gold_blast',card.skillName||card.name);
+          setReveal(card);board(card.type==='joker'?'arcane':'gold_blast',card.skillName||card.name,spellPresentation(card).school);
           const timer=setTimeout(()=>{setReveal(null);timers.current.delete(timer);},1600);timers.current.add(timer);
         }
       },
