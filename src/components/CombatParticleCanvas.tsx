@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type CSSProperties } from 'react';
 import './combat-effects.css';
 import {cueCharacter,attackFlavor} from '../game/characterMotion';
+import {BattleActor} from './BattleActor';
 import {SpellScene} from './SpellScene';
 import type {ActionCard,Hero} from '../types/game';
 
@@ -14,7 +15,7 @@ export interface CombatParticleCanvasRef {
   clear: ()=>void;
 }
 type Point = {x:number;y:number};
-export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;started:number;scope?:'board'};
+export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;started:number;scope?:'board';actor?:{id:string;name:string}};
 const labels:Record<ParticleEffectType,string>={slash:'ATAQUE',pierce:'PERFURAÇÃO',shield:'DEFESA',heal:'CURA',arcane:'MAGIA',gold_blast:'PODER REAL'};
 const center=(id:string):Point|null=>{
   const rect=document.getElementById(id)?.getBoundingClientRect();
@@ -29,12 +30,13 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
     document.querySelectorAll('[data-hero-id]').forEach(el=>cueCharacter(el.id,'idle'));};
   useEffect(()=>()=>{timers.current.forEach(clearTimeout);timers.current.clear();},[]);
   useImperativeHandle(ref,()=>{
-    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string,scope?:'board')=>{
+    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string,scope?:'board',actor?:BattleEffect['actor'])=>{
       const id=++sequence.current;
-      setEffects(prev=>[...prev.slice(-15),{id,from,to,type,label:label||labels[type],travel,flavor,scope,started:performance.now()}]);
-      const timer=setTimeout(()=>{setEffects(prev=>prev.filter(e=>e.id!==id));timers.current.delete(timer);},1900);
+      setEffects(prev=>[...prev.slice(-15),{id,from,to,type,label:label||labels[type],travel,flavor,scope,actor,started:performance.now()}]);
+      const timer=setTimeout(()=>{setEffects(prev=>prev.filter(e=>e.id!==id));timers.current.delete(timer);},2500);
       timers.current.add(timer);
     };
+    const actorFor=(id:string)=>{const el=document.getElementById(id);const heroId=el?.dataset.heroId;return heroId?{id:heroId,name:el?.querySelector('.hero-name')?.textContent||''}:undefined;};
     const board=(type:ParticleEffectType,label:string)=>{
       const rect=document.querySelector('[data-battlefield]')?.getBoundingClientRect();
       if(rect){const p={x:rect.left+rect.width/2,y:rect.top+rect.height/2};emit(p,p,type,label,false,undefined,'board');}
@@ -50,24 +52,24 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         }
       },
       triggerBurst:(x,y,type,label)=>emit({x,y},{x,y},type,label),
-      triggerCardBurst:(id,type,label)=>{const p=center(id);if(p){emit(p,p,type,label);if(type==='shield')cueCharacter(id,'guard');else if(type==='gold_blast'||type==='arcane'||type==='heal')cueCharacter(id,'cast');}},
+      triggerCardBurst:(id,type,label)=>{const p=center(id);if(p){emit(p,p,type,label,false,undefined,undefined,type==='shield'||type==='gold_blast'?actorFor(id):undefined);if(type==='shield')cueCharacter(id,'guard');else if(type==='gold_blast'||type==='arcane'||type==='heal')cueCharacter(id,'cast');}},
       triggerAttack:(sourceId,targetId,type='slash',label)=>{
         const from=center(sourceId),to=center(targetId);if(!from||!to)return;
         const source=document.getElementById(sourceId);
         const suit=source?.dataset.suit as Hero['suit']|undefined;
         const rank=source?.dataset.rank as Hero['rank']|undefined;
         const flavor=suit&&rank?attackFlavor({suit,rank}):undefined;
-        emit(from,to,type,label,true,flavor);
+        emit(from,to,type,label,true,flavor,undefined,actorFor(sourceId));
         cueCharacter(sourceId,type==='heal'||type==='arcane'?'cast':'attack');
         if(type==='slash'||type==='pierce'){
-          const timer=setTimeout(()=>{cueCharacter(targetId,'hurt');timers.current.delete(timer);},580);timers.current.add(timer);
+          const timer=setTimeout(()=>{cueCharacter(targetId,'hurt');timers.current.delete(timer);},880);timers.current.add(timer);
         }
       },
     };
   });
-  return <div className="combat-effects" aria-hidden="true"><SpellScene effects={effects}/>{effects.map(e=>{
+  return <div className="combat-effects" aria-hidden="true"><SpellScene effects={effects}/>{effects.filter(e=>e.actor).slice(-2).map(e=><BattleActor key={e.id} effect={e}/>)}{effects.map(e=>{
     const dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
-    const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?'580ms':'0ms'} as CSSProperties;
+    const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?'880ms':'0ms'} as CSSProperties;
     return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"} ${e.scope==='board'?'fx-board':''}`} data-effect={e.type} data-travel={e.travel} data-scope={e.scope||'target'} style={vars}>
       <div className="scene-light" style={{left:e.to.x,top:e.to.y}}/>
       {e.travel&&<div className="casting-seal" style={{left:e.from.x,top:e.from.y}}><i/><span>✧</span></div>}

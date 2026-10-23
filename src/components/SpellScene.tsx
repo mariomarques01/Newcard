@@ -1,10 +1,13 @@
-import {useEffect,useRef} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import type {BattleEffect} from './CombatParticleCanvas';
 const palette=(e:BattleEffect)=>e.type==='heal'?['#56ffb7','#ddffef']:e.type==='shield'?['#48ceff','#d9f9ff']:e.flavor==='flame'?['#ff771e','#fff1a0']:e.flavor==='blade'?['#67cbff','#ecfaff']:e.type==='gold_blast'||e.flavor==='coin'?['#ffd34b','#fff6c4']:['#b967ff','#f4ddff'];
 const noise=(n:number)=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v)};
 export function SpellScene({effects}:{effects:BattleEffect[]}){
  const canvas=useRef<HTMLCanvasElement>(null),live=useRef(effects),raf=useRef(0);
  useEffect(()=>{live.current=effects},[effects]);
+ const texture=useRef<HTMLImageElement|null>(null);
+ const [textureReady,setTextureReady]=useState(false);
+ useEffect(()=>{const img=new Image();img.onload=()=>{texture.current=img;setTextureReady(true)};img.src=`${import.meta.env.BASE_URL}assets/effects/elemental-novas.webp`;return()=>{img.onload=null;texture.current=null}},[]);
  const running=effects.length>0;
  useEffect(()=>{
   if(!running)return;
@@ -19,21 +22,46 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
   const draw=()=>{
    ctx.clearRect(0,0,w,h);const now=performance.now();ctx.globalCompositeOperation='screen';
    for(const e of live.current){
-    const elapsed=now-e.started;if(elapsed<0||elapsed>1900)continue;
-    const [color,light]=palette(e),delay=e.travel?580:0,age=(elapsed-delay)/1000;
-    const board=e.scope==='board',radius=board?Math.min(w*.7,h*.45):68;
+    const elapsed=now-e.started;if(elapsed<0||elapsed>2500)continue;
+    const [color,light]=palette(e),delay=e.travel?880:0,age=(elapsed-delay)/1000;
+    const board=e.scope==='board',radius=board?Math.min(w*.85,h*.5):115;
     // Charge at the caster, then a glowing projectile with an arcing particle wake.
-    if(e.travel&&!reduce&&elapsed<620){
-     const p=Math.max(0,Math.min(1,(elapsed-140)/440));const arc=Math.sin(p*Math.PI)*Math.min(45,Math.abs(e.to.x-e.from.x)*.12+18);
+    if(e.travel&&!reduce&&elapsed<940){
+     const p=Math.max(0,Math.min(1,(elapsed-300)/580));const arc=Math.sin(p*Math.PI)*Math.min(45,Math.abs(e.to.x-e.from.x)*.12+18);
      const x=e.from.x+(e.to.x-e.from.x)*p,y=e.from.y+(e.to.y-e.from.y)*p-arc;
      glow(e.from.x,e.from.y,32+elapsed*.035,color,(1-p)*.7);
      for(let j=15;j>=0;j--){const q=Math.max(0,p-j*.017),tx=e.from.x+(e.to.x-e.from.x)*q,ty=e.from.y+(e.to.y-e.from.y)*q-Math.sin(q*Math.PI)*Math.min(45,Math.abs(e.to.x-e.from.x)*.12+18);glow(tx,ty,3+(15-j)*.8,color,(1-j/16)*.55);}
      glow(x,y,26,color,1);glow(x,y,8,light,1);
      for(let j=0;j<5;j++){const a=elapsed*.017+j*1.256;glow(x+Math.cos(a)*17,y+Math.sin(a)*12,3,light,.9);}
     }
-    if(age<0||age>1.25)continue;
-    const fade=Math.max(0,1-age/.95),x=e.to.x,y=e.to.y;
+    if(e.travel&&!reduce&&elapsed>=300&&elapsed<1150){
+     const t=Math.min(1,(elapsed-300)/580),dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
+     ctx.save();ctx.translate(e.from.x+dx*t,e.from.y+dy*t);ctx.rotate(Math.atan2(dy,dx));ctx.globalAlpha=Math.min(1,(1150-elapsed)/250);
+     if(e.flavor==='blade'){
+      ctx.strokeStyle=light;ctx.lineWidth=5;ctx.shadowColor=color;ctx.shadowBlur=18;
+      for(let k=0;k<3;k++){ctx.beginPath();ctx.arc(-k*14,0,42+k*13,-1.2,1.2);ctx.stroke();}
+     }else if(e.flavor==='flame'){
+      for(let k=0;k<12;k++){const a=noise(e.id+k)*Math.PI*2;glow(-k*7,Math.sin(a+elapsed*.01)*(12+k),25-k,color,.8);}
+     }else if(e.flavor==='coin'){
+      for(let k=0;k<9;k++){const a=k*2.4+elapsed*.009;ctx.fillStyle='#ffdc56';ctx.strokeStyle='#fff3bd';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(Math.cos(a)*45-k*5,Math.sin(a)*35,9,12,elapsed*.005,0,Math.PI*2);ctx.fill();ctx.stroke();}
+     }else if(e.flavor==='heart'){
+      ctx.fillStyle='#ffa3ce';ctx.font='bold 32px Georgia';for(let k=0;k<5;k++){const a=k*1.25+elapsed*.008;ctx.fillText('♥',Math.cos(a)*36-16,Math.sin(a)*36+10);}
+     }else{
+      ctx.strokeStyle='#d69aff';ctx.lineWidth=3;for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(-70,k*12-18);for(let j=0;j<9;j++)ctx.lineTo(-70+j*12,(noise(e.id+k+j)*45-22)+k*8);ctx.stroke();}
+     }ctx.restore();
+    }
+    if(age<0||age>1.6)continue;
+    const fade=Math.max(0,1-age/1.3),x=e.to.x,y=e.to.y;
     if(reduce){glow(x,y,board?radius:48,color,fade*.3);continue;}
+    const atlas=texture.current;
+    if(atlas&&age<1.45){
+     const cellX=e.type==='shield'||e.flavor==='blade'?1:e.type==='gold_blast'||e.flavor==='coin'||e.type==='heal'?1:0;
+     const cellY=e.type==='shield'||e.flavor==='blade'||e.flavor==='flame'?0:1;
+     const halfW=atlas.naturalWidth/2,halfH=atlas.naturalHeight/2;
+     const r=(board?radius*.9:e.type==='shield'?100:130)*(.55+Math.min(age*2,1));
+     ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=Math.max(0,Math.min(1,age*9))*(1-age/1.5)*.88;
+     ctx.translate(x,y);ctx.rotate((e.type==='shield'?0:age*.3));ctx.drawImage(atlas,cellX*halfW,cellY*halfH,halfW,halfH,-r,-r,r*2,r*2);ctx.restore();
+    }
     // A brief local flash, expanding shock wave and drifting colored smoke.
     glow(x,y,(board?radius:95)*(1+age*.4),color,Math.max(0,1-age*4)*.7);
     const ringR=10+age*radius*2.3;
@@ -46,7 +74,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
       ctx.beginPath();for(let k=0;k<7;k++){const a=k*Math.PI/3;const px=hx+Math.cos(a)*12,py=hy+Math.sin(a)*12;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.stroke();
      }ctx.restore();glow(x,y,65,color,fade*.22);
     }
-    const count=board?68:30;
+    const count=board?100:65;
     for(let i=0;i<count;i++){
      const seed=e.id*91+i,angle=noise(seed)*Math.PI*2,speed=(20+noise(seed+3)*radius*1.8),life=.45+noise(seed+9)*.65;
      if(age>life)continue;
@@ -67,5 +95,5 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
   };raf.current=requestAnimationFrame(draw);
   return()=>{cancelAnimationFrame(raf.current);window.removeEventListener('resize',resize);ctx.clearRect(0,0,w,h)};
  },[running]);
- return <canvas ref={canvas} className="spell-scene" aria-hidden="true"/>;
+ return <canvas ref={canvas} className="spell-scene" data-texture-ready={textureReady} aria-hidden="true"/>;
 }

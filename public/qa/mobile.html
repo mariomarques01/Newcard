@@ -34,6 +34,8 @@
   check(!!d.querySelector('[data-effect="shield"]'),'Defesa dispara animação de escudo');
   const painted=()=>{const c=d.querySelector('.spell-scene');return c&&c.getContext('2d').getImageData(0,0,c.width,c.height).data.some((v,i)=>i%4===3&&v>0)};
   check(await until(painted),'Defesa desenha barreira e partículas no cenário');
+  check(!!d.querySelector('[data-battle-actor="p_rei_espadas"][data-performance="guard"]'),'Defesa mostra herói ampliado erguendo proteção');
+  check(await until(()=>d.querySelector('.spell-scene')?.dataset.textureReady==='true'),'Texturas especiais carregadas');
   check(d.querySelector('[data-character="p_rei_espadas"]').dataset.action==='guard','Personagem muda para postura defensiva');
   await drag(cards()[1],ally);check(cards().length===3&&hp()===initialHp,'Ataque em aliado rejeitado sem consumir carta');
   await drag(cards()[1],rival,true);check(cards().length===3&&hp()===initialHp,'Cancelar arraste não joga carta');
@@ -47,6 +49,7 @@
 
   await drag(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-face'),rival);check(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-condition').textContent==='AGIU','Herói arrastado ataca');check(!!d.querySelector('[data-effect="slash"][data-travel="true"] .fx-flight'),'Ataque do jogador tem rastro direcional');
   check(d.querySelector('[data-character="p_rei_espadas"]').dataset.action==='attack','Personagem prepara e executa golpe dentro da carta');
+  check(!!d.querySelector('[data-battle-actor="p_rei_espadas"][data-performance="attack"]'),'Herói ampliado avança para atacar');
   buttons[4].click();d.querySelector('[aria-label="Nova partida"]').click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 1')&&hp()===initialHp,'Reinício cancela ação pendente do rival');check(!d.querySelector('.combat-fx'),'Reinício limpa efeitos da partida anterior');
   buttons[3].click();await wait(80);buttons[3].click();await wait(80);check(cards().length===5,'Poder de compra respeita mão máxima de cinco cartas');
   d.querySelector('[aria-label="Nova partida"]').click();await wait(100);
