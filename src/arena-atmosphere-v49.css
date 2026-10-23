@@ -1,0 +1,32 @@
+/* V49: castle-like depth behind the original cards, using lightweight CSS only. */
+@media (orientation:portrait) and (max-width:600px){
+ .arena-board{background:linear-gradient(180deg,#3b101e 0%,#160e1a 47%,#112d46 53%,#08192e 100%)}
+ .arena-board .enemy-row,.arena-board .player-row{position:relative;isolation:isolate;overflow:hidden}
+ .arena-board .enemy-row::before,.arena-board .player-row::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-repeat:no-repeat;background-position:center bottom;
+ }
+ .arena-board .enemy-row::before{
+  background-image:
+   radial-gradient(ellipse at 65% 15%,#ffac5c6b,transparent 50%),
+   linear-gradient(0deg,#130b16 0 15%,transparent 15%),
+   linear-gradient(0deg,#1c101c 0 66%,transparent 66%),
+   repeating-linear-gradient(90deg,transparent 0 9%,#1b111d 9% 13%,transparent 13% 23%);
+  opacity:.8;
+ }
+ .arena-board .player-row::before{
+  background-image:
+   radial-gradient(ellipse at 35% 15%,#4ca9ed59,transparent 56%),
+   linear-gradient(0deg,#071729 0 16%,transparent 16%),
+   linear-gradient(0deg,#0b1c32 0 65%,transparent 65%),
+   repeating-linear-gradient(90deg,transparent 0 10%,#0b2038 10% 15%,transparent 15% 25%);
+  opacity:.85;
+ }
+ .arena-board .enemy-row::after,.arena-board .player-row::after{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(90deg,#0007,transparent 25%,transparent 75%,#0007);
+ }
+ .arena-board .enemy-row{background-color:#28111e}
+ .arena-board .player-row{background-color:#0b223b}
+ .arena-board .hero-row,.arena-board .row-caption{position:relative;z-index:1}
+}
