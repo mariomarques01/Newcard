@@ -1,0 +1,18 @@
+/* V15: readable turn ownership and energy state, no gameplay changes */
+.mobile-game[data-turn="player"] .score-player{border-color:#e7c46c!important;box-shadow:inset 0 0 12px #e8c06919,0 0 10px #f3d58b44}
+.mobile-game[data-turn="rival"] .score-rival{border-color:#ec9b9b!important;box-shadow:inset 0 0 12px #ec737319,0 0 10px #f1858544}
+.mobile-game[data-turn="player"] .score-turn strong{color:#ffebad;text-shadow:0 0 8px #f1c36c77}
+.mobile-game[data-turn="rival"] .score-turn strong{color:#ffc1b7;text-shadow:0 0 8px #f06f6977}
+.score-side .energy-track{position:relative}
+.score-side .energy-track b{font-variant-numeric:tabular-nums;font-weight:900!important;text-shadow:0 1px 4px #000}
+.score-side[data-energy="low"] .energy-track b{color:#ffde91!important}
+.score-side[data-energy="empty"] .energy-track b{color:#ffaaa6!important}
+.score-side[data-energy="empty"] .energy-track{filter:saturate(.55)}
+.score-side[data-energy="ready"] .energy-track b{color:#c4f8ef!important}
+.mobile-game[data-turn="rival"] .score-player .energy-track{opacity:.68}
+.mobile-game[data-turn="player"] .score-rival .energy-track{opacity:.7}
+@media(orientation:portrait) and (max-width:390px){
+ .score-turn strong{letter-spacing:0!important;font-size:clamp(8px,2.2vw,11px)!important}
+ .score-side .energy-track b{font-size:clamp(9px,2.5vw,12px)!important}
+}
+@media(prefers-reduced-motion:reduce){.score-turn,.score-turn::before,.score-turn::after{animation:none!important}}
