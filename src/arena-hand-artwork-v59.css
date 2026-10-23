@@ -1,0 +1,11 @@
+/* V59 — Hand shows the illustration, not the printed description on the card. */
+.arena-hand .hand-face{overflow:hidden;isolation:isolate}
+.arena-hand .hand-face img{
+  width:100%;height:100%;object-fit:cover;object-position:center top;
+  transform:scale(1.7);transform-origin:50% 12%;
+  pointer-events:none;
+}
+.arena-hand .hand-name{display:none!important}
+.arena-hand .energy-cost,.arena-hand .hand-selected-indicator,.arena-hand .hand-lack{z-index:3}
+.arena-hand .hand-info{z-index:4}
+@media (prefers-reduced-motion:reduce){.arena-hand .hand-face img{transition:none}}
