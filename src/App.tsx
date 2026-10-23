@@ -743,6 +743,7 @@ export default function App() {
   const dragValid = !!dragCurrent && (dragKind==='board' ? !!document.elementFromPoint(dragCurrent.x,dragCurrent.y)?.closest('[data-battlefield]') : [...playerHeroes,...rivalHeroes].some(h=>h.id===hoveredHeroId&&h.isAlive&&(dragKind==='enemy'?h.id.startsWith('r_'):dragKind==='ally'&&h.id.startsWith('p_'))));
   const selectionTarget = !gameOver && currentTurn === 'player' && selectedCard && playerEnergy >= selectedCard.cost ? targetFor(selectedCard) : null;
   const cardTarget = selectedCard ? targetFor(selectedCard) : null;
+  const cardCanPlay = !!selectedCard && !gameOver && currentTurn==='player' && playerEnergy>=selectedCard.cost;
   const canAttack = !gameOver && currentTurn==='player' && !!activePlayerHero?.isAlive && !activePlayerHero.hasAttacked && !!targetedRivalHero?.isAlive;
   const attackDamage = canAttack && targetedRivalHero ? Math.max(1,activePlayerHero.atk-Math.floor(targetedRivalHero.def/2))+(activePlayerHero.id==='p_rei_espadas'&&(targetedRivalHero.shield>0||targetedRivalHero.isDefending)?2:0) : 0;
   const forecastCardDamage = cardCanPlay && cardTarget==='enemy' && selectedCard ? abilityFor(selectedCard).damage||0 : 0;
@@ -750,7 +751,6 @@ export default function App() {
   const forecastShield = targetedRivalHero && forecastDamage ? Math.min(targetedRivalHero.shield,forecastDamage) : 0;
   const forecastHp = forecastDamage-forecastShield;
   const forecastGlory = targetedRivalHero && forecastDamage ? targetedRivalHero.currentHp<=forecastHp?2:forecastCardDamage?0:forecastHp>=3?1:0 : 0;
-  const cardCanPlay = !!selectedCard && !gameOver && currentTurn==='player' && playerEnergy>=selectedCard.cost;
   const cardInstruction = !selectedCard ? '' : gameOver ? 'A partida terminou' : currentTurn!=='player' ? 'Aguarde seu turno' : playerEnergy<selectedCard.cost ? `Faltam ${selectedCard.cost-playerEnergy} de energia` : cardTarget==='enemy' ? 'Selecione um rival vivo e toque em JOGAR' : cardTarget==='ally' ? 'Selecione um aliado vivo e toque em JOGAR' : 'Toque em JOGAR para ativar o efeito';
   const validHero = (hero: Hero) => !!dragKind && hero.isAlive && (dragKind==='enemy' ? hero.id.startsWith('r_') : dragKind==='ally' && hero.id.startsWith('p_'));
   return (
