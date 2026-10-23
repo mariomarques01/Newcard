@@ -190,8 +190,16 @@ export default function App() {
     setPlayerHeroes(result.allies); setRivalHeroes(result.enemies);
     setPlayerPg(pg); setRivalPg(rivalPg-stolen); setSelectedCardId(null);
     sound.playCardPlay();
-    const target = a.damage ? enemy : ally;
-    if (target) particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,a.damage?'pierce':a.heal?'heal':a.shield?'shield':'arcane');
+    const sourceId=`hand-card-${card.id}`;
+    const fx=particleCanvasRef.current;
+    if(a.damage&&enemy) fx?.triggerAttack(sourceId,`hero-card-${enemy.id}`,'pierce',`−${a.damage} VIDA`);
+    result.allies.forEach((next,i)=>{
+      const before=playerHeroes[i],id=`hero-card-${next.id}`;
+      if(next.currentHp>before.currentHp) fx?.triggerAttack(sourceId,id,'heal',`+${next.currentHp-before.currentHp} VIDA`);
+      if(next.shield>before.shield) fx?.triggerCardBurst(id,'shield',`+${next.shield-before.shield} ESCUDO`);
+      if(next.atk>before.atk||next.def>before.def) fx?.triggerCardBurst(id,'gold_blast',next.atk>before.atk?`+${next.atk-before.atk} ATQ`:`+${next.def-before.def} DEF`);
+    });
+    if(!a.damage&&!a.heal&&!a.shield&&!a.attack&&!a.defense) fx?.triggerCardBurst(`hero-card-${ally.id}`,'arcane',a.energy?`+${a.energy} ENERGIA`:a.draw?`+${a.draw} CARTAS`:'GLÓRIA');
     if (a.damage && enemy) { triggerHeroDamageHit(enemy.id); triggerScreenShake(); }
     setHint(`${card.name} • ${card.description}`);
     addLog(card.name,card.description,'card');
@@ -218,8 +226,8 @@ export default function App() {
     triggerHeroDamageHit(target.id);
 
     // Trigger visual particles on targeted rival and attacker
-    particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`, 'slash');
-    particleCanvasRef.current?.triggerCardBurst(`hero-card-${attacker.id}`, 'slash');
+    particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${target.id}`,'slash');
+    if(target.shield>0) particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield','BLOQUEIO');
 
     // Calculate base damage: ATQ - floor(DEF / 2)
     let damage = Math.max(1, attacker.atk - Math.floor(target.def / 2));
@@ -301,7 +309,7 @@ export default function App() {
     }
 
     sound.playDefend();
-    particleCanvasRef.current?.triggerCardBurst(`hero-card-${activePlayerHero.id}`, 'shield');
+    particleCanvasRef.current?.triggerCardBurst(`hero-card-${activePlayerHero.id}`, 'shield', '+3 ESCUDO');
 
     let bonusEnergy = 0;
     // Valete de Paus passive: generates +1 extra energy upon defending
@@ -383,7 +391,7 @@ export default function App() {
       particleCanvasRef.current?.triggerCardBurst(`hero-card-${activePlayerHero.id}`, 'slash');
       if (targetedRivalHero && targetedRivalHero.isAlive) {
         triggerHeroDamageHit(targetedRivalHero.id);
-        particleCanvasRef.current?.triggerCardBurst(`hero-card-${targetedRivalHero.id}`, 'pierce');
+        particleCanvasRef.current?.triggerAttack(`hero-card-${activePlayerHero.id}`,`hero-card-${targetedRivalHero.id}`, 'pierce', '−5 INVESTIDA');
         const dmg = 5;
         const newHp = Math.max(0, targetedRivalHero.currentHp - dmg);
         const isDead = newHp === 0;
@@ -432,19 +440,31 @@ export default function App() {
       const hp=Math.max(0,target.currentHp-damage+absorbed);
       const gained=hp===0?2:damage-absorbed>=3?1:0;
       let nextPlayers=playerHeroes.map(h=>h.id===target.id?{...h,currentHp:hp,shield:h.shield-absorbed,isAlive:hp>0}:{...h});
-      const nextRivals=rivalHeroes.map(h=>h.id===attacker.id && h.id==='r_rei_ouros'?{...h,shield:h.shield+1}:{...h});
+      const nextRivals=rivalHeroes.map(h=>({...h,isDefending:false,def:h.def-(h.isDefending?1:0),shield:h.shield+(h.id===attacker.id&&h.id==='r_rei_ouros'?1:0)}));
       const pg=Math.min(12,rivalPg+gained);
       setPlayerHeroes(nextPlayers);setRivalHeroes(nextRivals);setRivalPg(pg);
       sound.playAttack();triggerHeroDamageHit(target.id);triggerScreenShake();
-      particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'slash');
+      particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${target.id}`,'slash');
+      if(absorbed>0) particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield',`BLOQUEOU ${absorbed}`);
+      if(attacker.id==='r_rei_ouros') particleCanvasRef.current?.triggerCardBurst(`hero-card-${attacker.id}`,'shield','COFRE RÉGIO');
       addLog(attacker.name,`Atacou ${target.name}: ${damage-absorbed} de dano.`,'attack');
       if(checkWinConditions(playerPg,pg,nextPlayers,nextRivals)) return;
       setTimeout(()=>{
         if(token!==matchToken.current) return;
+        const guard=[...nextRivals].filter(h=>h.isAlive&&!h.isDefending).sort((a,b)=>a.currentHp-b.currentHp)[0];
+        if(guard){
+          setRivalHeroes(nextRivals.map(h=>h.id===guard.id?{...h,shield:h.shield+3,isDefending:true,def:h.def+1}:h));
+          particleCanvasRef.current?.triggerCardBurst(`hero-card-${guard.id}`,'shield','+3 ESCUDO');sound.playDefend();
+          addLog(guard.name,'Protegeu sua carta com +3 Escudo e +1 DEF.','defense');
+        }
+      },350);
+      setTimeout(()=>{
+        if(token!==matchToken.current) return;
         const queenAlive=nextPlayers.some(h=>h.id==='p_rainha_copas'&&h.isAlive);
         const wounded=nextPlayers.filter(h=>h.isAlive).sort((a,b)=>(b.maxHp-b.currentHp)-(a.maxHp-a.currentHp))[0];
-        nextPlayers=nextPlayers.map(h=>({...h,hasAttacked:false,isDefending:false,atk:h.atk-(h.temporaryAttack||0),temporaryAttack:0,currentHp:queenAlive&&h.id===wounded?.id?Math.min(h.maxHp,h.currentHp+2):h.currentHp}));
+        nextPlayers=nextPlayers.map(h=>({...h,hasAttacked:false,isDefending:false,def:h.def-(h.isDefending?1:0),atk:h.atk-(h.temporaryAttack||0),temporaryAttack:0,currentHp:queenAlive&&h.id===wounded?.id?Math.min(h.maxHp,h.currentHp+2):h.currentHp}));
         setPlayerHeroes(nextPlayers);
+        if(queenAlive&&wounded&&wounded.currentHp<wounded.maxHp) particleCanvasRef.current?.triggerCardBurst(`hero-card-${wounded.id}`,'heal','GRAÇA SOBERANA');
         if(deck.length && playerHand.length<5){setPlayerHand([...playerHand,deck[0]]);setDeck(deck.slice(1));}
         setPlayerEnergy(maxEnergy);setCurrentTurn('player');setRound(round+1);
         setActivePlayerHeroId(nextPlayers.find(h=>h.id===activePlayerHeroId&&h.isAlive)?.id||nextPlayers.find(h=>h.isAlive)!.id);
@@ -497,6 +517,8 @@ export default function App() {
   // 10. RESTART GAME
   const handleRestartGame = () => {
     matchToken.current++;
+    particleCanvasRef.current?.clear();
+    setFloatingNumbers([]);
     clearDrag();
     sound.playClick();
     setPlayerHeroes(JSON.parse(JSON.stringify(INITIAL_PLAYER_HEROES)));

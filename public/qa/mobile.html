@@ -27,14 +27,19 @@
   const ally=d.querySelector('[data-hero-id="p_rainha_copas"] .hero-face');
   const hp=()=>d.querySelector('[data-hero-id="r_valete_copas"] .hero-stats b').textContent;
   const initialHp=hp();
+  buttons[2].click();await wait(50);
+  check(!!d.querySelector('[data-hero-id="p_rei_espadas"].protected .hero-barrier'),'Defesa deixa barreira visível no jogador');
+  check(!!d.querySelector('[data-effect="shield"]'),'Defesa dispara animação de escudo');
   await drag(cards()[1],ally);check(cards().length===3&&hp()===initialHp,'Ataque em aliado rejeitado sem consumir carta');
   await drag(cards()[1],rival,true);check(cards().length===3&&hp()===initialHp,'Cancelar arraste não joga carta');
-  await drag(cards()[1],rival);check(cards().length===2&&hp()!==initialHp,'Arraste de ataque causa dano e consome uma carta');
+  await drag(cards()[1],rival);check(!!d.querySelector('[data-effect="pierce"][data-travel="true"] .fx-flight'),'Carta de ataque viaja até o rival');check(cards().length===2&&hp()!==initialHp,'Arraste de ataque causa dano e consome uma carta');
   await drag(cards()[1],ally);check(cards().length===1&&d.querySelector('[data-hero-id="p_rainha_copas"] .hero-stats').textContent.includes('⛨ 2'),'Apoio aplica escudo ao aliado escolhido');
   const before=cards().length;await drag(cards()[0],ally);check(cards().length===before,'Energia insuficiente bloqueia carta');
   buttons[4].click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 2'),'Rival age e devolve turno');
-  await drag(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-face'),rival);check(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-condition').textContent==='AGIU','Herói arrastado ataca');
-  buttons[4].click();d.querySelector('[aria-label="Nova partida"]').click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 1')&&hp()===initialHp,'Reinício cancela ação pendente do rival');
+  check(!!d.querySelector('.enemy-row .protected .hero-barrier'),'Defesa do rival deixa barreira visível');
+  check(!!d.querySelector('[data-effect="slash"][data-travel="true"]'),'Ataque do rival viaja até o jogador');
+  await drag(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-face'),rival);check(d.querySelector('[data-hero-id="p_rei_espadas"] .hero-condition').textContent==='AGIU','Herói arrastado ataca');check(!!d.querySelector('[data-effect="slash"][data-travel="true"] .fx-flight'),'Ataque do jogador tem rastro direcional');
+  buttons[4].click();d.querySelector('[aria-label="Nova partida"]').click();await wait(1800);check(d.querySelector('.score-turn').textContent.includes('RODADA 1')&&hp()===initialHp,'Reinício cancela ação pendente do rival');check(!d.querySelector('.combat-fx'),'Reinício limpa efeitos da partida anterior');
   buttons[3].click();await wait(80);buttons[3].click();await wait(80);check(cards().length===5,'Poder de compra respeita mão máxima de cinco cartas');
  }
  document.querySelector('#result').dataset.done='true';document.title='PASS — Newcard mobile';
