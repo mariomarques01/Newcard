@@ -34,6 +34,15 @@ const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
 const PROFILE_KEY = 'newcard-player-profile-v1';
 const CAMPAIGN_KEY = 'newcard-campaign-v1';
+const RELIC_KEY = 'newcard-campaign-relics-v1';
+const RELIC_NAMES = ['Escudo da Fronteira','Coração das Sombras','Lâmina de Ferro','Coroa do Destino'];
+const campaignPlayerHeroes = (relics:number[]):Hero[] => INITIAL_PLAYER_HEROES.map(hero=>({
+  ...hero,
+  shield:hero.shield+(relics.includes(1)?2:0),
+  maxHp:hero.maxHp+(relics.includes(2)?2:0),
+  currentHp:hero.currentHp+(relics.includes(2)?2:0),
+  atk:hero.atk+(relics.includes(3)?1:0)
+}));
 const CAMPAIGN_CHAPTERS = ['A Fronteira Esquecida','O Cerco das Sombras','A Coroa de Ferro','O Trono do Destino'];
 const CAMPAIGN_BOSSES = ['Sentinela da Fronteira','Guardião das Sombras','Regente de Ferro','Soberano do Destino'];
 const CAMPAIGN_BOSS_SKILLS = ['Bastião: inicia com +2 de escudo','Muralha Sombria: inicia com +4 de escudo','Armadura de Ferro: inicia com +6 de escudo','Trono Imortal: inicia com +8 de escudo'];
@@ -112,6 +121,10 @@ export default function App() {
   const [unlockedChapter,setUnlockedChapter] = useState(()=>{
     try { return Math.min(4,Math.max(1,Number(localStorage.getItem(CAMPAIGN_KEY))||1)); }
     catch { return 1; }
+  });
+  const [relics,setRelics] = useState<number[]>(()=>{
+    try { const v=JSON.parse(localStorage.getItem(RELIC_KEY)||'[]');return Array.isArray(v)?v.filter((n):n is number=>Number.isInteger(n)&&n>=1&&n<=4):[]; }
+    catch { return []; }
   });
   const [showCampaign,setShowCampaign] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -202,6 +215,17 @@ export default function App() {
     setUnlockedChapter(previous=>{
       if(next<=previous) return previous;
       try { localStorage.setItem(CAMPAIGN_KEY,String(next)); } catch { /* Local progress optional. */ }
+      return next;
+    });
+  },[gameOver,chapter]);
+
+  // Rewards are granted once per cleared chapter and apply to future battles.
+  useEffect(()=>{
+    if (!saveReady.current || gameOver!=='victory') return;
+    setRelics(previous=>{
+      if(previous.includes(chapter)) return previous;
+      const next=[...previous,chapter].sort((a,b)=>a-b);
+      try { localStorage.setItem(RELIC_KEY,JSON.stringify(next)); } catch { /* Local progress optional. */ }
       return next;
     });
   },[gameOver,chapter]);
@@ -653,15 +677,15 @@ export default function App() {
   };
 
   // 10. RESTART GAME
-  const handleRestartGame = (nextChapter = chapter) => {
-    if (!gameOver && !window.confirm('Iniciar uma nova partida? O progresso atual será perdido.')) return;
+  const handleRestartGame = (nextChapter = chapter):boolean => {
+    if (!gameOver && !window.confirm('Iniciar uma nova partida? O progresso atual será perdido.')) return false;
     try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(TURN_CHECKPOINT_KEY); } catch { /* Storage unavailable. */ }
     matchToken.current++;
     particleCanvasRef.current?.clear();
     setFloatingNumbers([]);
     clearDrag();
     sound.playClick();
-    setPlayerHeroes(JSON.parse(JSON.stringify(INITIAL_PLAYER_HEROES)));
+    setPlayerHeroes(campaignPlayerHeroes(relics));
     setRivalHeroes(campaignRivals(nextChapter));
     setChapter(nextChapter);
     setActivePlayerHeroId('p_rei_espadas');
@@ -687,6 +711,7 @@ export default function App() {
         text: 'Nova partida iniciada! Que a sabedoria e a bravura guiem suas cartas.',
       },
     ]);
+    return true;
   };
 
   const dragKind = draggingCard ? targetFor(draggingCard) : draggingHero ? 'enemy' : null;
@@ -742,7 +767,7 @@ export default function App() {
       {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragValid}/>}
       {dragKind && dragCurrent && <div className={`drag-drop-feedback ${dragValid?'valid':'invalid'}`} role="status" aria-live="off">{dragValid?'✓ SOLTE PARA EXECUTAR':dragKind==='enemy'?'MIRE EM UM RIVAL VIVO':dragKind==='ally'?'MIRE EM UM ALIADO VIVO':'MIRE NO TABULEIRO'}</div>}
       {draggingCard && dragCurrent && <div className="drag-card-ghost" style={{left:dragCurrent.x,top:dragCurrent.y}}><img src={draggingCard.image} alt=""/><span>{draggingCard.name}</span></div>}
-      {showCampaign && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Campanha"><div><button className="close-log" onClick={()=>setShowCampaign(false)}>Fechar ×</button><h2>⚑ Campanha dos Quatro Reinos</h2><p>Conquiste cada capítulo para desbloquear o próximo. Cada reino tem um chefe com resistência própria; os chefes dos capítulos 3 e 4 também causam +1 de dano quando atacam.</p>{CAMPAIGN_CHAPTERS.map((name,index)=><p key={name}><button disabled={index+1>unlockedChapter} onClick={()=>{handleRestartGame(index+1);setShowCampaign(false);}}>{index+1>unlockedChapter?'🔒':'⚔'} Capítulo {index+1}: {name}{chapter===index+1?' · ATUAL':''}</button><small>👑 {CAMPAIGN_BOSSES[index]} — {CAMPAIGN_BOSS_SKILLS[index]}</small></p>)}<small>Progresso salvo neste navegador.</small></div></div>}
+      {showCampaign && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Campanha"><div><button className="close-log" onClick={()=>setShowCampaign(false)}>Fechar ×</button><h2>⚑ Campanha dos Quatro Reinos</h2><p>Conquiste cada capítulo para desbloquear o próximo. Cada reino tem um chefe com resistência própria; os chefes dos capítulos 3 e 4 também causam +1 de dano quando atacam.</p>{CAMPAIGN_CHAPTERS.map((name,index)=><p key={name}><button disabled={index+1>unlockedChapter} onClick={()=>{if(handleRestartGame(index+1))setShowCampaign(false);}}>{index+1>unlockedChapter?'🔒':'⚔'} Capítulo {index+1}: {name}{chapter===index+1?' · ATUAL':''}</button><small>👑 {CAMPAIGN_BOSSES[index]} — {CAMPAIGN_BOSS_SKILLS[index]}</small></p>)}<small>Progresso salvo neste navegador.</small><h3>Relíquias permanentes</h3>{RELIC_NAMES.map((name,index)=><p key={name}>{relics.includes(index+1)?'🏆':'🔒'} {name} — {['+2 escudo inicial em todos os heróis','+2 vida máxima em todos os heróis','+1 ataque em todos os heróis','Relíquia lendária de conclusão'][index]}</p>)}</div></div>}
       {showProfile && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Perfil do jogador"><div><button className="close-log" onClick={()=>setShowProfile(false)}>Fechar ×</button><h2>★ Crônicas do Reino</h2><p>Partidas concluídas: <b>{profile.wins+profile.losses}</b></p><p>Vitórias: <b>{profile.wins}</b> · Derrotas: <b>{profile.losses}</b></p><p>Taxa de vitória: <b>{profile.wins+profile.losses?Math.round(profile.wins/(profile.wins+profile.losses)*100):0}%</b></p><p>Maior rodada alcançada: <b>{profile.bestRound}</b></p><p>Recorde de glória: <b>{profile.bestPg} PG</b></p><h3>Conquistas</h3><p>{profile.wins>=1?'🏆':'🔒'} Primeira vitória</p><p>{profile.wins>=5?'🏆':'🔒'} Veterano — 5 vitórias</p><p>{profile.wins>=10?'🏆':'🔒'} Lenda — 10 vitórias</p><p>{profile.bestPg>=12?'🏆':'🔒'} Glória máxima — 12 PG</p><small>Estatísticas salvas somente neste navegador.</small></div></div>}
       {showLog && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Histórico da batalha"><div><button className="close-log" onClick={()=>setShowLog(false)}>Fechar ×</button><h2>Registro de batalha</h2>{combatLogs.map(log=><p key={log.id}><b>{log.speaker}</b> {log.text}</p>)}</div></div>}
       {inspectingItem && <CardInspectModal item={inspectingItem} onClose={()=>setInspectingItem(null)}/>}
