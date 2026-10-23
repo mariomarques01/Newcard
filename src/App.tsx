@@ -30,6 +30,8 @@ import './arena-hand-v17.css';
 import './arena-iphone-layout-v18.css';
 import './arena-drag-feedback-v20.css';
 
+const SAVE_KEY = 'newcard-match-v1';
+
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
   const particleCanvasRef = useRef<CombatParticleCanvasRef>(null);
@@ -95,6 +97,54 @@ export default function App() {
   const activePlayerHero = playerHeroes.find((h) => h.id === activePlayerHeroId) || playerHeroes[0];
   const targetedRivalHero = rivalHeroes.find((h) => h.id === selectedRivalHeroId) || rivalHeroes.find((h) => h.isAlive);
   const selectedCard = playerHand.find((c) => c.id === selectedCardId) || null;
+
+  // V21: persist a match locally so Safari reloads do not discard progress.
+  const saveReady = useRef(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.version === 1 && Array.isArray(saved.playerHeroes) && Array.isArray(saved.rivalHeroes) &&
+            Array.isArray(saved.playerHand) && Array.isArray(saved.deck) && Array.isArray(saved.discardPile) &&
+            typeof saved.round === 'number' && saved.round >= 1 &&
+            (saved.currentTurn === 'player' || saved.currentTurn === 'rival')) {
+          matchToken.current++;
+          setPlayerHeroes(saved.playerHeroes);
+          setRivalHeroes(saved.rivalHeroes);
+          setPlayerHand(saved.playerHand);
+          setDeck(saved.deck);
+          setDiscardPile(saved.discardPile);
+          setActivePlayerHeroId(saved.activePlayerHeroId);
+          setSelectedRivalHeroId(saved.selectedRivalHeroId);
+          setPlayerPg(saved.playerPg);
+          setRivalPg(saved.rivalPg);
+          setPlayerEnergy(saved.playerEnergy);
+          setRivalEnergy(saved.rivalEnergy);
+          setRound(saved.round);
+          // Interrupted rival animations are resumed safely on the player's turn.
+          setCurrentTurn(saved.currentTurn === 'rival' ? 'player' : saved.currentTurn);
+          setGameOver(saved.gameOver ?? null);
+          setCombatLogs(Array.isArray(saved.combatLogs) ? saved.combatLogs : []);
+          setSelectedCardId(null);
+          setHint('Partida recuperada automaticamente neste dispositivo.');
+        }
+      }
+    } catch { /* Private browsing or corrupted save: start a new match. */ }
+    saveReady.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!saveReady.current) return;
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        version:1, playerHeroes,rivalHeroes,playerHand,deck,discardPile,
+        activePlayerHeroId,selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,
+        round,currentTurn,gameOver,combatLogs
+      }));
+    } catch { /* Storage can be unavailable on Safari. */ }
+  }, [playerHeroes,rivalHeroes,playerHand,deck,discardPile,activePlayerHeroId,
+      selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,round,currentTurn,gameOver,combatLogs]);
 
   // Sync sound manager enabled state
   useEffect(() => {
@@ -535,6 +585,8 @@ export default function App() {
 
   // 10. RESTART GAME
   const handleRestartGame = () => {
+    if (!gameOver && !window.confirm('Iniciar uma nova partida? O progresso atual será perdido.')) return;
+    try { localStorage.removeItem(SAVE_KEY); } catch { /* Storage unavailable. */ }
     matchToken.current++;
     particleCanvasRef.current?.clear();
     setFloatingNumbers([]);
