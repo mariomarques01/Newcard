@@ -26,7 +26,8 @@ export const FloatingNumberOverlay: React.FC<FloatingNumberOverlayProps> = ({ it
         return (
           <div
             key={item.id}
-            className={`absolute animate-float-number select-none tracking-tight ${styleClass}`}
+            data-type={item.type}
+            className={`damage-float select-none ${styleClass}`}
             style={{
               left: `${item.x}px`,
               top: `${item.y}px`,
