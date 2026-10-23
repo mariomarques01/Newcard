@@ -105,7 +105,13 @@ export default function App() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       if (raw) {
-        const saved = JSON.parse(raw);
+        const savedMatch = JSON.parse(raw);
+        // A rival turn has delayed actions. Recover its pre-turn checkpoint
+        // rather than granting a free turn after a partial rival attack.
+        const checkpointRaw = savedMatch.currentTurn === 'rival' ? localStorage.getItem(TURN_CHECKPOINT_KEY) : null;
+        const checkpoint = checkpointRaw ? JSON.parse(checkpointRaw) : null;
+        const saved = checkpoint?.version === 1 && checkpoint?.round === savedMatch.round &&
+          Array.isArray(checkpoint.playerHeroes) && Array.isArray(checkpoint.rivalHeroes) ? checkpoint : savedMatch;
         if (saved.version === 1 && Array.isArray(saved.playerHeroes) && Array.isArray(saved.rivalHeroes) &&
             Array.isArray(saved.playerHand) && Array.isArray(saved.deck) && Array.isArray(saved.discardPile) &&
             typeof saved.round === 'number' && saved.round >= 1 &&
@@ -123,8 +129,9 @@ export default function App() {
           setPlayerEnergy(saved.playerEnergy);
           setRivalEnergy(saved.rivalEnergy);
           setRound(saved.round);
-          // Interrupted rival animations are resumed safely on the player's turn.
-          setCurrentTurn(saved.currentTurn === 'rival' ? 'player' : saved.currentTurn);
+          // A complete pre-turn checkpoint restores the player's pending decision.
+          // Without one, preserve the rival turn instead of giving free energy/actions.
+          setCurrentTurn(saved.currentTurn);
           setGameOver(saved.gameOver ?? null);
           setCombatLogs(Array.isArray(saved.combatLogs) ? saved.combatLogs : []);
           setSelectedCardId(null);
@@ -496,6 +503,13 @@ export default function App() {
   const handleEndTurn = () => {
     if (gameOver || currentTurn !== 'player') return;
     const token=matchToken.current;
+    try {
+      localStorage.setItem(TURN_CHECKPOINT_KEY, JSON.stringify({
+        version:1, playerHeroes,rivalHeroes,playerHand,deck,discardPile,
+        activePlayerHeroId,selectedRivalHeroId,playerPg,rivalPg,playerEnergy,rivalEnergy,
+        round,currentTurn:'player',gameOver,combatLogs
+      }));
+    } catch { /* Safari storage may be unavailable. */ }
     setCurrentTurn('rival'); setSelectedCardId(null); sound.playTurnChange();
     setHint('O rival está preparando seu ataque…');
     setTimeout(()=>{
@@ -588,7 +602,7 @@ export default function App() {
   // 10. RESTART GAME
   const handleRestartGame = () => {
     if (!gameOver && !window.confirm('Iniciar uma nova partida? O progresso atual será perdido.')) return;
-    try { localStorage.removeItem(SAVE_KEY); } catch { /* Storage unavailable. */ }
+    try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem(TURN_CHECKPOINT_KEY); } catch { /* Storage unavailable. */ }
     matchToken.current++;
     particleCanvasRef.current?.clear();
     setFloatingNumbers([]);
