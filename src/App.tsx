@@ -502,11 +502,11 @@ export default function App() {
     }
     if (hero && (!hero.isAlive || hero.hasAttacked)) return;
     e.currentTarget.setPointerCapture(e.pointerId);
-    dragRef.current={card,hero,x:e.clientX,y:e.clientY,moved:false};
+    dragRef.current={card,hero,x:e.clientX,y:e.clientY,moved:false,pointerId:e.pointerId};
   };
   const handlePointerMove = (e: React.PointerEvent) => {
-    const d=dragRef.current; if (!d) return;
-    if (!d.moved && Math.hypot(e.clientX-d.x,e.clientY-d.y)<8) return;
+    const d=dragRef.current; if (!d || d.pointerId!==e.pointerId) return;
+    if (!d.moved && Math.hypot(e.clientX-d.x,e.clientY-d.y)<14) return;
     d.moved=true;
     setDraggingCard(d.card||null); setDraggingHero(d.hero||null);
     setDragOrigin({x:d.x,y:d.y}); setDragCurrent({x:e.clientX,y:e.clientY});
@@ -515,7 +515,8 @@ export default function App() {
   };
   const handlePointerUp = (e: React.PointerEvent) => {
     const d=dragRef.current;
-    if (!d?.moved) { clearDrag(); return; }
+    if (!d || d.pointerId!==e.pointerId) return;
+    if (!d.moved) { clearDrag(); return; }
     const el=document.elementFromPoint(e.clientX,e.clientY);
     const id=el?.closest('[data-hero-id]')?.getAttribute('data-hero-id');
     const enemy=rivalHeroes.find(h=>h.id===id && h.isAlive);
