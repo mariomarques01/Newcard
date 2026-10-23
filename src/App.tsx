@@ -32,6 +32,7 @@ import './arena-drag-feedback-v20.css';
 import './arena-clarity-v29.css';
 import './arena-card-context-v30.css';
 import './arena-damage-forecast-v31.css';
+import './arena-effect-targets-v32.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
@@ -744,6 +745,10 @@ export default function App() {
   const selectionTarget = !gameOver && currentTurn === 'player' && selectedCard && playerEnergy >= selectedCard.cost ? targetFor(selectedCard) : null;
   const cardTarget = selectedCard ? targetFor(selectedCard) : null;
   const cardCanPlay = !!selectedCard && !gameOver && currentTurn==='player' && playerEnergy>=selectedCard.cost;
+  const selectedAbility = selectedCard ? abilityFor(selectedCard) : null;
+  const affectedAllies = cardCanPlay && selectedAbility ? playerHeroes.filter(hero=>hero.isAlive && (selectedAbility.all || (selectedAbility.weakest ? hero.id===playerHeroes.filter(h=>h.isAlive).sort((a,b)=>(b.maxHp-b.currentHp)-(a.maxHp-a.currentHp))[0]?.id : cardTarget==='ally' && hero.id===activePlayerHeroId))).map(hero=>hero.id) : [];
+  const affectedRivals = cardCanPlay && selectedAbility?.damage && targetedRivalHero?.isAlive ? [targetedRivalHero.id] : [];
+  const effectSummary = selectedAbility ? [selectedAbility.damage&&`⚔ ${selectedAbility.damage} dano`,selectedAbility.heal&&`♥ +${selectedAbility.heal} vida`,selectedAbility.shield&&`🛡 +${selectedAbility.shield} escudo`,selectedAbility.attack&&`⚔ +${selectedAbility.attack} ATQ`,selectedAbility.energy&&`⚡ +${selectedAbility.energy} energia`,selectedAbility.draw&&`+${selectedAbility.draw} cartas`,selectedAbility.glory&&`+${selectedAbility.glory} PG`].filter(Boolean).join(' · ') : '';
   const canAttack = !gameOver && currentTurn==='player' && !!activePlayerHero?.isAlive && !activePlayerHero.hasAttacked && !!targetedRivalHero?.isAlive;
   const attackDamage = canAttack && targetedRivalHero ? Math.max(1,activePlayerHero.atk-Math.floor(targetedRivalHero.def/2))+(activePlayerHero.id==='p_rei_espadas'&&(targetedRivalHero.shield>0||targetedRivalHero.isDefending)?2:0) : 0;
   const forecastCardDamage = cardCanPlay && cardTarget==='enemy' && selectedCard ? abilityFor(selectedCard).damage||0 : 0;
@@ -785,18 +790,19 @@ export default function App() {
         <div className="battle-atmosphere" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div>
         <section className="arena-row enemy-row" aria-label="Campo rival">
           <div className="row-caption"><span>REINO ADVERSÁRIO</span><small>Arraste seu herói para atacar</small></div>
-          <div className="hero-row">{rivalHeroes.map(hero=><ArenaHero key={hero.id} hero={hero} targeted={hero.id===selectedRivalHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectRivalHero(hero)} onInspect={()=>setInspectingItem(hero)}/>)}</div>
+          <div className="hero-row">{rivalHeroes.map(hero=><div className={`arena-effect-target ${affectedRivals.includes(hero.id)?'will-hit':''}`} key={hero.id}><ArenaHero key={hero.id} hero={hero} targeted={hero.id===selectedRivalHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectRivalHero(hero)} onInspect={()=>setInspectingItem(hero)}/>{affectedRivals.includes(hero.id)&&<span className="arena-effect-marker">−{selectedAbility?.damage} VIDA</span>}</div>)}</div>
         </section>
         <div className={`battle-divider ${dragKind==='board'?'board-ready':''}`}><span className="pile">BARALHO <b>{deck.length}</b></span><p role="status">{dragKind ? dragKind==='enemy'?'SOLTE SOBRE UM RIVAL':dragKind==='ally'?'SOLTE SOBRE UM ALIADO':'SOLTE NO TABULEIRO' : 'ARENA DOS REINOS'}</p><span className="pile">DESCARTE <b>{discardPile.length}</b></span></div>
         <section className="arena-row player-row" aria-label="Seu campo">
           <div className="row-caption"><span>SUA CORTE</span><small>{activePlayerHero?.name}</small></div>
-          <div className="hero-row">{playerHeroes.map(hero=><ArenaHero key={hero.id} hero={hero} active={hero.id===activePlayerHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectPlayerHero(hero)} onInspect={()=>setInspectingItem(hero)} onStart={e=>startDrag(e,undefined,hero)}/>)}</div>
+          <div className="hero-row">{playerHeroes.map(hero=><div className={`arena-effect-target ${affectedAllies.includes(hero.id)?'will-buff':''}`} key={hero.id}><ArenaHero key={hero.id} hero={hero} active={hero.id===activePlayerHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectPlayerHero(hero)} onInspect={()=>setInspectingItem(hero)} onStart={e=>startDrag(e,undefined,hero)}/>{affectedAllies.includes(hero.id)&&<span className="arena-effect-marker">✦ EFEITO</span>}</div>)}</div>
         </section>
       </main>
       <section className="arena-hand" data-has-selection={!!selectedCard} aria-label="Cartas na mão">
         <div className="row-caption"><span>SUA MÃO · {playerHand.length}/5</span><small>Toque para escolher · arraste para jogar</small></div>
         <div className="hand-cards" data-count={playerHand.length}>{playerHand.map((card,index)=><ArenaHand key={card.id} card={card} index={index} count={playerHand.length} missingEnergy={Math.max(0,card.cost-playerEnergy)} selected={card.id===selectedCardId} affordable={playerEnergy>=card.cost} onSelect={()=>{setSelectedCardId(card.id);setHint(card.description);}} onInspect={()=>setInspectingItem(card)} onStart={e=>startDrag(e,card)}/>)}</div>
       </section>
+      {cardCanPlay && effectSummary && <div className="arena-effect-summary" role="status">{selectedAbility?.all?'TODOS OS ALIADOS · ':selectedAbility?.weakest?'ALIADO MAIS FERIDO · ':''}{effectSummary}</div>}
       {forecastDamage>0 && targetedRivalHero && <aside className="arena-damage-forecast" aria-label="Previsão de dano" role="status"><strong>⚔ PREVISÃO · {targetedRivalHero.name}</strong><span>🛡 −{forecastShield} escudo</span><span>♥ −{Math.min(forecastHp,targetedRivalHero.currentHp)} vida</span>{forecastGlory>0&&<em>+{forecastGlory} PG</em>}<small>{forecastCardDamage?'Carta selecionada':'Ataque do herói'} · estimativa</small></aside>}
       {selectedCard && <aside className={`arena-card-context ${cardCanPlay?'ready':'blocked'}`} aria-label="Carta selecionada" aria-live="polite"><img src={selectedCard.image} alt=""/><div className="arena-card-context-copy"><strong>{selectedCard.name}</strong><span>{selectedCard.description}</span><small>{cardInstruction}</small></div><button type="button" onClick={()=>setInspectingItem(selectedCard)} aria-label={`Ampliar ${selectedCard.name}`}>⤢</button><button type="button" onClick={()=>setSelectedCardId(null)} aria-label="Cancelar seleção">×</button></aside>}
       <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''}`} role="status"><span>{hint}</span></div>
