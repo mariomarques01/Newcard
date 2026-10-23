@@ -26,7 +26,7 @@ export function ArenaHand({card,selected,affordable,missingEnergy=0,index=0,coun
   card:ActionCard;selected:boolean;affordable:boolean;missingEnergy?:number;index?:number;count?:number;onSelect:()=>void;onInspect:()=>void;onStart:(e:PointerEvent)=>void;
 }) {
   const style={'--n':count,'--c':index-(count-1)/2,'--ov':count<=3?'0px':count===4?'10px':'18px'} as CSSProperties;
-  return <div id={`hand-card-${card.id}`} style={style} data-type={card.type} data-playable={affordable?'yes':'no'} data-selected={selected?'yes':'no'} className={`arena-hand-card ${selected?'selected':''} ${!affordable?'unaffordable':''} ${card.type==='joker'?'special-joker':card.rank==='A'?'special-ace':''}`}>
+  return <div id={`hand-card-${card.id}`} style={style} data-type={card.type} data-playable={affordable?'yes':'no'} data-selected={selected?'yes':'no'} data-suit={card.suit} className={`arena-hand-card ${selected?'selected':''} ${!affordable?'unaffordable':''} ${card.type==='joker'?'special-joker':card.rank==='A'?'special-ace':''}`}>
     <button className="hand-face" onClick={onSelect} onPointerDown={onStart} aria-pressed={selected} aria-label={`Selecionar ${card.name}, custo ${card.cost} de energia${affordable?', disponível para jogar':`, faltam ${missingEnergy} de energia`}`} >
       <img src={card.image} alt={card.name} draggable={false}/><b className="energy-cost">{card.cost}</b>
       {selected&&<span className="hand-selected-indicator" aria-hidden="true">✓</span>}
