@@ -36,6 +36,8 @@ const PROFILE_KEY = 'newcard-player-profile-v1';
 const CAMPAIGN_KEY = 'newcard-campaign-v1';
 const RELIC_KEY = 'newcard-campaign-relics-v1';
 const LOADOUT_KEY = 'newcard-relic-loadout-v1';
+const LEADER_KEY = 'newcard-team-leader-v1';
+const prepareHeroes = (relics:number[],leaderId:string):Hero[] => campaignPlayerHeroes(relics).map(hero=>hero.id===leaderId?{...hero,shield:hero.shield+2}:hero);
 const MAX_EQUIPPED_RELICS = 2;
 const RELIC_NAMES = ['Escudo da Fronteira','Coração das Sombras','Lâmina de Ferro','Coroa do Destino'];
 const campaignPlayerHeroes = (relics:number[]):Hero[] => INITIAL_PLAYER_HEROES.map(hero=>({
@@ -132,6 +134,11 @@ export default function App() {
     try { const v=JSON.parse(localStorage.getItem(LOADOUT_KEY)||'null'); return Array.isArray(v)?v.filter((n):n is number=>Number.isInteger(n)&&n>=1&&n<=3).slice(0,MAX_EQUIPPED_RELICS):[1,2]; }
     catch { return [1,2]; }
   });
+  const [leaderId,setLeaderId] = useState<string>(()=>{
+    try { const stored=localStorage.getItem(LEADER_KEY);return INITIAL_PLAYER_HEROES.some(h=>h.id===stored)?stored!:'p_rei_espadas'; }
+    catch { return 'p_rei_espadas'; }
+  });
+  const [showPreparation,setShowPreparation] = useState(false);
   const [showCampaign,setShowCampaign] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
   const [profile,setProfile] = useState<PlayerProfile>(()=>{
@@ -700,7 +707,7 @@ export default function App() {
     setFloatingNumbers([]);
     clearDrag();
     sound.playClick();
-    setPlayerHeroes(campaignPlayerHeroes(equippedRelics.filter(id=>relics.includes(id))));
+    setPlayerHeroes(prepareHeroes(equippedRelics.filter(id=>relics.includes(id)),leaderId));
     setRivalHeroes(campaignRivals(nextChapter));
     setChapter(nextChapter);
     setActivePlayerHeroId('p_rei_espadas');
@@ -738,6 +745,7 @@ export default function App() {
       <header className="arena-header">
         <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
         <nav aria-label="Menu do jogo">
+          <button onClick={()=>setShowPreparation(true)} aria-label="Preparação de batalha">⚔</button>
           <button onClick={()=>setShowCampaign(true)} aria-label="Campanha">⚑</button>
           <button onClick={()=>setShowProfile(true)} aria-label="Perfil e estatísticas">★</button>
           <button onClick={()=>setShowRules(true)} aria-label="Regras">?</button>
@@ -782,6 +790,7 @@ export default function App() {
       {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragValid}/>}
       {dragKind && dragCurrent && <div className={`drag-drop-feedback ${dragValid?'valid':'invalid'}`} role="status" aria-live="off">{dragValid?'✓ SOLTE PARA EXECUTAR':dragKind==='enemy'?'MIRE EM UM RIVAL VIVO':dragKind==='ally'?'MIRE EM UM ALIADO VIVO':'MIRE NO TABULEIRO'}</div>}
       {draggingCard && dragCurrent && <div className="drag-card-ghost" style={{left:dragCurrent.x,top:dragCurrent.y}}><img src={draggingCard.image} alt=""/><span>{draggingCard.name}</span></div>}
+      {showPreparation && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Preparação de batalha"><div><button className="close-log" onClick={()=>setShowPreparation(false)}>Fechar ×</button><h2>⚔ Preparação de Batalha</h2><p>Escolha o comandante da próxima batalha. Ele recebe +2 de escudo inicial. Todos os heróis continuam participando, preservando as regras do jogo.</p>{INITIAL_PLAYER_HEROES.map(hero=><p key={hero.id}><button aria-pressed={leaderId===hero.id} onClick={()=>{setLeaderId(hero.id);try{localStorage.setItem(LEADER_KEY,hero.id);}catch{/* Preferences optional. */}}}>{leaderId===hero.id?'👑 Comandante':'○ Selecionar'} — {hero.name} · ATQ {hero.atk} · VIDA {hero.maxHp}</button></p>)}<p>Relíquias equipadas: {equippedRelics.filter(id=>relics.includes(id)).map(id=>RELIC_NAMES[id-1]).join(', ')||'Nenhuma'}</p><button onClick={()=>{if(handleRestartGame()){setShowPreparation(false);}}}>Iniciar batalha com esta formação</button><small>O comandante escolhido será aplicado somente à próxima partida.</small></div></div>}
       {showCampaign && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Campanha"><div><button className="close-log" onClick={()=>setShowCampaign(false)}>Fechar ×</button><h2>⚑ Campanha dos Quatro Reinos</h2><p>Conquiste cada capítulo para desbloquear o próximo. Cada reino tem um chefe com resistência própria; os chefes dos capítulos 3 e 4 também causam +1 de dano quando atacam.</p>{CAMPAIGN_CHAPTERS.map((name,index)=><p key={name}><button disabled={index+1>unlockedChapter} onClick={()=>{if(handleRestartGame(index+1))setShowCampaign(false);}}>{index+1>unlockedChapter?'🔒':'⚔'} Capítulo {index+1}: {name}{chapter===index+1?' · ATUAL':''}</button><small>👑 {CAMPAIGN_BOSSES[index]} — {CAMPAIGN_BOSS_SKILLS[index]}</small></p>)}<small>Progresso salvo neste navegador.</small><h3>Relíquias permanentes</h3><p>Equipe até {MAX_EQUIPPED_RELICS} relíquias para a próxima batalha. Alterações não afetam a partida atual.</p>{RELIC_NAMES.map((name,index)=><p key={name}>{index<3?<button disabled={!relics.includes(index+1)||(!equippedRelics.includes(index+1)&&equippedRelics.filter(id=>relics.includes(id)).length>=MAX_EQUIPPED_RELICS)} onClick={()=>toggleRelic(index+1)}>{!relics.includes(index+1)?'🔒 Bloqueada':equippedRelics.includes(index+1)?'✓ Equipada':'○ Equipar'} {name}</button>:<b>{relics.includes(4)?'🏆':'🔒'} {name}</b>}<small>{['+2 escudo inicial em todos os heróis','+2 vida máxima em todos os heróis','+1 ataque em todos os heróis','Relíquia lendária de conclusão'][index]}</small></p>)}</div></div>}
       {showProfile && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Perfil do jogador"><div><button className="close-log" onClick={()=>setShowProfile(false)}>Fechar ×</button><h2>★ Crônicas do Reino</h2><p>Partidas concluídas: <b>{profile.wins+profile.losses}</b></p><p>Vitórias: <b>{profile.wins}</b> · Derrotas: <b>{profile.losses}</b></p><p>Taxa de vitória: <b>{profile.wins+profile.losses?Math.round(profile.wins/(profile.wins+profile.losses)*100):0}%</b></p><p>Maior rodada alcançada: <b>{profile.bestRound}</b></p><p>Recorde de glória: <b>{profile.bestPg} PG</b></p><h3>Conquistas</h3><p>{profile.wins>=1?'🏆':'🔒'} Primeira vitória</p><p>{profile.wins>=5?'🏆':'🔒'} Veterano — 5 vitórias</p><p>{profile.wins>=10?'🏆':'🔒'} Lenda — 10 vitórias</p><p>{profile.bestPg>=12?'🏆':'🔒'} Glória máxima — 12 PG</p><small>Estatísticas salvas somente neste navegador.</small></div></div>}
       {showLog && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Histórico da batalha"><div><button className="close-log" onClick={()=>setShowLog(false)}>Fechar ×</button><h2>Registro de batalha</h2>{combatLogs.map(log=><p key={log.id}><b>{log.speaker}</b> {log.text}</p>)}</div></div>}
