@@ -1,0 +1,20 @@
+/* V43: combat outcomes immediately readable, while keeping the original cards. */
+.arena-hero.protected:not(.fallen) .hero-barrier{filter:drop-shadow(0 0 5px #64d9ffbb)}
+.arena-hero.protected.hero-under-attack:not(.fallen) .hero-barrier{animation:shield-absorb-v43 .65s ease-out both}
+.arena-hero.protected.hero-under-attack:not(.fallen) .hero-face::after{
+ content:"";position:absolute;inset:4px;z-index:4;border:3px solid #b1f2ff;border-radius:9px;
+ box-shadow:inset 0 0 18px #57ccffb3,0 0 19px #70dcffbd;pointer-events:none;
+ animation:shield-ring-v43 .65s ease-out both
+}
+.arena-hero.fallen .hero-condition{
+ z-index:9!important;opacity:1!important;background:#50152a!important;border:1px solid #ffb1bb!important;
+ color:#fff3f0!important;font-weight:900!important;text-shadow:0 1px 3px #000;
+}
+.arena-hero.fallen .hero-hp{opacity:.72}
+.arena-hero.fallen .hero-info{opacity:.85}
+.arena-hero.fallen .hero-face{box-shadow:inset 0 0 0 2px #ff637955}
+.arena-hero.hero-under-attack:not(.fallen) .hero-health{animation:health-flash-v43 .55s ease-out}
+@keyframes shield-absorb-v43{0%{filter:drop-shadow(0 0 2px #6bdcff);transform:scale(1)}30%{filter:drop-shadow(0 0 17px #b9f7ff);transform:scale(1.3)}100%{filter:drop-shadow(0 0 5px #64d9ffbb);transform:scale(1)}}
+@keyframes shield-ring-v43{0%{opacity:0;transform:scale(.92)}20%{opacity:1;transform:scale(1.03)}100%{opacity:0;transform:scale(1.09)}}
+@keyframes health-flash-v43{0%,100%{filter:none}28%{filter:brightness(2.4)}}
+@media(prefers-reduced-motion:reduce){.arena-hero.protected.hero-under-attack:not(.fallen) .hero-barrier,.arena-hero.protected.hero-under-attack:not(.fallen) .hero-face::after,.arena-hero.hero-under-attack:not(.fallen) .hero-health{animation:none!important}}
