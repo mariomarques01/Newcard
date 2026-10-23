@@ -30,6 +30,7 @@ import './arena-hand-v17.css';
 import './arena-iphone-layout-v18.css';
 import './arena-drag-feedback-v20.css';
 import './arena-clarity-v29.css';
+import './arena-card-context-v30.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
@@ -740,6 +741,9 @@ export default function App() {
   const dragKind = draggingCard ? targetFor(draggingCard) : draggingHero ? 'enemy' : null;
   const dragValid = !!dragCurrent && (dragKind==='board' ? !!document.elementFromPoint(dragCurrent.x,dragCurrent.y)?.closest('[data-battlefield]') : [...playerHeroes,...rivalHeroes].some(h=>h.id===hoveredHeroId&&h.isAlive&&(dragKind==='enemy'?h.id.startsWith('r_'):dragKind==='ally'&&h.id.startsWith('p_'))));
   const selectionTarget = !gameOver && currentTurn === 'player' && selectedCard && playerEnergy >= selectedCard.cost ? targetFor(selectedCard) : null;
+  const cardTarget = selectedCard ? targetFor(selectedCard) : null;
+  const cardCanPlay = !!selectedCard && !gameOver && currentTurn==='player' && playerEnergy>=selectedCard.cost;
+  const cardInstruction = !selectedCard ? '' : gameOver ? 'A partida terminou' : currentTurn!=='player' ? 'Aguarde seu turno' : playerEnergy<selectedCard.cost ? `Faltam ${selectedCard.cost-playerEnergy} de energia` : cardTarget==='enemy' ? 'Selecione um rival vivo e toque em JOGAR' : cardTarget==='ally' ? 'Selecione um aliado vivo e toque em JOGAR' : 'Toque em JOGAR para ativar o efeito';
   const validHero = (hero: Hero) => !!dragKind && hero.isAlive && (dragKind==='enemy' ? hero.id.startsWith('r_') : dragKind==='ally' && hero.id.startsWith('p_'));
   return (
     <div className={`mobile-game ${screenShake ? 'animate-screen-shake' : ''}`} data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} data-drag-state={dragKind?(dragValid?'valid':'invalid'):'idle'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
@@ -785,6 +789,7 @@ export default function App() {
         <div className="row-caption"><span>SUA MÃO · {playerHand.length}/5</span><small>Toque para escolher · arraste para jogar</small></div>
         <div className="hand-cards" data-count={playerHand.length}>{playerHand.map((card,index)=><ArenaHand key={card.id} card={card} index={index} count={playerHand.length} missingEnergy={Math.max(0,card.cost-playerEnergy)} selected={card.id===selectedCardId} affordable={playerEnergy>=card.cost} onSelect={()=>{setSelectedCardId(card.id);setHint(card.description);}} onInspect={()=>setInspectingItem(card)} onStart={e=>startDrag(e,card)}/>)}</div>
       </section>
+      {selectedCard && <aside className={`arena-card-context ${cardCanPlay?'ready':'blocked'}`} aria-label="Carta selecionada" aria-live="polite"><img src={selectedCard.image} alt=""/><div className="arena-card-context-copy"><strong>{selectedCard.name}</strong><span>{selectedCard.description}</span><small>{cardInstruction}</small></div><button type="button" onClick={()=>setInspectingItem(selectedCard)} aria-label={`Ampliar ${selectedCard.name}`}>⤢</button><button type="button" onClick={()=>setSelectedCardId(null)} aria-label="Cancelar seleção">×</button></aside>}
       <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''}`} role="status"><span>{hint}</span></div>
       <div className="arena-actions"><ActionBar selectedCard={selectedCard} activeHero={activePlayerHero} targetedRival={targetedRivalHero} playerEnergy={playerEnergy} currentTurn={gameOver?'rival':currentTurn} onUseCard={handleUseCard} onAttack={handleAttack} onDefend={handleDefend} onUseAce={handleUseAce} onEndTurn={handleEndTurn}/></div>
       <CombatParticleCanvas ref={particleCanvasRef}/><FloatingNumberOverlay items={floatingNumbers}/>
