@@ -6,6 +6,7 @@ import './combat-target-focus-v45.css';
 import {cueCharacter,attackFlavor} from '../game/characterMotion';
 import {BattleActor} from './BattleActor';
 import {spellPresentation} from '../game/spellPresentation';
+import {CHARACTER_PERSONALITY} from '../game/characterMotion';
 import {SpellScene} from './SpellScene';
 import type {ActionCard,Hero} from '../types/game';
 
@@ -66,9 +67,11 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         const suit=source?.dataset.suit as Hero['suit']|undefined;
         const rank=source?.dataset.rank as Hero['rank']|undefined;
         const flavor=suit&&rank?attackFlavor({suit,rank}):undefined;
-        emit(from,to,type,label,true,flavor,undefined,actorFor(sourceId));
+        const royal=source?.dataset.heroId?CHARACTER_PERSONALITY[source.dataset.heroId]:undefined;
+        const combatLabel=label||(type==='shield'?royal?.guard:type==='slash'||type==='pierce'?royal?.attack:undefined);
+        emit(from,to,type,combatLabel,true,flavor,undefined,actorFor(sourceId));
         cueCharacter(sourceId,type==='heal'||type==='arcane'?'cast':'attack');
-        if(type==='slash'||type==='pierce'){
+        if(type==='slash'||type==='pierce'||type==='arcane'||type==='gold_blast'){
           const timer=setTimeout(()=>{cueCharacter(targetId,'hurt');timers.current.delete(timer);},880);timers.current.add(timer);
         }
       },
