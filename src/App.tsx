@@ -20,6 +20,7 @@ import './arena-buttons-v5.css';
 import './arena-status-v6.css';
 import './arena-premium-v7.css';
 import './arena-cinematics-v8.css';
+import './arena-damage-v9.css';
 
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
