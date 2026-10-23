@@ -1,0 +1,28 @@
+/* V55: premium mobile readability and distinct suit magic presentation.
+   Presentation-only: no gameplay math, hitboxes or saved state are changed. */
+:root { --nc-gold:#eac37a; --nc-gold-bright:#fff1c2; --nc-ruby:#d95e63; --nc-arcane:#a995ff; }
+@media (orientation:portrait) and (max-width:600px) {
+  .arena-hero .hero-face { isolation:isolate; transition:filter .22s ease,box-shadow .22s ease,border-color .22s ease; }
+  .arena-hero.active:not(.fallen) .hero-face {
+    filter:drop-shadow(0 0 7px rgba(255,216,146,.32));
+  }
+  .arena-hero.valid-target:not(.fallen) .hero-face {
+    outline:2px solid rgba(255,224,158,.65); outline-offset:2px;
+    box-shadow:0 0 0 3px rgba(88,47,22,.35),0 0 18px rgba(255,199,103,.35);
+  }
+  .arena-hero.drop-target:not(.fallen) .hero-face {
+    outline-color:#fff1bf; box-shadow:0 0 0 3px #9d5c3a,0 0 23px #ffdf82a8;
+  }
+  .arena-hero[data-suit="copas"].protected .hero-face { filter:drop-shadow(0 0 8px rgba(104,252,171,.25)); }
+  .arena-hero[data-suit="espadas"].protected .hero-face { filter:drop-shadow(0 0 8px rgba(108,192,255,.28)); }
+  .arena-hand-card.selected .hand-face { filter:drop-shadow(0 0 9px rgba(255,213,123,.42)); }
+  .arena-hand-card.unaffordable .hand-face { filter:saturate(.62) brightness(.8); }
+  .arena-hand-card:not(.unaffordable) .energy-cost { text-shadow:0 1px 2px #101321,0 0 7px #d8b1ff; }
+  .hero-hp,.hero-stats,.hand-name,.hand-lack { text-shadow:0 1px 3px rgba(0,0,0,.95); }
+}
+@media (hover:hover) and (pointer:fine) {
+  .arena-hand-card:not(.unaffordable):not(.selected):hover .hand-face { filter:brightness(1.11) drop-shadow(0 0 9px rgba(255,210,135,.22)); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .arena-hero .hero-face,.arena-hand-card .hand-face { transition:none!important; }
+}
