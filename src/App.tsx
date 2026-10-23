@@ -24,6 +24,7 @@ import './arena-damage-v9.css';
 import './arena-performance-v10.css';
 import './arena-selection-v13.css';
 import './arena-actions-v14.css';
+import './arena-turn-energy-v15.css';
 
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
