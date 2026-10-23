@@ -1,0 +1,8 @@
+/* V31 — Compact non-interactive damage forecast inside battle divider region. */
+.arena-damage-forecast{position:absolute;z-index:21;top:calc(env(safe-area-inset-top) + 104px);left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 20px);display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;padding:6px 10px;border:1px solid #f0c47cbb;border-radius:10px;background:#071421f2;box-shadow:0 5px 22px #000a;color:#f5e6c7;pointer-events:none;font:800 10px/1.25 'Plus Jakarta Sans',sans-serif}
+.arena-damage-forecast strong{color:#ffe4a1;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arena-damage-forecast span{white-space:nowrap}
+.arena-damage-forecast em{font-style:normal;color:#8ff2bc}
+.arena-damage-forecast small{color:#aebdc7;font-size:9px;font-weight:600}
+@media(orientation:portrait) and (max-width:390px){.arena-damage-forecast{gap:5px;padding:5px 7px;font-size:9px}.arena-damage-forecast strong{max-width:100px}.arena-damage-forecast small{display:none}}
+@media(orientation:portrait) and (max-height:720px){.arena-damage-forecast{top:calc(env(safe-area-inset-top) + 88px)}}
