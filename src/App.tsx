@@ -38,6 +38,7 @@ import './arena-hand-grid-fix-v34.css';
 import './arena-hand-fit-v36.css';
 import './arena-inline-selection-v37.css';
 import './arena-hand-states-v38.css';
+import './arena-turn-clarity-v39.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
@@ -780,13 +781,13 @@ export default function App() {
       </header>
       <div className="arena-score" aria-label="Placar">
         <div className="score-side score-player" data-energy={playerEnergy===0?'empty':playerEnergy<=2?'low':'ready'}>
-          <div className="score-head"><span>VOCÊ</span><strong>{playerPg}<small>/12 PG</small></strong></div>
+          <div className="score-head"><span>{!gameOver&&currentTurn==='player'?'▶ VOCÊ':'VOCÊ'}</span><strong>{playerPg}<small>/12 PG</small></strong></div>
           <div className="pg-track" role="img" aria-label={`Glória ${playerPg} de 12`}>{Array.from({length:12},(_,i)=><i key={i} className={i<playerPg?'on':''}/>)}</div>
           <div className="energy-track" role="img" aria-label={`Energia ${playerEnergy} de ${maxEnergy}`}>{Array.from({length:maxEnergy},(_,i)=><i key={i} className={i<playerEnergy?'on':''}/>)}<b>{playerEnergy}/{maxEnergy}</b></div>
         </div>
-        <div className="score-turn" role="status" aria-label={`Rodada ${round}. ${gameOver ? 'Partida encerrada' : currentTurn === 'player' ? 'Sua vez de jogar' : 'Vez do adversário'}`}><small>RODADA</small><em>{round}</em><strong>{gameOver?'FIM':currentTurn==='player'?'SEU TURNO':'RIVAL'}</strong></div>
+        <div className="score-turn" role="status" aria-label={`Rodada ${round}. ${gameOver ? 'Partida encerrada' : currentTurn === 'player' ? 'Sua vez de jogar' : 'Vez do adversário'}`}><small>RODADA {round}</small><span className="turn-owner-symbol" aria-hidden="true">{gameOver?'◆':currentTurn==='player'?'✓':'⚔'}</span><strong>{gameOver?'FIM':currentTurn==='player'?'SUA VEZ':'VEZ RIVAL'}</strong></div>
         <div className="score-side score-rival" data-energy={rivalEnergy===0?'empty':rivalEnergy<=2?'low':'ready'}>
-          <div className="score-head"><span>RIVAL</span><strong>{rivalPg}<small>/12 PG</small></strong></div>
+          <div className="score-head"><span>{!gameOver&&currentTurn==='rival'?'▶ RIVAL':'RIVAL'}</span><strong>{rivalPg}<small>/12 PG</small></strong></div>
           <div className="pg-track" role="img" aria-label={`Glória do rival ${rivalPg} de 12`}>{Array.from({length:12},(_,i)=><i key={i} className={i<rivalPg?'on':''}/>)}</div>
           <div className="energy-track" role="img" aria-label={`Energia do rival ${rivalEnergy} de ${maxEnergy}`}>{Array.from({length:maxEnergy},(_,i)=><i key={i} className={i<rivalEnergy?'on':''}/>)}<b>{rivalEnergy}/{maxEnergy}</b></div>
         </div>
