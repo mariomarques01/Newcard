@@ -1,0 +1,45 @@
+/* Premium clarity V7 — reduce visual clutter while preserving mechanics */
+.arena-hero.protected .hero-barrier{
+ inset:14px 5px 27px;
+ border:1.5px solid #a6f4ffad;
+ border-radius:15px;
+ background:linear-gradient(115deg,#b7f5ff14,transparent 32%,#56caff0c 75%,transparent);
+ box-shadow:inset 0 0 10px #61d8ff33,0 0 9px #4ad2ff44;
+ backdrop-filter:none;
+ animation:premium-shield-outline 2.8s ease-in-out infinite;
+}
+.arena-hero.protected .hero-barrier span{
+ right:4px;bottom:3px;font-size:14px;opacity:.8;
+ text-shadow:0 0 5px #16bfff;
+}
+.arena-hero.protected .hero-face img{filter:brightness(1.03) saturate(1.07)}
+.arena-hero.protected .shield-stat{
+ border-color:#9ceaff;
+ box-shadow:0 0 8px #38d6ff66;
+}
+.arena-hero .hero-face::after{background:linear-gradient(180deg,transparent 0%,transparent 48%,#06101b22 66%,#0307129e 100%)}
+.arena-hand{z-index:2}
+.hand-cards{padding-top:3px;padding-bottom:6px;align-items:flex-end}
+.arena-hand-card{box-shadow:0 0 0 1px #261d1a,0 5px 11px #000b;filter:none}
+.arena-hand-card.selected{transform:translateY(-5px) scale(1.025);z-index:5;box-shadow:0 0 0 2px #b9faff,0 0 13px #48d9ff66,0 7px 13px #000a}
+.arena-hint{z-index:3;background:linear-gradient(90deg,#1a2a3bf5,#111c2af5);border:1px solid #cba86570;border-left:3px solid #e4c181;color:#f4e7c9;font-size:11px;line-height:1.2}
+.arena-hint span{overflow:hidden;text-overflow:ellipsis}
+.arena-actions button{box-shadow:inset 0 1px #ffffff29,0 3px 9px #0008!important}
+.arena-actions button:not(:disabled):active{filter:brightness(1.2)}
+.arena-actions button>span{font-weight:700!important;letter-spacing:.1px}
+.arena-actions button:disabled{opacity:.38;filter:grayscale(.7)}
+@keyframes premium-shield-outline{
+ 0%,100%{border-color:#a6f4ff99;box-shadow:inset 0 0 10px #61d8ff2a,0 0 7px #4ad2ff3d}
+ 50%{border-color:#b9faffd9;box-shadow:inset 0 0 13px #61d8ff44,0 0 12px #4ad2ff66}
+}
+@media(orientation:portrait) and (max-width:600px){
+ .mobile-game{grid-template-rows:34px 64px minmax(0,1fr) clamp(120px,18dvh,156px) 34px 76px;gap:4px}
+ .arena-hint{padding:3px 8px}
+ .arena-hand-card.selected{transform:translateY(-4px) scale(1.02)}
+ .arena-actions button>span{font-size:9px!important;line-height:1.15!important}
+}
+@media(orientation:portrait) and (max-height:720px){
+ .mobile-game{grid-template-rows:30px 55px minmax(0,1fr) 106px 28px 67px;gap:3px}
+ .arena-hint{font-size:9.5px}
+}
+@media(prefers-reduced-motion:reduce){.arena-hero.protected .hero-barrier{animation:none}}
