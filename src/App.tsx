@@ -43,6 +43,7 @@ import './arena-hand-vertical-fit-v40.css';
 import './arena-original-hand-v41.css';
 import './arena-combat-defeat-v42.css';
 import './arena-combat-readability-v43.css';
+import './arena-combat-outcomes-v44.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
@@ -280,6 +281,17 @@ export default function App() {
     }, 1200);
   };
 
+  // Show the actual shield/HP outcome at the card that received the hit.
+  const showCombatOutcome = (heroId: string, shieldLost: number, hpLost: number, defeated: boolean) => {
+    const rect = document.getElementById(`hero-card-${heroId}`)?.getBoundingClientRect();
+    if (!rect) return;
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    if (shieldLost > 0) addFloatingNumber(x, y - 20, `⛨ -${shieldLost} ESCUDO`, 'shield');
+    if (hpLost > 0) addFloatingNumber(x, y + (shieldLost > 0 ? 20 : 0), `♥ -${hpLost} VIDA`, hpLost >= 3 ? 'crit' : 'damage');
+    if (defeated) addFloatingNumber(x, y + 40, 'DERROTADO!', 'crit');
+  };
+
   // Helper to trigger screen shake
   const triggerScreenShake = () => {
     setScreenShake(true);
@@ -463,7 +475,7 @@ export default function App() {
     const newPlayerPg = Math.min(12, playerPg + gainedPg);
 
     // Floating damage numbers
-    addFloatingNumber(window.innerWidth / 2, 200, `-${damage} DANO`, hpDmg >= 3 ? 'crit' : 'damage');
+    showCombatOutcome(target.id, shieldDmg, Math.min(target.currentHp, hpDmg), isDead);
     if (gainedPg > 0) {
       setTimeout(() => {
         addFloatingNumber(window.innerWidth / 2, 140, `+${gainedPg} PG`, 'pg');
@@ -517,7 +529,8 @@ export default function App() {
       return h;
     });
 
-    addFloatingNumber(window.innerWidth / 2, window.innerHeight - 250, '+3 ESCUDO', 'shield');
+    const defendRect = document.getElementById(`hero-card-${activePlayerHero.id}`)?.getBoundingClientRect();
+    if (defendRect) addFloatingNumber(defendRect.left + defendRect.width/2, defendRect.top + defendRect.height/2, '+3 ESCUDO', 'shield');
 
     addLog(
       activePlayerHero.name,
@@ -640,6 +653,7 @@ export default function App() {
       const nextRivals=rivalHeroes.map(h=>({...h,isDefending:false,def:h.def-(h.isDefending?1:0),shield:h.shield+(h.id===attacker.id&&h.id==='r_rei_ouros'?1:0)}));
       const pg=Math.min(12,rivalPg+gained);
       setPlayerHeroes(nextPlayers);setRivalHeroes(nextRivals);setRivalPg(pg);
+      showCombatOutcome(target.id, absorbed, Math.min(target.currentHp, damage-absorbed), hp===0);
       sound.playAttack();triggerHeroDamageHit(target.id);triggerScreenShake();
       particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${target.id}`,'slash');
       if(absorbed>0) particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield',`BLOQUEOU ${absorbed}`);
