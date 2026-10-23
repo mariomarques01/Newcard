@@ -1,0 +1,24 @@
+/* V8: turn and match outcome cinematic polish. No gameplay modifications. */
+.mobile-game[data-turn="player"] .score-turn{
+ border-color:#7bffd2;box-shadow:0 0 0 1px #8dffd055,0 0 20px #40e7a355,inset 0 0 18px #51ed9a1c;
+}
+.mobile-game[data-turn="rival"] .score-turn{
+ border-color:#ff9ab0;box-shadow:0 0 0 1px #ff879c55,0 0 20px #f64c7455,inset 0 0 18px #f64c741c;
+}
+.score-turn{position:relative;overflow:hidden;isolation:isolate}
+.score-turn::after{content:"";position:absolute;inset:-100% -80%;background:linear-gradient(110deg,transparent 38%,#ffffff22 49%,transparent 60%);transform:translateX(-85%) rotate(12deg);pointer-events:none;animation:royal-turn-sweep 5s ease-in-out infinite}
+.mobile-game[data-turn="rival"] .score-turn::after{background:linear-gradient(110deg,transparent 38%,#ffbac622 49%,transparent 60%)}
+.royal-result{overflow:hidden;isolation:isolate}
+.royal-result::before{content:"";position:absolute;inset:-35%;pointer-events:none;z-index:-1;background:conic-gradient(from 0deg,transparent,#f9d47a19,transparent,#e2a94a14,transparent);animation:royal-aura-spin 16s linear infinite}
+.royal-result[data-result="defeat"]::before{background:conic-gradient(from 0deg,transparent,#ff57711b,transparent,#ff364919,transparent)}
+.royal-result-panel{position:relative;overflow:hidden;animation:royal-result-arrive .65s cubic-bezier(.16,1,.3,1) both}
+.royal-result-panel::after{content:"";position:absolute;inset:2px;border:1px solid #ffffff26;border-radius:14px;pointer-events:none}
+.royal-result-emblem{animation:royal-emblem-rise .9s cubic-bezier(.2,1.3,.3,1) both}
+.royal-result-title{text-shadow:0 2px 9px #000,0 0 22px #e7ba6355}
+.royal-result[data-result="defeat"] .royal-result-title{text-shadow:0 2px 9px #000,0 0 22px #e5486655}
+.royal-result-action{min-height:48px;touch-action:manipulation}
+@keyframes royal-turn-sweep{0%,70%,100%{transform:translateX(-85%) rotate(12deg)}84%{transform:translateX(85%) rotate(12deg)}}
+@keyframes royal-aura-spin{to{transform:rotate(360deg)}}
+@keyframes royal-result-arrive{from{opacity:0;transform:translateY(25px) scale(.93)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes royal-emblem-rise{from{opacity:0;transform:translateY(20px) scale(.55) rotate(-20deg)}to{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
+@media(prefers-reduced-motion:reduce){.score-turn::after,.royal-result::before,.royal-result-panel,.royal-result-emblem{animation:none!important}}
