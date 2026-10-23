@@ -17,6 +17,7 @@ import './arena.css';
 import './arena-royal-v3.css';
 import './arena-mobile-v4.css';
 import './arena-buttons-v5.css';
+import './arena-status-v6.css';
 
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
