@@ -553,7 +553,7 @@ export default function App() {
   const dragKind = draggingCard ? targetFor(draggingCard) : draggingHero ? 'enemy' : null;
   const validHero = (hero: Hero) => !!dragKind && hero.isAlive && (dragKind==='enemy' ? hero.id.startsWith('r_') : dragKind==='ally' && hero.id.startsWith('p_'));
   return (
-    <div className={`mobile-game ${screenShake ? 'animate-screen-shake' : ''}`} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
+    <div className={`mobile-game ${screenShake ? 'animate-screen-shake' : ''}`} data-turn={gameOver?'over':currentTurn} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
       <header className="arena-header">
         <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
         <nav aria-label="Menu do jogo">
@@ -564,10 +564,18 @@ export default function App() {
           <button onClick={handleRestartGame} aria-label="Nova partida">↻</button>
         </nav>
       </header>
-      <div className="arena-score">
-        <div className="score-player"><span>VOCÊ</span><strong>{playerPg}<small>/12 PG</small></strong><b>⚡ {playerEnergy}/{maxEnergy}</b></div>
-        <div className="score-turn"><small>RODADA {round}</small><strong>{gameOver?'FIM DE JOGO':currentTurn==='player'?'SEU TURNO':'TURNO RIVAL'}</strong></div>
-        <div className="score-rival"><span>RIVAL</span><strong>{rivalPg}<small>/12 PG</small></strong><b>⚡ {rivalEnergy}</b></div>
+      <div className="arena-score" aria-label="Placar">
+        <div className="score-side score-player">
+          <div className="score-head"><span>VOCÊ</span><strong>{playerPg}<small>/12 PG</small></strong></div>
+          <div className="pg-track" role="img" aria-label={`Glória ${playerPg} de 12`}>{Array.from({length:12},(_,i)=><i key={i} className={i<playerPg?'on':''}/>)}</div>
+          <div className="energy-track" role="img" aria-label={`Energia ${playerEnergy} de ${maxEnergy}`}>{Array.from({length:maxEnergy},(_,i)=><i key={i} className={i<playerEnergy?'on':''}/>)}<b>{playerEnergy}/{maxEnergy}</b></div>
+        </div>
+        <div className="score-turn"><small>RODADA</small><em>{round}</em><strong>{gameOver?'FIM':currentTurn==='player'?'SEU TURNO':'RIVAL'}</strong></div>
+        <div className="score-side score-rival">
+          <div className="score-head"><span>RIVAL</span><strong>{rivalPg}<small>/12 PG</small></strong></div>
+          <div className="pg-track" role="img" aria-label={`Glória do rival ${rivalPg} de 12`}>{Array.from({length:12},(_,i)=><i key={i} className={i<rivalPg?'on':''}/>)}</div>
+          <div className="energy-track" role="img" aria-label={`Energia do rival ${rivalEnergy} de ${maxEnergy}`}>{Array.from({length:maxEnergy},(_,i)=><i key={i} className={i<rivalEnergy?'on':''}/>)}<b>{rivalEnergy}/{maxEnergy}</b></div>
+        </div>
       </div>
       <main className="arena-board" data-battlefield="true">
         <div className="battle-atmosphere" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div>
@@ -575,17 +583,17 @@ export default function App() {
           <div className="row-caption"><span>REINO ADVERSÁRIO</span><small>Arraste seu herói para atacar</small></div>
           <div className="hero-row">{rivalHeroes.map(hero=><ArenaHero key={hero.id} hero={hero} targeted={hero.id===selectedRivalHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectRivalHero(hero)} onInspect={()=>setInspectingItem(hero)}/>)}</div>
         </section>
-        <div className={`battle-divider ${dragKind==='board'?'board-ready':''}`}><span>✦</span><p role="status">{dragKind ? dragKind==='enemy'?'SOLTE SOBRE UM RIVAL':dragKind==='ally'?'SOLTE SOBRE UM ALIADO':'SOLTE NO TABULEIRO' : 'ARENA DOS REINOS'}</p><span>✦</span></div>
+        <div className={`battle-divider ${dragKind==='board'?'board-ready':''}`}><span className="pile">BARALHO <b>{deck.length}</b></span><p role="status">{dragKind ? dragKind==='enemy'?'SOLTE SOBRE UM RIVAL':dragKind==='ally'?'SOLTE SOBRE UM ALIADO':'SOLTE NO TABULEIRO' : 'ARENA DOS REINOS'}</p><span className="pile">DESCARTE <b>{discardPile.length}</b></span></div>
         <section className="arena-row player-row" aria-label="Seu campo">
           <div className="row-caption"><span>SUA CORTE</span><small>{activePlayerHero?.name}</small></div>
           <div className="hero-row">{playerHeroes.map(hero=><ArenaHero key={hero.id} hero={hero} active={hero.id===activePlayerHeroId} valid={validHero(hero)} hovered={hoveredHeroId===hero.id} hit={hitHeroId===hero.id} onSelect={()=>handleSelectPlayerHero(hero)} onInspect={()=>setInspectingItem(hero)} onStart={e=>startDrag(e,undefined,hero)}/>)}</div>
         </section>
       </main>
       <section className="arena-hand" aria-label="Cartas na mão">
-        <div className="row-caption"><span>SUA MÃO · {playerHand.length}/5</span><small>BARALHO {deck.length} · DESCARTE {discardPile.length}</small></div>
-        <div className="hand-cards">{playerHand.map(card=><ArenaHand key={card.id} card={card} selected={card.id===selectedCardId} affordable={playerEnergy>=card.cost} onSelect={()=>{setSelectedCardId(card.id);setHint(card.description);}} onInspect={()=>setInspectingItem(card)} onStart={e=>startDrag(e,card)}/>)}</div>
+        <div className="row-caption"><span>SUA MÃO · {playerHand.length}/5</span><small>Toque para escolher · arraste para jogar</small></div>
+        <div className="hand-cards" data-count={playerHand.length}>{playerHand.map((card,index)=><ArenaHand key={card.id} card={card} index={index} count={playerHand.length} missingEnergy={Math.max(0,card.cost-playerEnergy)} selected={card.id===selectedCardId} affordable={playerEnergy>=card.cost} onSelect={()=>{setSelectedCardId(card.id);setHint(card.description);}} onInspect={()=>setInspectingItem(card)} onStart={e=>startDrag(e,card)}/>)}</div>
       </section>
-      <div className="arena-hint" role="status">{hint}</div>
+      <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''}`} role="status"><span>{hint}</span></div>
       <div className="arena-actions"><ActionBar selectedCard={selectedCard} activeHero={activePlayerHero} targetedRival={targetedRivalHero} playerEnergy={playerEnergy} currentTurn={gameOver?'rival':currentTurn} onUseCard={handleUseCard} onAttack={handleAttack} onDefend={handleDefend} onUseAce={handleUseAce} onEndTurn={handleEndTurn}/></div>
       <CombatParticleCanvas ref={particleCanvasRef}/><FloatingNumberOverlay items={floatingNumbers}/>
       {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragKind==='board'||[...playerHeroes,...rivalHeroes].some(h=>h.id===hoveredHeroId&&validHero(h))}/>}
