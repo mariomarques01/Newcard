@@ -1,0 +1,52 @@
+/* V51 — Original deck hand and action clarity; no changes to touch logic or grid. */
+@media(orientation:portrait) and (max-width:600px){
+ .arena-hand .arena-hand-card{position:relative;isolation:isolate}
+ .arena-hand .arena-hand-card[data-playable="yes"]{
+  border-color:#a8d8be;box-shadow:0 0 0 1px #85edb844,0 3px 9px #000c;
+ }
+ .arena-hand .arena-hand-card[data-playable="no"]{
+  border-color:#786a66;box-shadow:0 2px 5px #000b;
+ }
+ .arena-hand .arena-hand-card[data-playable="no"] .hand-face{filter:grayscale(.55) brightness(.67)}
+ .arena-hand .arena-hand-card[data-playable="yes"] .hand-face{filter:none}
+ .arena-hand .arena-hand-card[data-selected="yes"]{
+  border-color:#f9d995;box-shadow:0 0 0 2px #ffe8ac,0 0 16px #e8bb62a3,0 4px 9px #000d;
+ }
+ .arena-hand .arena-hand-card .energy-cost{
+  z-index:8;top:3px;left:3px;
+  width:clamp(21px,6vw,28px);height:clamp(21px,6vw,28px);
+  border:2px solid #d7faff;background:linear-gradient(140deg,#2378c2,#0c2d6b);
+  font-weight:900;font-size:clamp(12px,3.6vw,16px);
+  box-shadow:0 1px 5px #000d,0 0 6px #4da8ff66;
+ }
+ .arena-hand .arena-hand-card[data-playable="no"] .energy-cost{
+  background:linear-gradient(140deg,#754357,#341b31);border-color:#dba5b2;
+ }
+ .arena-hand .arena-hand-card .hand-lack{
+  top:48%;font-size:clamp(8px,2.4vw,10px);
+  padding:3px 5px;border:1px solid #ffb2a2;
+  background:#491b2af2;box-shadow:0 2px 6px #000a;
+ }
+ .arena-hand .arena-hand-card .hand-name{
+  padding:12px 2px 4px;
+  font-size:clamp(9px,2.6vw,12px);font-weight:900;
+  background:linear-gradient(transparent,#030911e8 45%,#030911fa 85%);
+  text-shadow:0 1px 3px #000,0 0 5px #000;
+ }
+ .arena-hand .arena-hand-card .hand-info{
+  width:clamp(19px,5.6vw,24px);height:clamp(19px,5.6vw,24px);
+  background:#0b1c2be8;border:1px solid #f2d5a1;
+  box-shadow:0 1px 5px #000b;
+ }
+ .arena-hint{color:#f8e8c9;text-shadow:0 1px 2px #000;font-weight:650}
+ .arena-actions button:not(:disabled){
+  filter:saturate(1.1);box-shadow:inset 0 1px #ffffff42,0 0 0 1px #f6d18a44,0 3px 8px #000b!important;
+ }
+ .arena-actions button:disabled{opacity:.42;filter:grayscale(.85)}
+ .arena-actions button:focus-visible{outline:3px solid #fff0ad;outline-offset:-3px}
+}
+@media(orientation:portrait) and (max-height:720px){
+ .arena-hand .arena-hand-card .hand-name{font-size:9px;padding:7px 1px 2px}
+ .arena-hand .arena-hand-card .energy-cost{width:20px;height:20px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.arena-hand .arena-hand-card{transition:none!important}}
