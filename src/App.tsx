@@ -22,6 +22,7 @@ import './arena-premium-v7.css';
 import './arena-cinematics-v8.css';
 import './arena-damage-v9.css';
 import './arena-performance-v10.css';
+import './arena-selection-v13.css';
 
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
