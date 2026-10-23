@@ -1,0 +1,26 @@
+/* V13: tap selection and target affordances, no game logic changes. */
+.arena-hand-card.selected{z-index:5;filter:drop-shadow(0 0 10px #ffdd83bb) drop-shadow(0 6px 7px #000a)}
+.arena-hand-card.selected .hand-face{outline:2px solid #ffe4a3;outline-offset:1px;box-shadow:0 0 0 3px #a7793880,0 0 18px #ffca6c77}
+.arena-hand-card.selected .energy-cost{box-shadow:0 0 10px #f9d66a88}
+.arena-hand-card .hand-face:focus-visible,.arena-hero .hero-face:focus-visible{outline:3px solid #fff0bb;outline-offset:2px}
+.mobile-game[data-selection-target="enemy"] .enemy-row .arena-hero:not(.fallen),
+.mobile-game[data-selection-target="ally"] .player-row .arena-hero:not(.fallen){
+ outline:2px solid #c5eeb8;outline-offset:1px;
+ box-shadow:0 0 0 3px #65cb8a33,0 0 12px #71dfac55;
+}
+.mobile-game[data-selection-target="enemy"] .enemy-row .arena-hero.targeted:not(.fallen){
+ outline:3px solid #ffe3a1;outline-offset:1px;
+ box-shadow:0 0 0 4px #ffdb7255,0 0 18px #ffc35f88;
+}
+.mobile-game[data-selection-target="ally"] .player-row .arena-hero.active:not(.fallen){
+ outline:3px solid #ffe3a1;outline-offset:1px;
+ box-shadow:0 0 0 4px #ffdb7255,0 0 18px #ffc35f88;
+}
+.mobile-game[data-selection-target="board"] .battle-divider{border-color:#f6d88a;box-shadow:inset 0 0 10px #f2bd5d22,0 0 12px #e5bb6a44}
+.mobile-game[data-selection-target="enemy"] .enemy-row .row-caption small,
+.mobile-game[data-selection-target="ally"] .player-row .row-caption small{color:#d6ffd8}
+@media(orientation:portrait) and (max-width:390px){
+ .arena-hand-card.selected .hand-face{outline-width:2px;outline-offset:0}
+ .mobile-game[data-selection-target="enemy"] .enemy-row .arena-hero.targeted:not(.fallen),
+ .mobile-game[data-selection-target="ally"] .player-row .arena-hero.active:not(.fallen){outline-width:2px}
+}
