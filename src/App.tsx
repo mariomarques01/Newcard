@@ -100,6 +100,7 @@ export default function App() {
 
   // V21: persist a match locally so Safari reloads do not discard progress.
   const saveReady = useRef(false);
+  const skipInitialSave = useRef(true);
   useEffect(() => {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
@@ -136,6 +137,7 @@ export default function App() {
 
   useEffect(() => {
     if (!saveReady.current) return;
+    if (skipInitialSave.current) { skipInitialSave.current = false; return; }
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({
         version:1, playerHeroes,rivalHeroes,playerHand,deck,discardPile,
