@@ -1,0 +1,8 @@
+/* V34 regression fix: HUD is inside the board divider, never an extra root grid row. */
+.battle-divider{position:relative}
+.battle-divider .arena-combat-hud{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);width:max-content;max-width:calc(100% - 12px);margin:0;z-index:9;padding:4px 7px;pointer-events:none}
+.battle-divider .arena-combat-hud-effects,.battle-divider .arena-combat-hud-forecast{flex-wrap:nowrap}
+.battle-divider .arena-combat-hud-effects>span{max-width:calc(100vw - 145px)}
+/* Keep hand, hint and action bar in their original fixed grid tracks. */
+@media(orientation:portrait){.mobile-game>.arena-hand{grid-row:4;min-height:0}.mobile-game>.arena-hint{grid-row:5}.mobile-game>.arena-actions{grid-row:6}.arena-hand-card{visibility:visible}}
+@media(orientation:portrait) and (max-width:390px){.battle-divider .arena-combat-hud{font-size:9px;max-width:calc(100% - 4px);padding:3px 5px}.battle-divider .arena-combat-hud-effects>span{max-width:calc(100vw - 110px)}}
