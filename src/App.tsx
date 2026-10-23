@@ -29,6 +29,7 @@ import './arena-hero-stats-v16.css';
 import './arena-hand-v17.css';
 import './arena-iphone-layout-v18.css';
 import './arena-drag-feedback-v20.css';
+import './arena-clarity-v29.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
