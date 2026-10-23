@@ -27,6 +27,7 @@ import './arena-actions-v14.css';
 import './arena-turn-energy-v15.css';
 import './arena-hero-stats-v16.css';
 import './arena-hand-v17.css';
+import './arena-iphone-layout-v18.css';
 
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
