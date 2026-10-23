@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import type {Hero} from '../types/game';
-import {CHARACTER_EVENT,CHARACTER_ROWS,CHARACTER_PERSONALITY,type CharacterCue,type CharacterAction} from '../game/characterMotion';
+import {CHARACTER_EVENT,CHARACTER_ROWS,type CharacterCue,type CharacterAction} from '../game/characterMotion';
 import './character-portrait.css';
 const atlas=`${import.meta.env.BASE_URL}assets/characters/royal-actions.webp`;
 export function CharacterPortrait({hero}:{hero:Hero}){
@@ -21,9 +21,9 @@ export function CharacterPortrait({hero}:{hero:Hero}){
   const row=CHARACTER_ROWS[hero.id]||0;
   const bounds=[[0,245],[245,486],[486,726],[726,956],[956,1214],[1214,1536]][row];
   const cellHeight=bounds[1]-bounds[0];
-  const action=!hero.isAlive?'fallen':motion.action==='idle'&&hero.isDefending?'guard':motion.action;
+  const action=!hero.isAlive?'fallen':motion.action==='idle'&&hero.isDefending?'guarding':motion.action;
   return <span className={`character-stage suit-${hero.suit} ${hero.isAlive?'living':''}`} data-character={hero.id} data-action={action} role="img" aria-label={hero.name}>
     <img className="portrait-loader" src={atlas} alt="" onLoad={()=>setReady(true)} onError={()=>setReady(false)}/>
-    {ready?<><span className="character-backdrop"/><span className="character-runes">✦ · ✧ · ✦</span><span key={motion.serial} className={`character-body action-${action}`} style={{'--sprite-aspect':256/cellHeight,'--sprite-row':`${bounds[0]/(1536-cellHeight)*100}%`,backgroundImage:`url("${atlas}")`,backgroundSize:`400% ${1536/cellHeight*100}%`} as CSSProperties}/><span className="character-magic"/><span className="hero-habit">{CHARACTER_PERSONALITY[hero.id]?.habit}</span><span className="character-vignette"/></>:<img className="portrait-fallback" src={hero.image} alt="" draggable={false}/>}
+    {ready?<><span className="character-backdrop"/><span className="character-runes">✦ · ✧ · ✦</span><span key={motion.serial} className={`character-body action-${action}`} style={{'--sprite-aspect':256/cellHeight,'--sprite-row':`${bounds[0]/(1536-cellHeight)*100}%`,backgroundImage:`url("${atlas}")`,backgroundSize:`400% ${1536/cellHeight*100}%`} as CSSProperties}/><span className="character-magic"/><span className="character-vignette"/></>:<img className="portrait-fallback" src={hero.image} alt="" draggable={false}/>}
   </span>;
 }
