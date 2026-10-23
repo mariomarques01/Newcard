@@ -41,6 +41,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           type="button"
           onClick={onUseCard}
           disabled={!canUseCard}
+          data-action="play" data-ready={canUseCard}
           className={`min-h-[48px] sm:min-h-[52px] flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl font-royal font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 border cursor-pointer ${
             canUseCard
               ? 'bg-gradient-to-b from-amber-600 via-amber-700 to-amber-900 border-amber-400 text-amber-100 shadow-[0_0_15px_rgba(251,191,36,0.5)] hover:scale-[1.02] active:scale-95 active:brightness-125'
@@ -57,7 +58,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>JOGAR</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
-            {selectedCard ? `${selectedCard.cost} ⚡` : 'Selecione'}
+            {!isPlayerTurn ? 'Aguarde' : !selectedCard ? 'Selecione' : playerEnergy < selectedCard.cost ? 'Sem energia' : `${selectedCard.cost} ⚡ · Pronto`}
           </span>
         </button>
 
@@ -66,6 +67,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           type="button"
           onClick={onAttack}
           disabled={!canAttack}
+          data-action="attack" data-ready={!!canAttack}
           className={`min-h-[48px] sm:min-h-[52px] flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl font-royal font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 border cursor-pointer ${
             canAttack
               ? 'bg-gradient-to-b from-rose-700 via-rose-800 to-rose-950 border-rose-500 text-rose-100 shadow-[0_0_15px_rgba(244,63,94,0.5)] hover:scale-[1.02] active:scale-95 active:brightness-125'
@@ -86,7 +88,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>ATACAR</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
-            {targetedRival ? `Alvo: ${targetedRival.name.split(' ')[0]}` : 'Escolha Alvo'}
+            {!isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Herói abatido' : activeHero.hasAttacked ? 'Já atacou' : !targetedRival?.isAlive ? 'Escolha alvo' : `Alvo: ${targetedRival.name.split(' ')[0]}`}
           </span>
         </button>
 
@@ -95,6 +97,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           type="button"
           onClick={onDefend}
           disabled={!canDefend}
+          data-action="defend" data-ready={!!canDefend}
           className={`min-h-[48px] sm:min-h-[52px] flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl font-royal font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 border cursor-pointer ${
             canDefend
               ? 'bg-gradient-to-b from-blue-700 via-blue-800 to-blue-950 border-blue-400 text-blue-100 shadow-[0_0_15px_rgba(96,165,250,0.5)] hover:scale-[1.02] active:scale-95 active:brightness-125'
@@ -107,7 +110,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>DEFENDER</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90">
-            {activeHero?.isDefending ? 'Em Guarda' : '+3 Escudo'}
+            {!isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : activeHero.isDefending ? 'Em Guarda' : '+3 Escudo'}
           </span>
         </button>
 
@@ -116,6 +119,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           type="button"
           onClick={onUseAce}
           disabled={!canUseAce}
+          data-action="ace" data-ready={!!canUseAce}
           className={`min-h-[48px] sm:min-h-[52px] flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl font-royal font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 border cursor-pointer ${
             canUseAce
               ? 'bg-gradient-to-b from-emerald-700 via-emerald-800 to-emerald-950 border-emerald-400 text-emerald-100 shadow-[0_0_15px_rgba(52,211,153,0.5)] hover:scale-[1.02] active:scale-95 active:brightness-125'
@@ -132,7 +136,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>ÁS (2 ⚡)</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
-            {activeHero?.rank === 'K' ? 'Compra 2' : activeHero?.rank === 'Q' ? 'Cura 4' : 'Ataque 5'}
+            {!isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : playerEnergy < 2 ? 'Sem energia' : activeHero.rank === 'K' ? 'Compra 2' : activeHero.rank === 'Q' ? 'Cura 4' : 'Ataque 5'}
           </span>
         </button>
 
@@ -141,6 +145,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           type="button"
           onClick={onEndTurn}
           disabled={!isPlayerTurn}
+          data-action="end" data-ready={isPlayerTurn}
           className={`col-span-2 sm:col-span-1 min-h-[48px] sm:min-h-[52px] flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl font-royal font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 border cursor-pointer ${
             isPlayerTurn
               ? 'bg-gradient-to-b from-red-800 via-red-900 to-black border-red-500 text-red-100 shadow-[0_0_15px_rgba(239,68,68,0.5)] hover:scale-[1.02] active:scale-95 active:brightness-125'
