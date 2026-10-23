@@ -1,0 +1,22 @@
+/* Arena V6 — readable combat state, presentation-only */
+.arena-hero{isolation:isolate}
+.arena-hero .hero-health{height:7px;overflow:hidden;border-top:1px solid #fff6;border-radius:0 0 6px 6px;box-shadow:0 -2px 8px #0008}
+.arena-hero .hero-health i{height:100%;box-shadow:0 0 9px currentColor;transition:width .35s ease}
+.arena-hero[data-hp=high] .hero-health i{background:linear-gradient(90deg,#1c9f78,#80ffcb)}
+.arena-hero[data-hp=mid] .hero-health i{background:linear-gradient(90deg,#d98b1d,#ffe17b)}
+.arena-hero[data-hp=low] .hero-health i{background:linear-gradient(90deg,#a50f36,#ff547c)}
+.arena-hero[data-hp=low]:not(.fallen){border-color:#ff647f;box-shadow:0 0 0 1px #ff668c88,0 0 18px #f42e5a55,0 6px 14px #000b}
+.arena-hero[data-hp=low] .hero-hp{background:#620f27f2;color:#fff;border:1px solid #ff8ba4;font-size:13px;box-shadow:0 0 12px #ff426477}
+.arena-hero[data-hp=mid] .hero-hp{border-color:#ffdb87;background:#553615f2;color:#fff0bd}
+.arena-hero.protected .shield-stat{background:linear-gradient(135deg,#0c3a59,#071927);border:1px solid #76e9ff;box-shadow:0 0 9px #38cfff66,inset 0 0 6px #48caff33;color:#e2fcff}
+.arena-hero.protected .hero-barrier{background:linear-gradient(145deg,#8deeff30,transparent 35%,#46c8ff29 75%,transparent);border-color:#b1f4ff;box-shadow:inset 0 0 24px #5adcff77,0 0 14px #56d7ff55}
+.arena-hero.targeted:not(.fallen){border-color:#ff6a8d;outline:2px solid #ff8ca9;outline-offset:1px;box-shadow:0 0 0 3px #ff457433,0 0 25px #ff477c99,0 8px 17px #000a}
+.arena-hero.targeted .hero-condition{background:#64142be8;color:#fff0f4;border:1px solid #ff90b2;box-shadow:0 0 9px #ff548077}
+.arena-hero.active:not(.fallen){border-color:#8afaff;box-shadow:0 0 0 2px #69e9f977,0 0 22px #3ddcff88,0 7px 17px #000b}
+.arena-hero.active .hero-condition{background:#073a4cf2;color:#dcfdff;border:1px solid #7befff;box-shadow:0 0 9px #40d9ff66}
+.arena-hero.fallen{filter:grayscale(.95);opacity:.55}
+.arena-hero.fallen .hero-condition{background:#111923ed;color:#e0dce3;border:1px solid #c3b4bb}
+.arena-hero .hero-stats{gap:5px}
+.arena-hero .hero-stats>span{font-variant-numeric:tabular-nums}
+@media(max-width:390px){.arena-hero .hero-stats{gap:3px}.arena-hero .hero-stats>span{min-width:0;padding:1px 5px}.arena-hero .hero-hp{padding:2px 5px}}
+@media(prefers-reduced-motion:reduce){.arena-hero .hero-health i{transition:none}}
