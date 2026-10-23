@@ -28,6 +28,7 @@ import './arena-turn-energy-v15.css';
 import './arena-hero-stats-v16.css';
 import './arena-hand-v17.css';
 import './arena-iphone-layout-v18.css';
+import './arena-drag-feedback-v20.css';
 
 export default function App() {
   useEffect(() => () => { matchToken.current++; }, []);
@@ -566,10 +567,11 @@ export default function App() {
   };
 
   const dragKind = draggingCard ? targetFor(draggingCard) : draggingHero ? 'enemy' : null;
+  const dragValid = !!dragCurrent && (dragKind==='board' ? !!document.elementFromPoint(dragCurrent.x,dragCurrent.y)?.closest('[data-battlefield]') : [...playerHeroes,...rivalHeroes].some(h=>h.id===hoveredHeroId&&h.isAlive&&(dragKind==='enemy'?h.id.startsWith('r_'):dragKind==='ally'&&h.id.startsWith('p_'))));
   const selectionTarget = !gameOver && currentTurn === 'player' && selectedCard && playerEnergy >= selectedCard.cost ? targetFor(selectedCard) : null;
   const validHero = (hero: Hero) => !!dragKind && hero.isAlive && (dragKind==='enemy' ? hero.id.startsWith('r_') : dragKind==='ally' && hero.id.startsWith('p_'));
   return (
-    <div className={`mobile-game ${screenShake ? 'animate-screen-shake' : ''}`} data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
+    <div className={`mobile-game ${screenShake ? 'animate-screen-shake' : ''}`} data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} data-drag-state={dragKind?(dragValid?'valid':'invalid'):'idle'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
       <header className="arena-header">
         <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
         <nav aria-label="Menu do jogo">
@@ -612,7 +614,8 @@ export default function App() {
       <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''}`} role="status"><span>{hint}</span></div>
       <div className="arena-actions"><ActionBar selectedCard={selectedCard} activeHero={activePlayerHero} targetedRival={targetedRivalHero} playerEnergy={playerEnergy} currentTurn={gameOver?'rival':currentTurn} onUseCard={handleUseCard} onAttack={handleAttack} onDefend={handleDefend} onUseAce={handleUseAce} onEndTurn={handleEndTurn}/></div>
       <CombatParticleCanvas ref={particleCanvasRef}/><FloatingNumberOverlay items={floatingNumbers}/>
-      {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragKind==='board'||[...playerHeroes,...rivalHeroes].some(h=>h.id===hoveredHeroId&&validHero(h))}/>}
+      {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragValid}/>}
+      {dragKind && dragCurrent && <div className={`drag-drop-feedback ${dragValid?'valid':'invalid'}`} role="status" aria-live="off">{dragValid?'✓ SOLTE PARA EXECUTAR':dragKind==='enemy'?'MIRE EM UM RIVAL VIVO':dragKind==='ally'?'MIRE EM UM ALIADO VIVO':'MIRE NO TABULEIRO'}</div>}
       {draggingCard && dragCurrent && <div className="drag-card-ghost" style={{left:dragCurrent.x,top:dragCurrent.y}}><img src={draggingCard.image} alt=""/><span>{draggingCard.name}</span></div>}
       {showLog && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Histórico da batalha"><div><button className="close-log" onClick={()=>setShowLog(false)}>Fechar ×</button><h2>Registro de batalha</h2>{combatLogs.map(log=><p key={log.id}><b>{log.speaker}</b> {log.text}</p>)}</div></div>}
       {inspectingItem && <CardInspectModal item={inspectingItem} onClose={()=>setInspectingItem(null)}/>}
