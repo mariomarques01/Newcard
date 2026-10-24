@@ -1,0 +1,46 @@
+/* V64 — Original images are complete printed cards: crop into the illustration area.
+   Screenshot confirmed the lower half is the printed dark description panel, not a loading error.
+   Do not edit source assets, touch regions or grid dimensions. */
+@media (orientation:portrait) and (max-width:600px){
+ .arena-hero .hero-face{overflow:hidden!important}
+ .arena-hero .hero-face>img.hero-original-art{
+  position:absolute!important;inset:0!important;
+  width:100%!important;height:100%!important;
+  max-width:none!important;display:block!important;
+  object-fit:cover!important;object-position:50% 0%!important;
+  transform:scale(2.15)!important;
+  transform-origin:50% 0%!important;
+  opacity:1!important;visibility:visible!important;
+  z-index:0!important;pointer-events:none!important;
+ }
+ .arena-hero.fallen .hero-face>img.hero-original-art{
+  filter:grayscale(1) brightness(.5)!important;
+ }
+ .arena-hand-card .hand-face{overflow:hidden!important}
+ .arena-hand-card .hand-face>img{
+  position:absolute!important;inset:0!important;
+  display:block!important;width:100%!important;height:100%!important;
+  max-width:none!important;object-fit:cover!important;
+  object-position:50% 0%!important;
+  transform:scale(2.2)!important;
+  transform-origin:50% 0%!important;
+  opacity:1!important;visibility:visible!important;
+  z-index:1!important;pointer-events:none!important;
+ }
+ .arena-hand-card .hand-name{
+  display:flex!important;align-items:flex-end;justify-content:center;
+  position:absolute!important;bottom:0!important;left:0;right:0;
+  min-height:25px!important;z-index:4!important;
+  padding:9px 2px 3px!important;
+  background:linear-gradient(transparent,#06101be8 40%,#030914fc 100%)!important;
+  color:#fff1d8!important;
+ }
+ .arena-hero .hero-face::after{
+  background:linear-gradient(180deg,transparent 0%,transparent 66%,#04091120 78%,#0307119a 100%)!important;
+  pointer-events:none!important;
+ }
+}
+@media (orientation:portrait) and (max-height:720px){
+ .arena-hero .hero-face>img.hero-original-art{transform:scale(2.05)!important}
+ .arena-hand-card .hand-face>img{transform:scale(2.1)!important}
+}
