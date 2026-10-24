@@ -19,11 +19,11 @@ jobs:
       - name: Install headless Blender
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender
+          sudo apt-get install -y blender libegl1 libgl1 libglx-mesa0 libopengl0 libx11-6 libxext6 libxrender1 libxi6 libxxf86vm1 libsm6 libice6
           blender --version
       - name: Render medieval hero and effects
         run: |
-          blender -b -t 2 --python scripts/blender/render_royal.py -- --output dist-blender
+          LIBGL_ALWAYS_SOFTWARE=1 EGL_PLATFORM=surfaceless blender -b -t 2 --python scripts/blender/render_royal.py -- --output dist-blender
       - name: Publish preview for review
         uses: actions/upload-artifact@v4
         with:
