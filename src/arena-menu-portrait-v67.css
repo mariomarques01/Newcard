@@ -1,0 +1,74 @@
+/* V67 — compact top bar, bigger battlefield, predictable artwork cropping. */
+@media(orientation:portrait) and (max-width:600px){
+ .mobile-game{
+  grid-template-rows:30px 60px minmax(0,1fr) clamp(112px,18dvh,156px) 30px 72px!important;
+  row-gap:3px!important;
+ }
+ .mobile-game>.arena-header{height:30px;min-height:0;overflow:visible;z-index:25!important}
+ .arena-header .arena-brand{font-size:12px}
+ .arena-header .arena-menu{position:relative;display:flex;align-items:center;z-index:40}
+ .arena-header .arena-menu-trigger{
+  width:38px;height:29px;font-size:25px;font-weight:900;line-height:1;
+  border:1px solid #d4b474;border-radius:9px;color:#f5d69b;
+  background:linear-gradient(#22374b,#101b2d);
+ }
+ .arena-menu-panel{
+  position:absolute;right:0;top:calc(100% + 5px);z-index:50;
+  display:flex;flex-direction:column;gap:3px;
+  width:min(235px,calc(100vw - 22px));max-height:min(68dvh,510px);overflow-y:auto;
+  padding:8px;border:1px solid #d8b87e;border-radius:12px;
+  background:#101b2af8;box-shadow:0 8px 30px #000e;
+ }
+ .arena-header .arena-menu-panel button{
+  display:block;width:100%;height:auto;min-height:35px;
+  padding:7px 10px;text-align:left;font:700 12px/1.3 'Plus Jakarta Sans',sans-serif;
+  color:#f5e5c9;border:1px solid #bda06b50;border-radius:7px;background:#233348;
+ }
+ .arena-header .arena-menu-panel button:active{background:#395572}
+ .arena-pause-cover{
+  position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;padding:25px;
+  background:#060d18ed;text-align:center;color:#f3ddb0;
+ }
+ .arena-pause-cover strong{font:800 26px Cinzel,serif}
+ .arena-pause-cover p{max-width:300px;font-size:13px;line-height:1.5}
+ .arena-pause-cover button{border:1px solid #e5c383;background:#21455a;color:#fff2d4;border-radius:12px;padding:12px 24px;font-weight:800}
+ .mobile-game>.arena-board{padding:3px 4px;min-height:0}
+ .arena-board .arena-row{padding:1px 2px 2px;grid-template-rows:14px minmax(0,1fr);gap:2px}
+ .arena-board .hero-row{gap:4px}
+ .arena-board .arena-hero{overflow:hidden;border-radius:12px}
+ .arena-board .hero-face{overflow:hidden;isolation:isolate}
+ /* Printed cards have a title at the top and description panel at the bottom.
+    Show the illustrated middle section, without transforms or inherited dark masks. */
+ .arena-board .hero-face>img.hero-original-art{
+  display:block!important;position:absolute!important;
+  left:0!important;right:0!important;top:-21%!important;bottom:auto!important;
+  width:100%!important;height:205%!important;max-width:none!important;
+  object-fit:fill!important;object-position:center center!important;
+  transform:none!important;filter:none;
+  opacity:1!important;visibility:visible!important;z-index:0!important;
+ }
+ .arena-board .hero-face::before{display:none!important}
+ .arena-board .hero-face::after{
+  content:"";display:block;position:absolute;inset:auto 0 0;height:38px;
+  background:linear-gradient(transparent,#07101bd9 80%)!important;
+  pointer-events:none;z-index:1;
+ }
+ .arena-board .hero-name{z-index:4!important}
+ .arena-board .hero-hp,.arena-board .hero-stats,.arena-board .hero-condition,.arena-board .hero-health{z-index:5!important}
+ .arena-board .arena-hero.fallen .hero-face>img.hero-original-art{filter:grayscale(1) brightness(.45)!important}
+ .arena-hand-card .hand-face>img{
+  position:absolute!important;top:-17%!important;left:0!important;
+  width:100%!important;height:195%!important;max-width:none!important;
+  object-fit:fill!important;transform:none!important;opacity:1!important;
+  visibility:visible!important;z-index:1!important;
+ }
+ .arena-hand-card .hand-face::after{display:none!important}
+ .arena-hand-card .hand-name{z-index:5!important}
+}
+@media(orientation:portrait) and (max-width:390px){
+ .mobile-game{grid-template-rows:29px 58px minmax(0,1fr) clamp(108px,17dvh,142px) 29px 70px!important}
+}
+@media(orientation:portrait) and (max-height:720px){
+ .mobile-game{grid-template-rows:27px 52px minmax(0,1fr) 108px 26px 62px!important}
+}
