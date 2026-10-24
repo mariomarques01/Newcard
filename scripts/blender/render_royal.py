@@ -116,6 +116,34 @@ scene.render.resolution_y=896
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
 scene.render.film_transparent=True
-scene.render.filepath=os.path.join(out,"royal-hero.png")
-bpy.ops.render.render(write_still=True)
-print("3D render generated:", scene.render.filepath)
+# Render a four-suit concept collection with distinct heraldic palettes and equipment.
+# Every image is a review artifact; original game artwork remains untouched.
+variants = [
+    ("spades-king", (0.035, 0.13, 0.35), (0.045, 0.68, 0.94), "Sapphire shield"),
+    ("hearts-queen", (0.43, 0.055, 0.12), (0.94, 0.12, 0.055), "Ruby attack"),
+    ("diamonds-jack", (0.36, 0.19, 0.055), (0.97, 0.66, 0.14), "Golden aura"),
+    ("clubs-guardian", (0.035, 0.26, 0.16), (0.16, 0.86, 0.46), "Sapphire shield"),
+]
+for name, armor_color, spell_color, ring_name in variants:
+    blue.diffuse_color = (*armor_color, 1)
+    blue.node_tree.nodes.get("Principled BSDF").inputs["Base Color"].default_value = (*armor_color, 1)
+    magic.diffuse_color = (*spell_color, 1)
+    magic.node_tree.nodes.get("Principled BSDF").inputs["Base Color"].default_value = (*spell_color, 1)
+    magic.node_tree.nodes.get("Principled BSDF").inputs["Emission Color"].default_value = (*spell_color, 1)
+    for obj in bpy.data.objects:
+        if obj.name.startswith("VFX "):
+            obj.hide_render = obj.name != "VFX " + ring_name
+    # Differing silhouettes and poses, rather than just recolored cards.
+    bpy.data.objects["Regal torso"].scale.x = .60 if "king" in name else (.51 if "queen" in name else .55)
+    bpy.data.objects["Distinctive royal face"].scale.x = .37 if "king" in name else (.32 if "queen" in name else .35)
+    bpy.data.objects["Sword blade"].hide_render = "queen" in name
+    bpy.data.objects["Sword hilt"].hide_render = "queen" in name
+    bpy.data.objects["Cross guard"].hide_render = "queen" in name
+    bpy.data.objects["Royal crown"].hide_render = "jack" in name
+    for obj in bpy.data.objects:
+        if obj.name.startswith("Crown point"):
+            obj.hide_render = "jack" in name
+    scene.render.filepath = os.path.join(out, name + ".png")
+    bpy.ops.render.render(write_still=True)
+    print("3D render generated:", scene.render.filepath)
+
