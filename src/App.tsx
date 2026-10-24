@@ -13,6 +13,7 @@ import { TargetingArrow } from './components/TargetingArrow';
 import { Crown } from 'lucide-react';
 import { targetFor, makeDeck, resolveCard, abilityFor } from './game/cards';
 import { ArenaHero, ArenaHand } from './components/MobileArena';
+import {heroPowerPresentation,heroPowerTargets} from './game/heroPowerPresentation';
 import { PROJECTILE_IMPACT_MS, HIT_REACTION_MS } from './game/combatTiming';
 import './arena.css';
 import './arena-royal-v3.css';
@@ -132,7 +133,6 @@ export default function App() {
   ]);
 
   const [floatingNumbers, setFloatingNumbers] = useState<FloatingNumber[]>([]);
-  const [screenShake, setScreenShake] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [hitHeroId, setHitHeroId] = useState<string | null>(null);
 
@@ -330,12 +330,6 @@ export default function App() {
       if (hpLost > 0) addFloatingNumber(x, y + (shieldLost > 0 ? 16 : 0), `♥ −${hpLost} VIDA`, hpLost >= 3 ? 'crit' : 'damage');
       if (defeated || shieldBroken) atImpact(()=>addFloatingNumber(x,y+34,defeated?'DERROTADO!':'ESCUDO QUEBRADO',defeated?'crit':'shield'),180);
     });
-  };
-
-  // Helper to trigger screen shake
-  const triggerScreenShake = () => {
-    setScreenShake(true);
-    setTimeout(() => setScreenShake(false), 320);
   };
 
   // Helper to add log
@@ -591,9 +585,13 @@ export default function App() {
       return;
     }
 
+    if(heroPowerPresentation(activePlayerHero).needsEnemy&&!targetedRivalHero?.isAlive){
+      setHint('Selecione um rival vivo para usar a Investida Titânica.');return;
+    }
+    beginCombat();
     sound.playAcePower();
-    particleCanvasRef.current?.triggerBoard(activePlayerHero.rank==='Q'?'heal':activePlayerHero.rank==='J'?'pierce':'gold_blast',activePlayerHero.passiveName+' · PODER DE ÁS');
-    triggerScreenShake();
+    particleCanvasRef.current?.triggerHeroPower(activePlayerHero,heroPowerTargets(activePlayerHero,playerHeroes,targetedRivalHero));
+    // Royal powers use their caster and real recipients instead of a generic board flash.
     setPlayerEnergy((e) => e - 2);
 
     let updatedPlayerHeroes = [...playerHeroes];
@@ -601,8 +599,7 @@ export default function App() {
     let newPlayerPg = playerPg;
 
     if (activePlayerHero.rank === 'K') {
-      // King of Spades Ace: Draws 2 cards and gets +2 temporary ATQ
-      particleCanvasRef.current?.triggerCardBurst(`hero-card-${activePlayerHero.id}`, 'gold_blast');
+      // King of Spades Ace: Draws 2 cards and gets +2 ATQ
       const drawn = deck.slice(0, 2);
       const nextHand = [...playerHand, ...drawn];
       setPlayerHand(nextHand.slice(0,5));
@@ -615,29 +612,29 @@ export default function App() {
         }
         return h;
       });
-      addFloatingNumber(window.innerWidth / 2, window.innerHeight - 250, '+2 ATQ & 2 CARTAS', 'pg');
+      const rect=document.getElementById(`hero-card-${activePlayerHero.id}`)?.getBoundingClientRect();
+      if(rect)addFloatingNumber(rect.left+rect.width/2,rect.top+rect.height/2,`+2 ATQ · ${drawn.length} CARTAS`,'pg');
       addLog(activePlayerHero.name, 'ativou o Poder de Ás: Sacou 2 cartas de reforço e afiou sua espada (+2 ATQ)!', 'ace');
     } else if (activePlayerHero.rank === 'Q') {
       // Queen of Hearts Ace: Heals all player heroes by 4 HP
       sound.playHeal();
-      playerHeroes.forEach((h) => {
-        particleCanvasRef.current?.triggerCardBurst(`hero-card-${h.id}`, 'heal');
-      });
       updatedPlayerHeroes = updatedPlayerHeroes.map((h) => {
         if (h.isAlive) {
           return { ...h, currentHp: Math.min(h.maxHp, h.currentHp + 4) };
         }
         return h;
       });
-      addFloatingNumber(window.innerWidth / 2, window.innerHeight - 250, '+4 CURA GERAL', 'heal');
+      playerHeroes.filter(h=>h.isAlive&&h.currentHp<h.maxHp).forEach(h=>{
+        atImpact(()=>{
+          const rect=document.getElementById(`hero-card-${h.id}`)?.getBoundingClientRect();
+          if(rect)addFloatingNumber(rect.left+rect.width/2,rect.top+rect.height/2,`+${Math.min(4,h.maxHp-h.currentHp)} VIDA`,'heal');
+        },h.id===activePlayerHero.id?0:PROJECTILE_IMPACT_MS);
+      });
       addLog(activePlayerHero.name, 'ergueu o Cálice de Copas: Restaurou 4 de Vida a toda a corte!', 'heal');
     } else if (activePlayerHero.rank === 'J') {
       // Jack of Clubs Ace: 5 direct damage + 1 energy
-      particleCanvasRef.current?.triggerCardBurst(`hero-card-${activePlayerHero.id}`, 'slash');
       if (targetedRivalHero && targetedRivalHero.isAlive) {
-        beginCombat();
         triggerHeroDamageHit(targetedRivalHero.id);
-        particleCanvasRef.current?.triggerAttack(`hero-card-${activePlayerHero.id}`,`hero-card-${targetedRivalHero.id}`, 'pierce', '−5 INVESTIDA');
         const dmg = 5;
         const newHp = Math.max(0, targetedRivalHero.currentHp - dmg);
         const isDead = newHp === 0;
@@ -832,7 +829,7 @@ export default function App() {
   const cardInstruction = !selectedCard ? '' : gameOver ? 'A partida terminou' : currentTurn!=='player' ? 'Aguarde seu turno' : playerEnergy<selectedCard.cost ? `Faltam ${selectedCard.cost-playerEnergy} de energia` : cardTarget==='enemy' ? 'Selecione um rival vivo e toque em JOGAR' : cardTarget==='ally' ? 'Selecione um aliado vivo e toque em JOGAR' : 'Toque em JOGAR para ativar o efeito';
   const validHero = (hero: Hero) => !!dragKind && hero.isAlive && (dragKind==='enemy' ? hero.id.startsWith('r_') : dragKind==='ally' && hero.id.startsWith('p_'));
   return (
-    <div className={`mobile-game ${screenShake ? 'animate-screen-shake' : ''}`} data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} data-drag-state={dragKind?(dragValid?'valid':'invalid'):'idle'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
+    <div className="mobile-game" data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} data-drag-state={dragKind?(dragValid?'valid':'invalid'):'idle'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
       <header className="arena-header">
         <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
         <nav aria-label="Menu do jogo">

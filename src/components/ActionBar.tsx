@@ -33,7 +33,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   const canUseCard = isPlayerTurn && selectedCard !== null && playerEnergy >= selectedCard.cost;
   const canAttack = isPlayerTurn && activeHero?.isAlive && !activeHero?.hasAttacked && targetedRival?.isAlive;
   const canDefend = isPlayerTurn && activeHero?.isAlive && !activeHero?.isDefending;
-  const canUseAce = isPlayerTurn && activeHero?.isAlive && playerEnergy >= 2;
+  const canUseAce = isPlayerTurn && activeHero?.isAlive && playerEnergy >= 2 && (activeHero.rank!=='J'||targetedRival?.isAlive);
 
   return (
     <div className="w-full max-w-4xl mx-auto px-1 sm:px-2 py-1 sm:py-2">
@@ -138,7 +138,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
             <span>ÁS (2 ⚡)</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
-            {resolving ? 'Em combate' : !isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : playerEnergy < 2 ? 'Sem energia' : activeHero.rank === 'K' ? 'Compra 2' : activeHero.rank === 'Q' ? 'Cura 4' : 'Ataque 5'}
+            {resolving ? 'Em combate' : !isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : playerEnergy < 2 ? 'Sem energia' : activeHero.rank==='J'&&!targetedRival?.isAlive ? 'Escolha alvo' : activeHero.rank === 'K' ? 'Compra 2' : activeHero.rank === 'Q' ? 'Cura 4' : 'Ataque 5'}
           </span>
         </button>
 

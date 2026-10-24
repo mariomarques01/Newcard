@@ -10,6 +10,8 @@ import {spellPresentation,schoolForSuit} from '../game/spellPresentation';
 import {CHARACTER_PERSONALITY} from '../game/characterMotion';
 import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
 import {impactFor,type CombatOutcome,type ImpactKind} from '../game/combatImpact';
+import {PowerAnnouncement,type PowerAnnouncementData} from './PowerAnnouncement';
+import {heroPowerPresentation,type HeroPowerTarget} from '../game/heroPowerPresentation';
 import {SpellScene} from './SpellScene';
 import type {ActionCard,Hero} from '../types/game';
 
@@ -20,6 +22,7 @@ export interface CombatParticleCanvasRef {
   triggerAttack: (sourceId:string,targetId:string,type?:ParticleEffectType,label?:string,card?:ActionCard)=>void;
   triggerBoard: (type:ParticleEffectType,label:string,card?:ActionCard)=>void;
   revealCard: (card:ActionCard,casterId:string)=>void;
+  triggerHeroPower:(hero:Hero,targets:HeroPowerTarget[])=>void;
   triggerOutcome:(elementId:string,outcome:CombatOutcome)=>void;
   clear: ()=>void;
 }
@@ -35,8 +38,9 @@ const center=(id:string):Point|null=>{
 };
 export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function CombatEffects(_,ref){
   const [effects,setEffects]=useState<BattleEffect[]>([]);
-  const [reveal,setReveal]=useState<ActionCard|null>(null);
+  const [reveal,setReveal]=useState<PowerAnnouncementData|null>(null);
   const sequence=useRef(0);
+  const revealSequence=useRef(0);
   const timers=useRef(new Set<ReturnType<typeof setTimeout>>());
   const clear=()=>{timers.current.forEach(clearTimeout);timers.current.clear();setEffects([]);setReveal(null);
     document.querySelectorAll('[data-hero-id]').forEach(el=>cueCharacter(el.id,'idle'));};
@@ -53,8 +57,27 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
       const rect=document.querySelector('[data-battlefield]')?.getBoundingClientRect();
       if(rect){const p={x:rect.left+rect.width/2,y:rect.top+rect.height/2};emit(p,p,type,label,false,undefined,'board',undefined,card?spellPresentation(card).school:undefined,{intensity:card?spellPresentation(card).intensity:'normal'});}
     };
+    const announce=(data:Omit<PowerAnnouncementData,'id'|'y'>)=>{
+      const rect=document.querySelector('.battle-divider')?.getBoundingClientRect();
+      const y=Math.max(48,Math.min(window.innerHeight-105,rect?rect.top+rect.height/2-32:window.innerHeight*.45));
+      const id=++revealSequence.current;setReveal({...data,id,y});
+      const timer=setTimeout(()=>{setReveal(current=>current?.id===id?null:current);timers.current.delete(timer);},1600);timers.current.add(timer);
+    };
     return {
       clear,
+      triggerHeroPower:(hero,targets)=>{
+        const sourceId=`hero-card-${hero.id}`,from=center(sourceId);if(!from)return;
+        const power=heroPowerPresentation(hero);
+        announce({title:power.title,summary:power.summary,image:hero.image,kind:'hero',school:power.school});
+        cueCharacter(sourceId,hero.rank==='J'?'attack':'cast');
+        for(const target of targets){
+          const id=`hero-card-${target.id}`,to=center(id);if(!to)continue;
+          emit(from,to,target.type,target.label,hero.id!==target.id,hero.rank==='J'?'flame':hero.rank==='Q'?'heart':'blade',undefined,{id:hero.id,name:hero.name,casting:hero.rank!=='J'},power.school,{intensity:'legendary'});
+          if(target.type==='pierce'){
+            const timer=setTimeout(()=>{cueCharacter(id,'hurt');timers.current.delete(timer);},PROJECTILE_IMPACT_MS);timers.current.add(timer);
+          }
+        }
+      },
       triggerBoard:board,
       triggerOutcome:(id,outcome)=>{
         const p=center(id),impact=impactFor(outcome);if(!p||!impact)return;
@@ -63,8 +86,8 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
       revealCard:(card,casterId)=>{
         cueCharacter(casterId,'cast');
         if(card.type==='joker'||card.rank==='A'){
-          setReveal(card);board(card.type==='joker'?'arcane':'gold_blast',card.skillName||card.name,card);
-          const timer=setTimeout(()=>{setReveal(null);timers.current.delete(timer);},1600);timers.current.add(timer);
+          const presentation=spellPresentation(card);
+          announce({title:presentation.title,summary:card.description,image:card.image,kind:card.type==='joker'?'joker':'ace',school:presentation.school});board(card.type==='joker'?'arcane':'gold_blast',card.skillName||card.name,card);
         }
       },
       triggerBurst:(x,y,type,label,card)=>emit({x,y},{x,y},type,label,false,undefined,undefined,undefined,card?spellPresentation(card).school:undefined,{intensity:card?spellPresentation(card).intensity:'normal'}),
@@ -101,7 +124,5 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         <strong className="fx-label">{e.label}</strong>
       </div>
     </div>;
-  })}{reveal&&<div key={reveal.id} className={`special-reveal ${reveal.type==='joker'?'reveal-joker':'reveal-ace'}`} data-special={reveal.type}>
-    <div className="legendary-halo"/><img src={reveal.image} alt=""/><div><small>{reveal.type==='joker'?'CORINGA DESPERTADO':'PODER DE ÁS'}</small><strong>{reveal.skillName||reveal.name}</strong><span>{reveal.description}</span></div>
-  </div>}</div>;
+  })}{reveal&&<PowerAnnouncement key={reveal.id} power={reveal}/>}</div>;
 });

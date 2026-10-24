@@ -22,3 +22,15 @@ test('actions become available again after combat, preserving rival-turn gating'
  const rival=renderToStaticMarkup(React.createElement(ActionBar,{...props,currentTurn:'rival'}));
  assert.equal((rival.match(/disabled=""/g)||[]).length,5);
 });
+test('jack power waits for a living enemy while reinforcement remains usable',()=>{
+ const jack={...props.activeHero,rank:'J'} as Hero;
+ const fallen={...props.targetedRival,isAlive:false} as Hero;
+ const renderAce=(activeHero:Hero,targetedRival?:Hero)=>{
+  const html=renderToStaticMarkup(React.createElement(ActionBar,{...props,activeHero,targetedRival}));
+  return html.match(/<button\b[^>]*data-action="ace"[\s\S]*?<\/button>/)?.[0]||'';
+ };
+ assert.match(renderAce(jack,fallen),/disabled=""/);
+ assert.match(renderAce(jack,fallen),/Escolha alvo/);
+ assert.doesNotMatch(renderAce(props.activeHero,fallen),/disabled=""/);
+ assert.doesNotMatch(renderAce(jack,props.targetedRival),/disabled=""/);
+});
