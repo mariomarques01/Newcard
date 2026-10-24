@@ -65,6 +65,7 @@ import './arena-direct-art-v63.css';
 import './arena-art-crop-v64.css';
 import './arena-art-framing-v65.css';
 import './arena-clean-battlefield-v66.css';
+import './arena-menu-portrait-v67.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
@@ -115,6 +116,8 @@ export default function App() {
   const [playerHand, setPlayerHand] = useState<ActionCard[]>(() => makeDeck(DECK_TEMPLATES).slice(0,3));
   const [deck, setDeck] = useState<ActionCard[]>(() => makeDeck(DECK_TEMPLATES).slice(3));
   const [showLog, setShowLog] = useState(false);
+  const [showGameMenu, setShowGameMenu] = useState(false);
+  const [menuPaused, setMenuPaused] = useState(false);
   const [hint, setHint] = useState('Arraste uma carta até o alvo ou selecione e toque em Jogar.');
   const dragRef = useRef<{card?: ActionCard; hero?: Hero; x:number; y:number; moved:boolean; pointerId:number} | null>(null);
   const matchToken = useRef(0);
@@ -855,17 +858,22 @@ export default function App() {
     <div className="mobile-game" data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} data-drag-state={dragKind?(dragValid?'valid':'invalid'):'idle'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
       <header className="arena-header">
         <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
-        <nav aria-label="Menu do jogo">
-          <button onClick={()=>setShowPreparation(true)} aria-label="Preparação de batalha">⚔</button>
-          <button onClick={()=>setShowCampaign(true)} aria-label="Campanha">⚑</button>
-          <button onClick={()=>setShowProfile(true)} aria-label="Perfil e estatísticas">★</button>
-          <button onClick={()=>setShowRules(true)} aria-label="Regras">?</button>
-          <button onClick={()=>setShowCompendium(true)} aria-label="Coleção de cartas">♛</button>
-          <button onClick={()=>setShowLog(true)} aria-label="Histórico da batalha">≡</button>
-          <button onClick={()=>setSoundEnabled(!soundEnabled)} aria-label={soundEnabled?'Desativar som':'Ativar som'}>{soundEnabled?'♫':'♪'}</button>
-          <button onClick={()=>handleRestartGame()} aria-label="Nova partida">↻</button>
+        <nav className="arena-menu" aria-label="Menu do jogo">
+          <button type="button" className="arena-menu-trigger" aria-expanded={showGameMenu} aria-controls="arena-menu-panel" aria-label="Abrir menu do jogo" onClick={()=>setShowGameMenu(v=>!v)}>⋮</button>
+          {showGameMenu&&<div id="arena-menu-panel" className="arena-menu-panel" role="group" aria-label="Opções do jogo">
+            <button onClick={()=>{setShowGameMenu(false);setShowPreparation(true)}}>⚔ Preparação</button>
+            <button onClick={()=>{setShowGameMenu(false);setShowCampaign(true)}}>⚑ Campanha</button>
+            <button onClick={()=>{setShowGameMenu(false);setShowProfile(true)}}>★ Perfil e estatísticas</button>
+            <button onClick={()=>{setShowGameMenu(false);setShowRules(true)}}>? Regras</button>
+            <button onClick={()=>{setShowGameMenu(false);setShowCompendium(true)}}>♛ Coleção de cartas</button>
+            <button onClick={()=>{setShowGameMenu(false);setShowLog(true)}}>≡ Histórico</button>
+            <button onClick={()=>setSoundEnabled(!soundEnabled)}>{soundEnabled?'♫ Desativar som':'♪ Ativar som'}</button>
+            <button onClick={()=>{setShowGameMenu(false);setMenuPaused(true)}}>Ⅱ Pausar visualização</button>
+            <button onClick={()=>{setShowGameMenu(false);handleRestartGame()}}>↻ Reiniciar partida</button>
+          </div>}
         </nav>
       </header>
+      {menuPaused&&<div className="arena-pause-cover" role="dialog" aria-modal="true" aria-label="Partida pausada"><strong>Ⅱ PAUSA</strong><p>Visualização pausada. O progresso continua salvo automaticamente.</p><button onClick={()=>setMenuPaused(false)}>CONTINUAR</button></div>}
       <div className="arena-score" aria-label="Placar">
         <div className="score-side score-player" data-energy={playerEnergy===0?'empty':playerEnergy<=2?'low':'ready'}>
           <div className="score-head"><span>{!gameOver&&currentTurn==='player'?'▶ VOCÊ':'VOCÊ'}</span><strong>{playerPg}<small>/12 PG</small></strong></div>
