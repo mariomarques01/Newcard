@@ -60,6 +60,7 @@ export function ArenaHand({card,selected,affordable,missingEnergy=0,index=0,coun
       <img src={card.image} alt={card.name} draggable={false}/><b className="energy-cost">{card.cost}</b>
       {selected&&<span className="hand-selected-indicator" aria-hidden="true">✓</span>}
       {!affordable&&<span className="hand-lack">⚡ falta {missingEnergy}</span>}
+      {selected&&<span className="hand-ability" aria-label={`Habilidade: ${card.description}`}>{card.description}</span>}
       <span className="hand-name">{card.name}</span>
     </button>
     <button className="hand-info" onClick={onInspect} aria-label={`Habilidade de ${card.name}`}>i</button>
