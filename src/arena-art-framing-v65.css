@@ -1,0 +1,31 @@
+/* V65 — Center illustration, hide printed title strip, preserve the name below.
+   The source PNG contains a printed card header and a dark description footer. */
+@media (orientation:portrait) and (max-width:600px){
+ .arena-hero .hero-face>img.hero-original-art{
+  transform:scale(1.72)!important;
+  transform-origin:50% 17%!important;
+  object-position:50% 18%!important;
+ }
+ .arena-hand-card .hand-face>img{
+  transform:scale(1.72)!important;
+  transform-origin:50% 17%!important;
+  object-position:50% 18%!important;
+ }
+ /* Opaque title masks, below HUD labels and above the illustration. */
+ .arena-hero .hero-face::before{
+  content:"";position:absolute;z-index:2;pointer-events:none;
+  left:0;right:0;top:0;height:clamp(13px,16%,30px);
+  background:linear-gradient(180deg,#0b1829 0%,#0b1829 75%,#0b1829d9 91%,transparent 100%);
+ }
+ .arena-hand-card .hand-face::after{
+  content:"";position:absolute;z-index:2;pointer-events:none;
+  left:0;right:0;top:0;height:clamp(13px,15%,25px);
+  background:linear-gradient(180deg,#0b1829 0%,#0b1829 74%,#0b1829d9 90%,transparent 100%);
+ }
+ .arena-hero .hero-hp,.arena-hero .hero-condition,
+ .arena-hero .hero-name,.arena-hero .hero-stats,.arena-hero .hero-evolution,
+ .arena-hero .hero-health{z-index:3}
+ .arena-hand-card .energy-cost,.arena-hand-card .hand-name,
+ .arena-hand-card .hand-selected-indicator,.arena-hand-card .hand-lack{z-index:3}
+ .arena-hand-card .hand-info{z-index:4}
+}
