@@ -1,0 +1,73 @@
+/* V66 — Calm medieval battlefield, inspired by clear tabletop composition.
+   Preserve existing cards, controls, hit areas, and gameplay. */
+@media (orientation:portrait) and (max-width:600px){
+ /* Battlefield pieces: character portrait and essential combat stats only. */
+ .arena-board .arena-hero{border-width:1px;border-radius:13px;box-shadow:0 3px 8px #0009}
+ .arena-board .arena-hero::before{inset:2px;border-color:#e7c98a50}
+ .arena-board .hero-evolution,.arena-board .hero-info,.arena-board .hero-barrier{display:none!important}
+ .arena-board .hero-condition{display:none!important}
+ .arena-board .arena-hero.fallen .hero-condition,
+ .arena-board .arena-hero.protected .hero-condition{display:block!important}
+ .arena-board .hero-condition{
+  left:50%;top:43%;transform:translate(-50%,-50%);
+  width:max-content;max-width:95%;padding:3px 5px;
+  text-align:center;font-size:clamp(8px,2.3vw,10px);
+  border:1px solid #e7b980;border-radius:6px;
+  background:#1b1827e8;color:#f8e7d0;
+ }
+ .arena-board .arena-hero.protected .hero-condition{
+  top:41%;border-color:#8edff5;background:#102b44ed;color:#dff9ff;
+ }
+ .arena-board .arena-hero.fallen .hero-condition{
+  top:44%;border-color:#bcb4b4!important;background:#25232be9!important;
+ }
+ .arena-board .hero-hp{
+  top:5px;left:5px;padding:3px 5px;
+  font-size:clamp(11px,3.3vw,14px);
+  border-radius:9px;box-shadow:0 2px 6px #000a;
+ }
+ .arena-board .hero-name{
+  bottom:26px;padding:13px 2px 4px;
+  font-size:clamp(9px,2.6vw,11px);
+  background:linear-gradient(transparent,#030b16db 50%,#030b16f5);
+ }
+ .arena-board .hero-stats{bottom:5px;gap:5px}
+ .arena-board .hero-stats>span{
+  min-width:0;flex:1;max-width:72px;
+  border-radius:13px;padding:3px 2px;
+  font-size:clamp(10px,3vw,13px);
+  background:#091728ed;
+ }
+ .arena-board .hero-health{bottom:0}
+ .arena-board .arena-hero.active:not(.fallen){outline:1px solid #78e8fa;outline-offset:0}
+ .arena-board .arena-hero.targeted:not(.fallen){outline:1px solid #ff849d;outline-offset:0}
+ .arena-board .enemy-row,.arena-board .player-row{background-blend-mode:normal}
+ .arena-board .row-caption{font-size:clamp(9px,2.8vw,12px);opacity:.86}
+ /* Remove the thick, flat printed title strip: source card is framed as a portrait. */
+ .arena-board .hero-face::before{
+  height:clamp(12px,11%,20px);
+  background:linear-gradient(#12202bf5,#12202bd9 70%,transparent);
+ }
+ /* Hand is where abilities live; selected card reveals its own effect. */
+ .arena-hand-card .hand-ability{
+  display:-webkit-box;position:absolute;z-index:6;
+  left:4px;right:4px;bottom:27px;
+  -webkit-box-orient:vertical;-webkit-line-clamp:3;
+  overflow:hidden;pointer-events:none;
+  border:1px solid #e7cb8a9c;border-radius:5px;
+  background:#071523ed;padding:4px 3px;
+  color:#fff0d3;text-align:center;
+  font-size:clamp(9px,2.5vw,11px);line-height:1.2;
+  text-shadow:0 1px 3px #000;
+ }
+ .arena-hand-card.selected{z-index:8}
+ .arena-hand-card.selected .hand-name{background:linear-gradient(#071523a0,#071523f7)!important}
+ .arena-hand-card .hand-info{border-color:#e4c88a}
+ /* Existing selected-card strip carries the complete instruction and expand button. */
+ .arena-hint.has-card-selection .arena-inline-selection>span{
+  font-size:clamp(9px,2.6vw,11px);line-height:1.15;
+ }
+}
+@media (orientation:portrait) and (max-height:720px){
+ .arena-hand-card .hand-ability{bottom:22px;padding:2px;font-size:9px;-webkit-line-clamp:2}
+}
