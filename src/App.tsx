@@ -63,6 +63,7 @@ import './arena-hand-suit-finish-v61.css';
 import './arena-restore-art-v62.css';
 import './arena-direct-art-v63.css';
 import './arena-art-crop-v64.css';
+import './arena-art-framing-v65.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
