@@ -1,0 +1,22 @@
+.arena-hero{--evolution-tone:#cfb2ff}
+.arena-hero[data-suit="espadas"]{--evolution-tone:#98e9ff}
+.arena-hero[data-suit="copas"]{--evolution-tone:#9dffcf}
+.arena-hero[data-suit="ouros"]{--evolution-tone:#ffe09a}
+.arena-hero[data-suit="paus"]{--evolution-tone:#d3adff}
+.hero-evolution{position:absolute;z-index:8;right:4px;bottom:48px;display:flex;align-items:center;gap:3px;padding:2px 4px;border:1px solid #b7a5dc85;border-radius:5px;background:#0b1226ed;color:#d8c9f3;font:800 9px/1.1 system-ui;pointer-events:none;box-shadow:0 1px 4px #000b;font-variant-numeric:tabular-nums}
+.hero-evolution b{font-size:12px;line-height:1;color:var(--evolution-tone)}
+.arena-hero[data-evolved="yes"]:not(.fallen){border-color:var(--evolution-tone);box-shadow:0 0 0 1px #e2cfff88,0 0 14px color-mix(in srgb,var(--evolution-tone) 50%,transparent),0 5px 12px #000a}
+.arena-hero[data-evolved="yes"] .hero-evolution{color:#fff5dc;border-color:var(--evolution-tone);background:linear-gradient(135deg,#3a2759,#101424)}
+.character-evolved .character-body{filter:drop-shadow(0 0 3px #fff1b9) drop-shadow(0 0 8px var(--aura))}
+.character-evolved .character-backdrop{opacity:.55;background:radial-gradient(ellipse at 50% 35%,var(--aura),transparent 65%),repeating-conic-gradient(from 0deg,#ffe7b518 0deg 10deg,transparent 10deg 45deg)}
+.character-evolved .character-runes{opacity:.5;color:#fff0c5}
+.evolution-transformation{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 20%,#fff9dfcc 47%,var(--evolution-tone) 52%,transparent 78%);animation:evolution-sweep 1100ms ease-out both;mix-blend-mode:screen}
+@keyframes evolution-sweep{0%{opacity:0;transform:translateX(-85%) scaleX(.4)}20%{opacity:1}70%{opacity:.7}100%{opacity:0;transform:translateX(85%) scaleX(.5)}}
+.evolution-detail{width:100%;flex-shrink:0;border:1px solid #b695e8;border-radius:10px;padding:10px 12px;margin-bottom:12px;background:linear-gradient(120deg,#251839,#0e1726);color:#e9ddff;text-align:left}
+.evolution-detail strong{font:800 11px system-ui;letter-spacing:.06em}
+.evolution-detail p{font:11px/1.45 system-ui;margin:6px 0 0;color:#d6ddea}
+.evolution-track{display:flex;gap:5px;margin-top:7px;height:5px}
+.evolution-track i{flex:1;border-radius:3px;background:#bba4e52b}
+.evolution-track .filled{background:linear-gradient(90deg,#ba8cff,#ffe4a5);box-shadow:0 0 6px #d2b5ff66}
+@media(max-height:620px) and (orientation:portrait){.hero-evolution{bottom:43px;font-size:8px;padding:1px 3px}}
+@media(prefers-reduced-motion:reduce){.evolution-transformation{display:none}.character-evolved .character-body{filter:drop-shadow(0 0 5px var(--aura))}}

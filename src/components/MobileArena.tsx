@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import {evolutionCharge,EVOLUTION_ACTIONS} from '../game/evolution';
 import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
 import { CharacterPortrait } from './CharacterPortrait';
 import type { CSSProperties, PointerEvent } from 'react';
@@ -23,12 +24,23 @@ export function ArenaHero({hero:liveHero, active, targeted, valid, hovered, hit,
     const timer=setTimeout(apply,PROJECTILE_IMPACT_MS);
     return()=>clearTimeout(timer);
   },[liveHero.currentHp,liveHero.shield,liveHero.isAlive]);
-  const hero={...liveHero,...vitals};
+  const [evolutionVisible,setEvolutionVisible]=useState(!!liveHero.evolved);
+  const [evolutionFlash,setEvolutionFlash]=useState(false);
+  useEffect(()=>{
+    if(!liveHero.evolved){setEvolutionVisible(false);setEvolutionFlash(false);return;}
+    if(evolutionVisible)return;
+    const timer=setTimeout(()=>{setEvolutionVisible(true);setEvolutionFlash(true);},PROJECTILE_IMPACT_MS);
+    return()=>clearTimeout(timer);
+  },[liveHero.evolved,evolutionVisible]);
+  const hero={...liveHero,...vitals,evolved:evolutionVisible};
+  const charge=evolutionCharge(liveHero);
   const ratio=hero.maxHp>0?hero.currentHp/hero.maxHp:0;
   const hpState=ratio<=.34?'low':ratio<=.67?'mid':'high';
-  return <div id={`hero-card-${hero.id}`} data-hero-id={hero.id} data-suit={hero.suit} data-rank={hero.rank} data-hp={hpState} className={`arena-hero ${active?'active':''} ${targeted?'targeted':''} ${valid?'valid-target':''} ${hovered&&valid?'drop-target':''} ${!hero.isAlive?'fallen':''} ${defeatBurst?'defeat-fresh':''} ${hero.shield>0&&hero.isAlive?'protected':''} ${hit?'hero-under-attack':''}`}>
+  return <div id={`hero-card-${hero.id}`} data-evolved={evolutionVisible?'yes':'no'} data-evolution-charge={charge} data-hero-id={hero.id} data-suit={hero.suit} data-rank={hero.rank} data-hp={hpState} className={`arena-hero ${active?'active':''} ${targeted?'targeted':''} ${valid?'valid-target':''} ${hovered&&valid?'drop-target':''} ${!hero.isAlive?'fallen':''} ${defeatBurst?'defeat-fresh':''} ${evolutionFlash?'evolution-flash':''} ${hero.shield>0&&hero.isAlive?'protected':''} ${hit?'hero-under-attack':''}`}>
     <button className="hero-face" aria-label={`Selecionar ${hero.name}`} onClick={onSelect} onPointerDown={onStart} disabled={!liveHero.isAlive}>
       <CharacterPortrait hero={hero}/>
+      <span className="hero-evolution" aria-label={evolutionVisible?'Carta evoluída: +1 de ataque e +2 de escudo nesta batalha':`Evolução: ${charge} de ${EVOLUTION_ACTIONS} ações`} title={evolutionVisible?'Evoluída nesta batalha':`${charge}/${EVOLUTION_ACTIONS} ações para evoluir`}><b>{evolutionVisible?'✦':'✧'}</b>{evolutionVisible?'EVO':`${charge}/${EVOLUTION_ACTIONS}`}</span>
+      {evolutionFlash&&<span className="evolution-transformation" aria-hidden="true"/>}
       {hero.shield>0&&hero.isAlive&&<span className="hero-barrier" aria-label={`Protegido por ${hero.shield} de escudo`}><span>⛨</span></span>}
       <span className="hero-hp" aria-label={`Vida ${hero.currentHp} de ${hero.maxHp}`}>♥ {hero.currentHp}<small>/{hero.maxHp}</small></span>
       <span className="hero-condition">{!hero.isAlive?'ABATIDO':hero.isDefending?'DEFENDENDO':hero.hasAttacked?'AGIU':active?'ATIVO':targeted?'ALVO':''}</span>

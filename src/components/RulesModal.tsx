@@ -90,6 +90,11 @@ export const RulesModal: React.FC<RulesModalProps> = ({ onClose }) => {
               </li>
             </ul>
           </div>
+          <div className="p-3 rounded-xl bg-purple-950/30 border border-purple-500/40">
+            <h3 className="font-royal text-sm font-bold text-purple-200 mb-1">4. Evolução durante a batalha</h3>
+            <p>Cada carta de personagem, sua ou do rival, evolui após 3 ações válidas: atacar, defender, jogar uma habilidade ou usar o poder ÁS. O medidor fica na carta; toque em “i” para ver os detalhes.</p>
+            <p className="mt-2">Ao despertar, a carta ganha +1 ATQ e +2 Escudo uma única vez. O ataque maior dura até o fim da batalha; o escudo pode ser consumido normalmente pelos golpes. A evolução é salva com a partida em andamento e recomeça do zero em uma nova batalha.</p>
+          </div>
         </div>
 
         {/* Footer */}

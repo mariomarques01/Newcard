@@ -1,6 +1,8 @@
 export type Suit = 'espadas' | 'copas' | 'ouros' | 'paus' | 'coringa';
 
 export interface Hero {
+  evolutionCharge?: number;
+  evolved?: boolean;
   id: string;
   name: string;
   title: string;

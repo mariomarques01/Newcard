@@ -23,11 +23,12 @@ export interface CombatParticleCanvasRef {
   triggerBoard: (type:ParticleEffectType,label:string,card?:ActionCard)=>void;
   revealCard: (card:ActionCard,casterId:string)=>void;
   triggerHeroPower:(hero:Hero,targets:HeroPowerTarget[])=>void;
+  triggerEvolution:(hero:Hero)=>void;
   triggerOutcome:(elementId:string,outcome:CombatOutcome)=>void;
   clear: ()=>void;
 }
 type Point = {x:number;y:number};
-export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;school?:string;started:number;intensity?:'normal'|'legendary';impact?:ImpactKind;scope?:'board';actor?:{id:string;name:string;casting?:boolean}};
+export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;school?:string;started:number;intensity?:'normal'|'legendary';impact?:ImpactKind;evolution?:boolean;scope?:'board';actor?:{id:string;name:string;casting?:boolean}};
 const MAX_ACTIVE_EFFECTS = 6;
 // Projectile travel (900ms) + impact animation (1350ms) + cleanup margin.
 const EFFECT_LIFETIME_MS = 2400;
@@ -46,7 +47,7 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
     document.querySelectorAll('[data-hero-id]').forEach(el=>cueCharacter(el.id,'idle'));};
   useEffect(()=>()=>{timers.current.forEach(clearTimeout);timers.current.clear();},[]);
   useImperativeHandle(ref,()=>{
-    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string,scope?:'board',actor?:BattleEffect['actor'],school?:string,presentation:Pick<BattleEffect,'intensity'|'impact'>={})=>{
+    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string,scope?:'board',actor?:BattleEffect['actor'],school?:string,presentation:Pick<BattleEffect,'intensity'|'impact'|'evolution'>={})=>{
       const id=++sequence.current;
       setEffects(prev=>[...prev.slice(-(MAX_ACTIVE_EFFECTS - 1)),{id,from,to,type,label:label||labels[type],travel,flavor,scope,actor,school,...presentation,started:performance.now()}]);
       const timer=setTimeout(()=>{setEffects(prev=>prev.filter(e=>e.id!==id));timers.current.delete(timer);},EFFECT_LIFETIME_MS);
@@ -65,6 +66,13 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
     };
     return {
       clear,
+      triggerEvolution:(hero)=>{
+        const p=center(`hero-card-${hero.id}`);if(!p)return;
+        const school=schoolForSuit(hero.suit);
+        announce({title:`${hero.name} despertou`,summary:'+1 ATQ · +2 Escudo até o fim da batalha',image:hero.image,kind:'evolution',school});
+        emit(p,p,'gold_blast','EVOLUÍDO',false,undefined,undefined,{id:hero.id,name:hero.name,casting:true},school,{intensity:'legendary',evolution:true});
+        cueCharacter(`hero-card-${hero.id}`,'cast');
+      },
       triggerHeroPower:(hero,targets)=>{
         const sourceId=`hero-card-${hero.id}`,from=center(sourceId);if(!from)return;
         const power=heroPowerPresentation(hero);
@@ -113,7 +121,7 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
     const dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
     const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?`${PROJECTILE_IMPACT_MS}ms`:'0ms'} as CSSProperties;
     if(e.impact)return <div key={e.id} className={`combat-outcome outcome-${e.impact}`} data-outcome={e.impact} style={{left:e.to.x,top:e.to.y}}><span className="outcome-seal">{e.impact==='blocked'?'⛨':e.impact==='shield-break'?'✧':e.impact==='lethal'?'✦':e.impact==='heavy'?'⚔':'✧'}</span></div>;
-    return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"} ${e.scope==='board'?'fx-board':''}`} data-intensity={e.intensity||'normal'} data-school={e.school} data-effect={e.type} data-travel={e.travel} data-scope={e.scope||'target'} style={vars}>
+    return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"} ${e.scope==='board'?'fx-board':''}`} data-evolution={e.evolution||undefined} data-intensity={e.intensity||'normal'} data-school={e.school} data-effect={e.type} data-travel={e.travel} data-scope={e.scope||'target'} style={vars}>
       <div className="scene-light" style={{left:e.to.x,top:e.to.y}}/>
       {e.travel&&<div className="casting-seal" style={{left:e.from.x,top:e.from.y}}><i/><span>✧</span></div>}
       {e.travel&&<div className="fx-flight" style={{left:e.from.x,top:e.from.y}}><div className="fx-bolt"><i/><b>{e.flavor==='heart'?'♥':e.flavor==='coin'?'◆':e.flavor==='flame'?'♨':e.flavor==='thorn'?'♣':e.flavor==='blade'?'⚔':'✦'}</b></div></div>}

@@ -13,6 +13,8 @@ import { TargetingArrow } from './components/TargetingArrow';
 import { Crown } from 'lucide-react';
 import { targetFor, makeDeck, resolveCard, abilityFor } from './game/cards';
 import { ArenaHero, ArenaHand } from './components/MobileArena';
+import {advanceEvolution} from './game/evolution';
+import './arena-evolution.css';
 import {heroPowerPresentation,heroPowerTargets} from './game/heroPowerPresentation';
 import { PROJECTILE_IMPACT_MS, HIT_REACTION_MS } from './game/combatTiming';
 import './arena.css';
@@ -353,6 +355,19 @@ export default function App() {
     setCombatLogs((prev) => [newEntry, ...prev]);
   };
 
+  const evolveCourt = (court:Hero[],actorId:string,delay=0):Hero[] => {
+    const result=advanceEvolution(court,actorId);
+    if(result.awakened){
+      const hero=result.awakened;
+      atImpact(()=>{
+        particleCanvasRef.current?.triggerEvolution(hero);
+        setHint(`${hero.name} DESPERTOU! +1 ATQ e +2 Escudo até o fim desta batalha.`);
+        addLog(hero.name,'Evoluiu após 3 ações: +1 ATQ e +2 Escudo. A evolução dura até o fim desta batalha.','system');
+      },delay);
+    }
+    return result.heroes;
+  };
+
   // Check victory / defeat conditions
   const checkWinConditions = (
     currentPglayer: number,
@@ -419,7 +434,8 @@ export default function App() {
     setDiscardPile(prev=>[card,...remaining.slice(5),...prev]);
     setDeck(deck.slice(draws.length));
     setPlayerEnergy(Math.min(maxEnergy,playerEnergy-card.cost+(a.energy||0)));
-    setPlayerHeroes(result.allies); setRivalHeroes(result.enemies);
+    const progressedAllies=evolveCourt(result.allies,ally.id,a.damage?PROJECTILE_IMPACT_MS:0);
+    setPlayerHeroes(progressedAllies); setRivalHeroes(result.enemies);
     setPlayerPg(pg); setRivalPg(rivalPg-stolen); setSelectedCardId(null);
     sound.playCardPlay();
     const sourceId=`hero-card-${ally.id}`;
@@ -440,7 +456,7 @@ export default function App() {
     }
     setHint(`${card.name} • ${card.description}`);
     addLog(card.name,card.description,'card');
-    checkWinConditions(pg,rivalPg-stolen,result.allies,result.enemies);
+    checkWinConditions(pg,rivalPg-stolen,progressedAllies,result.enemies);
   };
 
   const handleUseCard = () => {
@@ -528,11 +544,12 @@ export default function App() {
       gainedPg
     );
 
-    setPlayerHeroes(updatedPlayerHeroes);
+    const progressedHeroes=evolveCourt(updatedPlayerHeroes,attacker.id,PROJECTILE_IMPACT_MS);
+    setPlayerHeroes(progressedHeroes);
     setRivalHeroes(updatedRivalHeroes);
     setPlayerPg(newPlayerPg);
 
-    checkWinConditions(newPlayerPg, rivalPg, updatedPlayerHeroes, updatedRivalHeroes);
+    checkWinConditions(newPlayerPg, rivalPg, progressedHeroes, updatedRivalHeroes);
   };
 
   const handleAttack = () => {
@@ -576,7 +593,7 @@ export default function App() {
       'defense'
     );
 
-    setPlayerHeroes(updatedPlayerHeroes);
+    setPlayerHeroes(evolveCourt(updatedPlayerHeroes,activePlayerHero.id));
   };
 
   // 7. USE ACE SPECIAL POWER (COSTS 2 ENERGY)
@@ -658,6 +675,7 @@ export default function App() {
       }
     }
 
+    updatedPlayerHeroes=evolveCourt(updatedPlayerHeroes,activePlayerHero.id,PROJECTILE_IMPACT_MS);
     setPlayerHeroes(updatedPlayerHeroes);
     setRivalHeroes(updatedRivalHeroes);
     setPlayerPg(newPlayerPg);
@@ -692,7 +710,7 @@ export default function App() {
       const hp=Math.max(0,target.currentHp-damage+absorbed);
       const gained=hp===0?2:damage-absorbed>=3?1:0;
       let nextPlayers=playerHeroes.map(h=>h.id===target.id?{...h,currentHp:hp,shield:h.shield-absorbed,isAlive:hp>0}:{...h});
-      const nextRivals=rivalHeroes.map(h=>({...h,isDefending:false,def:h.def-(h.isDefending?1:0),shield:h.shield+(h.id===attacker.id&&h.id==='r_rei_ouros'?1:0)}));
+      const nextRivals=evolveCourt(rivalHeroes.map(h=>({...h,isDefending:false,def:h.def-(h.isDefending?1:0),shield:h.shield+(h.id===attacker.id&&h.id==='r_rei_ouros'?1:0)})),attacker.id,PROJECTILE_IMPACT_MS);
       const pg=Math.min(12,rivalPg+gained);
       setPlayerHeroes(nextPlayers);setRivalHeroes(nextRivals);setRivalPg(pg);
       showCombatOutcome(target.id, absorbed, Math.min(target.currentHp, damage-absorbed), hp===0, target.shield>0 && absorbed===target.shield);
@@ -706,11 +724,11 @@ export default function App() {
         if(token!==matchToken.current) return;
         const guard=[...nextRivals].filter(h=>h.isAlive&&!h.isDefending).sort((a,b)=>a.currentHp-b.currentHp)[0];
         if(guard){
-          setRivalHeroes(nextRivals.map(h=>h.id===guard.id?{...h,shield:h.shield+3,isDefending:true,def:h.def+1}:h));
+          setRivalHeroes(evolveCourt(nextRivals.map(h=>h.id===guard.id?{...h,shield:h.shield+3,isDefending:true,def:h.def+1}:h),guard.id));
           particleCanvasRef.current?.triggerCardBurst(`hero-card-${guard.id}`,'shield','+3 ESCUDO');sound.playDefend();
           addLog(guard.name,'Protegeu sua carta com +3 Escudo e +1 DEF.','defense');
         }
-      },350);
+      },PROJECTILE_IMPACT_MS+180);
       setTimeout(()=>{
         if(token!==matchToken.current) return;
         const queenAlive=nextPlayers.some(h=>h.id==='p_rainha_copas'&&h.isAlive);
@@ -722,7 +740,7 @@ export default function App() {
         setPlayerEnergy(maxEnergy);setCurrentTurn('player');setRound(round+1);
         setActivePlayerHeroId(nextPlayers.find(h=>h.id===activePlayerHeroId&&h.isAlive)?.id||nextPlayers.find(h=>h.isAlive)!.id);
         setHint('Seu turno. Arraste uma carta ou um herói até o alvo.');sound.playCardDraw();
-      },700);
+      },PROJECTILE_IMPACT_MS+HIT_REACTION_MS+200);
     },900);
   };
 
@@ -882,7 +900,7 @@ export default function App() {
       {showCampaign && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Campanha"><div><button className="close-log" onClick={()=>setShowCampaign(false)}>Fechar ×</button><h2>⚑ Campanha dos Quatro Reinos</h2><p>Conquiste cada capítulo para desbloquear o próximo. Cada reino tem um chefe com resistência própria; os chefes dos capítulos 3 e 4 também causam +1 de dano quando atacam.</p>{CAMPAIGN_CHAPTERS.map((name,index)=><p key={name}><button disabled={index+1>unlockedChapter} onClick={()=>{if(handleRestartGame(index+1))setShowCampaign(false);}}>{index+1>unlockedChapter?'🔒':'⚔'} Capítulo {index+1}: {name}{chapter===index+1?' · ATUAL':''}</button><small>👑 {CAMPAIGN_BOSSES[index]} — {CAMPAIGN_BOSS_SKILLS[index]}</small></p>)}<small>Progresso salvo neste navegador.</small><h3>Relíquias permanentes</h3><p>Equipe até {MAX_EQUIPPED_RELICS} relíquias para a próxima batalha. Alterações não afetam a partida atual.</p>{RELIC_NAMES.map((name,index)=><p key={name}>{index<3?<button disabled={!relics.includes(index+1)||(!equippedRelics.includes(index+1)&&equippedRelics.filter(id=>relics.includes(id)).length>=MAX_EQUIPPED_RELICS)} onClick={()=>toggleRelic(index+1)}>{!relics.includes(index+1)?'🔒 Bloqueada':equippedRelics.includes(index+1)?'✓ Equipada':'○ Equipar'} {name}</button>:<b>{relics.includes(4)?'🏆':'🔒'} {name}</b>}<small>{['+2 escudo inicial em todos os heróis','+2 vida máxima em todos os heróis','+1 ataque em todos os heróis','Relíquia lendária de conclusão'][index]}</small></p>)}</div></div>}
       {showProfile && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Perfil do jogador"><div><button className="close-log" onClick={()=>setShowProfile(false)}>Fechar ×</button><h2>★ Crônicas do Reino</h2><p>Partidas concluídas: <b>{profile.wins+profile.losses}</b></p><p>Vitórias: <b>{profile.wins}</b> · Derrotas: <b>{profile.losses}</b></p><p>Taxa de vitória: <b>{profile.wins+profile.losses?Math.round(profile.wins/(profile.wins+profile.losses)*100):0}%</b></p><p>Maior rodada alcançada: <b>{profile.bestRound}</b></p><p>Recorde de glória: <b>{profile.bestPg} PG</b></p><h3>Conquistas</h3><p>{profile.wins>=1?'🏆':'🔒'} Primeira vitória</p><p>{profile.wins>=5?'🏆':'🔒'} Veterano — 5 vitórias</p><p>{profile.wins>=10?'🏆':'🔒'} Lenda — 10 vitórias</p><p>{profile.bestPg>=12?'🏆':'🔒'} Glória máxima — 12 PG</p><small>Estatísticas salvas somente neste navegador.</small></div></div>}
       {showLog && <div className="arena-modal" role="dialog" aria-modal="true" aria-label="Histórico da batalha"><div><button className="close-log" onClick={()=>setShowLog(false)}>Fechar ×</button><h2>Registro de batalha</h2>{combatLogs.map(log=><p key={log.id}><b>{log.speaker}</b> {log.text}</p>)}</div></div>}
-      {inspectingItem && <CardInspectModal item={inspectingItem} onClose={()=>setInspectingItem(null)}/>}
+      {inspectingItem && <CardInspectModal item={'maxHp' in inspectingItem?[...playerHeroes,...rivalHeroes].find(h=>h.id===inspectingItem.id)||inspectingItem:inspectingItem} onClose={()=>setInspectingItem(null)}/>}
       {showCompendium && <CardCompendiumModal onClose={()=>setShowCompendium(false)} onInspect={item=>setInspectingItem(item)}/>}
       {showRules && <RulesModal onClose={()=>setShowRules(false)}/>}
       {gameOver && resultVisible && <VictoryModal status={gameOver} playerPg={playerPg} rivalPg={rivalPg} rounds={round} onPlayAgain={()=>handleRestartGame()}/>}

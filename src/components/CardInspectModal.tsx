@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Hero, ActionCard } from '../types/game';
+import {evolutionCharge,EVOLUTION_ACTIONS} from '../game/evolution';
 import { SuitIcon } from './SuitIcon';
 import { X, Heart, Swords, Shield, Sparkles, Flame, Zap, Eye, BookOpen, AlertTriangle } from 'lucide-react';
 
@@ -61,6 +62,12 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ item, onClos
 
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 flex flex-col items-center">
+          {isHero&&<div className="evolution-detail" data-evolution-detail={item.evolved?'evolved':'charging'}>
+            <strong>{item.evolved?'✦ CARTA EVOLUÍDA':`✧ EVOLUÇÃO · ${evolutionCharge(item)}/${EVOLUTION_ACTIONS}`}</strong>
+            <div className="evolution-track" role="progressbar" aria-label="Ações para evoluir" aria-valuenow={evolutionCharge(item)} aria-valuemin={0} aria-valuemax={EVOLUTION_ACTIONS}>{Array.from({length:EVOLUTION_ACTIONS},(_,i)=><i key={i} className={i<evolutionCharge(item)?'filled':''}/>)}</div>
+            <p>{item.evolved?'Bônus já aplicado: +1 ATQ e +2 Escudo. A forma evoluída dura até o fim desta batalha.':'Ataque, defenda, jogue uma habilidade ou use o poder ÁS com esta carta. Na terceira ação, ela desperta com +1 ATQ e +2 Escudo.'}</p>
+          </div>}
+
           {viewMode === 'card' ? (
             /* FULL CARD AUTHENTIC VIEW */
             <div className="flex flex-col items-center w-full">
