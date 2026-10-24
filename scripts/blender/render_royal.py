@@ -116,6 +116,18 @@ scene.render.resolution_y=896
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
 scene.render.film_transparent=True
+# Character identity objects can be switched per portrait without modifying game cards.
+beard = sphere("Removable royal beard", (0,-.20,2.30),(.30,.22,.24),hair)
+mustache_left = sphere("Removable left mustache",(-.13,-.30,2.43),(.14,.06,.06),hair)
+mustache_right = sphere("Removable right mustache",(.13,-.30,2.43),(.14,.06,.06),hair)
+braid_left = sphere("Removable left braid",(-.38,.10,2.40),(.13,.15,.45),hair)
+braid_right = sphere("Removable right braid",(.38,.10,2.40),(.13,.15,.45),hair)
+gem = sphere("Royal forehead gem",(0,-.28,3.02),(.075,.055,.12),magic)
+cape = sphere("Removable royal cape",(0,.29,1.38),(.67,.14,.88),red)
+nose = sphere("Distinctive nose",(0,-.34,2.52),(.095,.105,.15),skin)
+brow_left = sphere("Left expressive brow",(-.15,-.315,2.70),(.12,.055,.045),hair)
+brow_right = sphere("Right expressive brow",(.15,-.315,2.70),(.12,.055,.045),hair)
+
 # Render a four-suit concept collection with distinct heraldic palettes and equipment.
 # Every image is a review artifact; original game artwork remains untouched.
 variants = [
@@ -133,6 +145,23 @@ for name, armor_color, spell_color, ring_name in variants:
     for obj in bpy.data.objects:
         if obj.name.startswith("VFX "):
             obj.hide_render = obj.name != "VFX " + ring_name
+    # Different facial proportions, grooming, royal ornaments and silhouettes.
+    king = "king" in name
+    queen = "queen" in name
+    jack = "jack" in name
+    guardian = "guardian" in name
+    beard.hide_render = not (king or guardian)
+    mustache_left.hide_render = not (king or guardian)
+    mustache_right.hide_render = not (king or guardian)
+    braid_left.hide_render = not queen
+    braid_right.hide_render = not queen
+    gem.hide_render = jack
+    cape.hide_render = jack
+    nose.scale = (.105,.11,.17) if king else ((.065,.08,.12) if queen else (.095,.10,.14))
+    brow_left.scale.z = .060 if guardian else .038
+    brow_right.scale.z = .060 if guardian else .038
+    hair.diffuse_color = ((.16,.085,.035,1) if queen else ((.06,.09,.045,1) if guardian else (.08,.045,.035,1)))
+    hair.node_tree.nodes.get("Principled BSDF").inputs["Base Color"].default_value = hair.diffuse_color
     # Differing silhouettes and poses, rather than just recolored cards.
     bpy.data.objects["Regal torso"].scale.x = .60 if "king" in name else (.51 if "queen" in name else .55)
     bpy.data.objects["Distinctive royal face"].scale.x = .37 if "king" in name else (.32 if "queen" in name else .35)
