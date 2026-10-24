@@ -1,0 +1,54 @@
+/* V62 — iPhone visibility recovery: original art first, optional animation second. */
+@media (orientation:portrait) and (max-width:600px){
+ .hero-face .character-stage{display:block;isolation:isolate}
+ .hero-face .character-stage>.portrait-fallback{
+  display:block!important;position:absolute!important;inset:0!important;
+  width:100%!important;height:100%!important;max-width:none!important;
+  object-fit:cover!important;object-position:center 25%!important;
+  opacity:1!important;visibility:visible!important;z-index:0;
+  filter:none!important;
+ }
+ /* The action atlas is an optional effect; never cover the approved illustration at rest. */
+ .hero-face .character-stage>.character-body{z-index:1;opacity:0;visibility:hidden}
+ .hero-face .character-stage[data-action="attack"]>.character-body,
+ .hero-face .character-stage[data-action="cast"]>.character-body,
+ .hero-face .character-stage[data-action="guard"]>.character-body,
+ .hero-face .character-stage[data-action="hurt"]>.character-body{
+  opacity:.78;visibility:visible;
+ }
+ .hero-face .character-stage>.character-backdrop,
+ .hero-face .character-stage>.character-runes,
+ .hero-face .character-stage>.character-magic,
+ .hero-face .character-stage>.character-vignette{z-index:2;pointer-events:none}
+ .hero-face .character-stage>.character-vignette{background:linear-gradient(#02050b15,transparent 42%,#02050b45)}
+ .arena-hand .hand-face img{
+  display:block!important;position:relative!important;z-index:1;
+  width:100%!important;height:100%!important;max-width:none!important;
+  object-fit:cover!important;object-position:center 22%!important;
+  transform:none!important;opacity:1!important;visibility:visible!important;
+ }
+ .arena-hand .hand-face::after{height:12px;opacity:.35}
+ .arena-hand .hand-name{
+  display:block!important;z-index:3;bottom:0;
+  padding:8px 2px 3px!important;
+  font-size:clamp(9px,2.4vw,11px)!important;
+  line-height:1.05!important;color:#fff1d4;
+  text-shadow:0 1px 3px #000,0 0 5px #000;
+ }
+ .arena-score{grid-template-columns:minmax(0,1fr) minmax(84px,26%) minmax(0,1fr);overflow:hidden}
+ .arena-score .score-side{min-width:0;overflow:hidden;gap:1px}
+ .arena-score .score-head{min-width:0;gap:2px;flex-wrap:nowrap}
+ .arena-score .score-head span{font-size:clamp(7px,2vw,9px);letter-spacing:0;white-space:nowrap}
+ .arena-score .score-head strong{font-size:clamp(15px,4.5vw,22px)!important;flex-shrink:0}
+ .arena-score .score-head strong small{font-size:8px}
+ .arena-score .energy-track{gap:2px;min-width:0;overflow:hidden}
+ .arena-score .energy-track i{width:clamp(6px,1.9vw,9px);height:clamp(6px,1.9vw,9px);flex-shrink:1}
+ .arena-score .energy-track b{font-size:10px;white-space:nowrap;margin:0 1px}
+ .arena-score .pg-track{gap:1px;min-width:0}
+ .arena-score .score-turn{min-width:0;overflow:hidden}
+}
+@media(orientation:portrait) and (max-width:390px){
+ .arena-score{grid-template-columns:minmax(0,1fr) 82px minmax(0,1fr);padding:3px 4px;column-gap:2px}
+ .arena-score .score-head span{font-size:7px}
+ .arena-score .score-head strong{font-size:15px!important}
+}
