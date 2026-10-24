@@ -1,7 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {evolutionCharge,EVOLUTION_ACTIONS} from '../game/evolution';
 import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
-import { CharacterPortrait } from './CharacterPortrait';
 import type { CSSProperties, PointerEvent } from 'react';
 import type { Hero, ActionCard } from '../types/game';
 
@@ -38,7 +37,7 @@ export function ArenaHero({hero:liveHero, active, targeted, valid, hovered, hit,
   const hpState=ratio<=.34?'low':ratio<=.67?'mid':'high';
   return <div id={`hero-card-${hero.id}`} data-evolved={evolutionVisible?'yes':'no'} data-evolution-charge={charge} data-hero-id={hero.id} data-suit={hero.suit} data-rank={hero.rank} data-hp={hpState} className={`arena-hero ${active?'active':''} ${targeted?'targeted':''} ${valid?'valid-target':''} ${hovered&&valid?'drop-target':''} ${!hero.isAlive?'fallen':''} ${defeatBurst?'defeat-fresh':''} ${evolutionFlash?'evolution-flash':''} ${hero.shield>0&&hero.isAlive?'protected':''} ${hit?'hero-under-attack':''}`}>
     <button className="hero-face" aria-label={`Selecionar ${hero.name}`} onClick={onSelect} onPointerDown={onStart} disabled={!liveHero.isAlive}>
-      <CharacterPortrait hero={hero}/>
+      <img className="hero-original-art" src={hero.image} alt="" draggable={false} loading="eager" decoding="async"/>
       <span className="hero-evolution" aria-label={evolutionVisible?'Carta evoluída: +1 de ataque e +2 de escudo nesta batalha':`Evolução: ${charge} de ${EVOLUTION_ACTIONS} ações`} title={evolutionVisible?'Evoluída nesta batalha':`${charge}/${EVOLUTION_ACTIONS} ações para evoluir`}><b>{evolutionVisible?'✦':'✧'}</b>{evolutionVisible?'EVO':`${charge}/${EVOLUTION_ACTIONS}`}</span>
       {evolutionFlash&&<span className="evolution-transformation" aria-hidden="true"/>}
       {hero.shield>0&&hero.isAlive&&<span className="hero-barrier" aria-label={`Protegido por ${hero.shield} de escudo`}><span>⛨</span></span>}
