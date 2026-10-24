@@ -66,6 +66,7 @@ import './arena-art-crop-v64.css';
 import './arena-art-framing-v65.css';
 import './arena-clean-battlefield-v66.css';
 import './arena-menu-portrait-v67.css';
+import './arena-menu-hud-fix-v68.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
@@ -860,7 +861,7 @@ export default function App() {
         <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
         <nav className="arena-menu" aria-label="Menu do jogo">
           <button type="button" className="arena-menu-trigger" aria-expanded={showGameMenu} aria-controls="arena-menu-panel" aria-label="Abrir menu do jogo" onClick={()=>setShowGameMenu(v=>!v)}>⋮</button>
-          {showGameMenu&&<div id="arena-menu-panel" className="arena-menu-panel" role="group" aria-label="Opções do jogo">
+          {showGameMenu&&<><button type="button" className="arena-menu-dismiss" aria-label="Fechar menu" onClick={()=>setShowGameMenu(false)}></button><div id="arena-menu-panel" className="arena-menu-panel" role="group" aria-label="Opções do jogo">
             <button onClick={()=>{setShowGameMenu(false);setShowPreparation(true)}}>⚔ Preparação</button>
             <button onClick={()=>{setShowGameMenu(false);setShowCampaign(true)}}>⚑ Campanha</button>
             <button onClick={()=>{setShowGameMenu(false);setShowProfile(true)}}>★ Perfil e estatísticas</button>
@@ -870,7 +871,7 @@ export default function App() {
             <button onClick={()=>setSoundEnabled(!soundEnabled)}>{soundEnabled?'♫ Desativar som':'♪ Ativar som'}</button>
             <button onClick={()=>{setShowGameMenu(false);setMenuPaused(true)}}>Ⅱ Pausar visualização</button>
             <button onClick={()=>{setShowGameMenu(false);handleRestartGame()}}>↻ Reiniciar partida</button>
-          </div>}
+          </div></>}
         </nav>
       </header>
       {menuPaused&&<div className="arena-pause-cover" role="dialog" aria-modal="true" aria-label="Partida pausada"><strong>Ⅱ PAUSA</strong><p>Visualização pausada. O progresso continua salvo automaticamente.</p><button onClick={()=>setMenuPaused(false)}>CONTINUAR</button></div>}
