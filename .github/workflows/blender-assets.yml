@@ -1,0 +1,32 @@
+name: Blender 3D Asset Preview
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/blender/**'
+      - '.github/workflows/blender-assets.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install headless Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender
+          blender --version
+      - name: Render medieval hero and effects
+        run: |
+          blender -b -t 2 --python scripts/blender/render_royal.py -- --output dist-blender
+      - name: Publish preview for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-medieval-preview
+          path: dist-blender/*.png
+          if-no-files-found: error
