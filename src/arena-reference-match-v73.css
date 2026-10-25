@@ -97,14 +97,14 @@
  .mobile-game.mobile-game .arena-board .player-row .row-caption small{display:none}
 
  .mobile-game.mobile-game .arena-board .arena-effect-target{position:absolute!important;margin:0!important;padding:0!important;max-height:none!important;flex:none!important;pointer-events:auto;z-index:1}
- .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target{top:28.3%!important;width:17.6%!important;height:10.9%!important}
- .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(1){left:19.9%!important}
- .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(2){left:41.2%!important}
- .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(3){left:62.5%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target{top:47%!important;width:15.8%!important;height:9.7%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(1){left:25.4%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(2){left:42.1%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(3){left:58.8%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target{top:27.86%!important;width:19%!important;height:11.78%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(1){left:19.2%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(2){left:40.5%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(3){left:61.8%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target{top:46.61%!important;width:17.06%!important;height:10.48%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(1){left:22.97%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(2){left:41.47%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(3){left:59.97%!important}
 
  /* Hero card: arched portrait, heart (HP) top-left, ATK / shield badges at the base */
  .mobile-game.mobile-game .arena-board .arena-hero{
@@ -219,11 +219,11 @@
  .mobile-game.mobile-game .arena-hand>.row-caption small{position:absolute;left:0!important;right:0!important;width:100%!important;max-width:none;top:68.3%!important;height:2.6%!important;display:flex;align-items:center;justify-content:center;
   font:700 calc(var(--u)*2.6)/1 Cinzel,serif!important;color:#3a2814!important;text-shadow:0 1px 0 #f1dcaa88}
  .mobile-game.mobile-game .arena-hand>.hand-cards{
-  position:absolute!important;left:0!important;right:0!important;top:71.4%!important;height:9.7%!important;width:auto!important;max-height:none!important;
+  position:absolute!important;left:0!important;right:0!important;top:70.62%!important;height:10.48%!important;width:auto!important;max-height:none!important;
   display:flex!important;justify-content:center;align-items:stretch;gap:.9%!important;padding:0!important;margin:0!important;overflow:visible!important;pointer-events:none;
  }
  .mobile-game.mobile-game .arena-hand .arena-hand-card{
-  position:relative!important;flex:none!important;width:12.4%!important;height:100%!important;max-height:none!important;aspect-ratio:auto!important;margin:0!important;padding:0!important;
+  position:relative!important;flex:none!important;width:13.39%!important;height:100%!important;max-height:none!important;aspect-ratio:auto!important;margin:0!important;padding:0!important;
   left:auto!important;top:auto!important;transform:none!important;overflow:visible!important;pointer-events:auto;border:0!important;background:none!important;box-shadow:none!important;border-radius:calc(var(--u)*1.7)!important;
   --ring:#c28cff;
  }
