@@ -67,6 +67,7 @@ import './arena-art-framing-v65.css';
 import './arena-clean-battlefield-v66.css';
 import './arena-menu-portrait-v67.css';
 import './arena-menu-hud-fix-v68.css';
+import './arena-parchment-redesign-v69.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
