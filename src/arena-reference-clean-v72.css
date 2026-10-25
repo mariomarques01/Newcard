@@ -1,0 +1,157 @@
+/* V72: precise spacing of reference scene. One visible layer per UI element.
+   Fixed card proportions, contained actions, no duplicated printed card titles. */
+@media(orientation:portrait) and (max-width:600px){
+ .mobile-game{
+  grid-template-rows:clamp(38px,5dvh,46px) clamp(49px,6.5dvh,60px) minmax(0,1fr) clamp(119px,16.5dvh,148px) clamp(32px,4.3dvh,39px) clamp(90px,12.3dvh,112px)!important;
+  padding:calc(env(safe-area-inset-top) + 5px) 7px calc(env(safe-area-inset-bottom) + 7px)!important;
+ }
+ /* Background already includes the frame, score banner, divider and action slots. */
+ .mobile-game>.arena-header{margin:0 10px!important;padding:0 8px!important;align-items:center!important}
+ .arena-header .arena-menu-trigger{width:35px!important;min-width:35px!important;height:34px!important;min-height:34px!important}
+ .mobile-game>.arena-score{
+  margin:0 17px!important;padding:2px 4px!important;
+  grid-template-columns:minmax(0,1fr) minmax(86px,30%) minmax(0,1fr)!important;
+  gap:2px!important;overflow:hidden!important;
+ }
+ .arena-score .score-side{background:none!important;border:0!important;box-shadow:none!important;padding:2px!important;overflow:hidden!important}
+ .arena-score .score-head{display:flex!important;flex-wrap:nowrap!important;white-space:nowrap!important;justify-content:center!important;gap:2px!important}
+ .arena-score .score-head span{font-size:clamp(8px,2.15vw,10px)!important}
+ .arena-score .score-head strong{font-size:clamp(14px,3.7vw,18px)!important}
+ .arena-score .score-head strong small{font-size:8px!important}
+ .arena-score .score-turn{height:39px!important;min-height:0!important;overflow:hidden!important;justify-content:center!important}
+ .arena-score .score-turn small{font-size:9px!important}
+ .arena-score .score-turn strong{font-size:clamp(11px,3vw,14px)!important}
+ .arena-score .pg-track{height:4px!important}
+ .arena-score .energy-track{height:12px!important;overflow:hidden!important}
+ /* Separate hero lanes from labels, keep portraits within the intended open parchment. */
+ .mobile-game>.arena-board{
+  margin:0 17px!important;padding:4px 2px!important;
+  grid-template-rows:minmax(0,1fr) 31px minmax(0,1fr)!important;
+  overflow:hidden!important;
+ }
+ .arena-board .enemy-row,.arena-board .player-row{
+  display:grid!important;grid-template-rows:clamp(35px,4.5dvh,44px) minmax(0,1fr)!important;
+  padding:0 1px 4px!important;overflow:hidden!important;
+ }
+ .arena-board .enemy-row .row-caption{align-items:center!important;justify-content:flex-start!important;padding-top:3px!important}
+ .arena-board .player-row .row-caption{align-items:flex-start!important;justify-content:center!important;padding-left:8px!important}
+ .arena-board .row-caption span{font-size:clamp(12px,3.2vw,15px)!important;line-height:1.1!important}
+ .arena-board .row-caption small{font-size:clamp(9px,2.3vw,11px)!important}
+ .arena-board .hero-row{align-items:center!important;justify-content:center!important;gap:clamp(12px,3.3vw,23px)!important;overflow:visible!important}
+ .arena-board .arena-effect-target{
+  width:min(27%,116px)!important;height:clamp(104px,62%,162px)!important;
+  max-height:100%!important;flex:0 0 auto!important;
+ }
+ .arena-board .arena-hero{
+  border-radius:47% 47% 11px 11px / 30% 30% 11px 11px!important;
+  border:2px solid #725739!important;
+  overflow:visible!important;
+  box-shadow:inset 0 0 0 1px #d9b779,0 2px 3px #0008!important;
+ }
+ .arena-board .arena-hero.active{box-shadow:0 0 0 2px #6ce6fc,0 0 7px #31a5dc!important}
+ .arena-board .arena-hero.targeted{box-shadow:0 0 0 2px #fa8fa3,0 0 7px #c75472!important}
+ .arena-board .hero-face{border-radius:45% 45% 8px 8px / 29% 29% 8px 8px!important}
+ .arena-board .hero-face>img.hero-original-art{
+  inset:0!important;width:100%!important;height:100%!important;
+  object-fit:cover!important;object-position:center 28%!important;
+  transform:scale(1.05)!important;transform-origin:center 20%!important;
+ }
+ /* Opaque plate hides the title and stats printed in the original card PNG. */
+ .arena-board .hero-face::after{
+  display:block!important;content:""!important;position:absolute!important;
+  bottom:0!important;left:0!important;right:0!important;top:auto!important;
+  height:38%!important;z-index:3!important;
+  background:linear-gradient(180deg,#32281ce0,#221a12 36%,#221a12 100%)!important;
+ }
+ .arena-board .hero-name{
+  bottom:20px!important;z-index:7!important;
+  padding:0 1px!important;font:800 clamp(7px,1.8vw,9px)/1.05 Cinzel,serif!important;
+  text-overflow:ellipsis!important;white-space:nowrap!important;
+ }
+ .arena-board .hero-hp{
+  top:-7px!important;left:-6px!important;z-index:10!important;
+  border-radius:50%!important;font-size:clamp(11px,3vw,14px)!important;
+  padding:4px!important;
+ }
+ .arena-board .hero-stats{
+  bottom:-8px!important;left:-3px!important;right:-3px!important;
+  z-index:10!important;justify-content:space-between!important;
+ }
+ .arena-board .hero-stats>span{
+  min-width:29px!important;max-width:45%!important;
+  padding:3px!important;font-size:clamp(10px,2.65vw,12px)!important;
+  background:#bca785!important;color:#2b241d!important;border:1px solid #55483a!important;
+ }
+ .arena-board .hero-condition{z-index:11!important;top:50%!important;max-width:90%!important}
+ .arena-board .hero-condition:empty{display:none!important}
+ .arena-board .battle-divider{
+  height:29px!important;min-height:29px!important;
+  padding:1px 3px!important;margin:0!important;
+  background:#282c2bdc!important;overflow:hidden!important;
+ }
+ .battle-divider .pile{padding:2px 3px!important;white-space:nowrap!important}
+ .battle-divider p{font-size:clamp(10px,2.6vw,13px)!important}
+ .arena-board .arena-attack-preview,.arena-board .arena-effect-marker,.arena-board .arena-combat-hud{display:none!important}
+ /* Five cards fit without clipping; no card overlaps the instruction strip. */
+ .mobile-game>.arena-hand{margin:0 19px!important;overflow:hidden!important}
+ .arena-hand>.row-caption{flex:0 0 23px!important;min-height:23px!important;padding:2px 9px!important}
+ .arena-hand>.hand-cards{
+  flex:1!important;height:auto!important;max-height:calc(100% - 23px)!important;
+  overflow:hidden!important;align-items:flex-start!important;
+  justify-content:center!important;padding:3px 1px 1px!important;
+  gap:clamp(3px,1vw,6px)!important;
+ }
+ .arena-hand .arena-hand-card{
+  width:min(calc((100vw - 70px)/5),87px)!important;
+  height:100%!important;max-height:100%!important;
+  aspect-ratio:auto!important;overflow:hidden!important;
+  border-radius:7px!important;
+ }
+ .arena-hand .hand-face>img{
+  width:100%!important;height:100%!important;
+  object-fit:cover!important;transform:none!important;object-position:center 25%!important;
+ }
+ .arena-hand .hand-name{bottom:0!important;padding:9px 1px 3px!important;font-size:clamp(8px,2.2vw,10px)!important}
+ .arena-hand .hand-ability{bottom:27px!important;font-size:9px!important;-webkit-line-clamp:2}
+ /* HUD note must not float over the action buttons. */
+ .mobile-game>.arena-hint{
+  margin:0 19px!important;padding:2px 8px!important;
+  overflow:hidden!important;border:0!important;
+  background:#e4c99bd9!important;color:#372619!important;
+  font-size:clamp(9px,2.4vw,11px)!important;line-height:1.12!important;
+  z-index:4!important;
+ }
+ .arena-hint .arena-inline-selection{max-height:100%!important;overflow:hidden!important}
+ /* Actual ActionBar nesting is .arena-actions > div > div (not .action-bar). */
+ .mobile-game>.arena-actions{
+  margin:0 16px 4px!important;padding:2px 1px!important;
+  box-sizing:border-box!important;overflow:hidden!important;
+  isolation:isolate!important;
+ }
+ .arena-actions>div{height:100%!important;max-height:100%!important;padding:0!important;overflow:hidden!important}
+ .arena-actions>div>div{
+  display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:clamp(3px,.9vw,6px)!important;width:100%!important;height:100%!important;
+  min-width:0!important;overflow:hidden!important;
+ }
+ .arena-actions button{
+  box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  min-width:0!important;min-height:0!important;
+  width:100%!important;height:100%!important;max-height:100%!important;
+  margin:0!important;padding:3px 1px!important;
+  border-radius:13px 13px 8px 8px!important;
+  font-size:clamp(9px,2.3vw,12px)!important;
+  line-height:1.05!important;overflow:hidden!important;
+ }
+ .arena-actions button>div{max-width:100%!important;min-width:0!important;gap:2px!important}
+ .arena-actions button>span{font-size:clamp(8px,2.1vw,10px)!important;line-height:1.05!important}
+ .arena-actions button svg{width:clamp(17px,5vw,23px)!important;height:clamp(17px,5vw,23px)!important}
+}
+@media(orientation:portrait) and (max-height:720px){
+ .mobile-game{grid-template-rows:36px 46px minmax(0,1fr) 105px 29px 75px!important}
+ .arena-board .enemy-row,.arena-board .player-row{grid-template-rows:28px minmax(0,1fr)!important}
+ .arena-board .arena-effect-target{height:clamp(86px,62%,125px)!important}
+ .arena-hand>.row-caption{flex-basis:20px!important;min-height:20px!important}
+ .arena-hand>.hand-cards{max-height:calc(100% - 20px)!important}
+}

@@ -70,6 +70,7 @@ import './arena-menu-hud-fix-v68.css';
 import './arena-parchment-redesign-v69.css';
 import './arena-uploaded-background-v70.css';
 import './arena-alignment-fix-v71.css';
+import './arena-reference-clean-v72.css';
 
 const SAVE_KEY = 'newcard-match-v1';
 const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
