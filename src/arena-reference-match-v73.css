@@ -92,7 +92,7 @@
  .mobile-game.mobile-game .arena-board .row-caption span{font:800 calc(var(--u)*3.3)/1.1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.12)!important;color:#3a2814!important;text-shadow:0 1px 0 #f1dcaa88}
  .mobile-game.mobile-game .arena-board .row-caption small{font:600 calc(var(--u)*2.4)/1.2 Cinzel,serif!important;color:#4d3822!important;text-shadow:0 1px 0 #f1dcaa66}
  .mobile-game.mobile-game .arena-board .enemy-row .row-caption{left:27%!important;right:27%!important;top:17.6%!important;height:4.4%!important}
- .mobile-game.mobile-game .arena-board .player-row .row-caption{left:8.2%!important;width:83.6%!important;top:44.9%!important;height:2.2%!important;align-items:center}
+ .mobile-game.mobile-game .arena-board .player-row .row-caption{left:8.2%!important;width:83.6%!important;top:44.5%!important;height:1.8%!important;align-items:center}
  .mobile-game.mobile-game .arena-board .player-row .row-caption span{font-size:calc(var(--u)*2.7)!important}
  .mobile-game.mobile-game .arena-board .player-row .row-caption small{display:none}
 
@@ -101,10 +101,10 @@
  .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(1){left:12.51%!important}
  .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(2){left:38.51%!important}
  .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(3){left:64.51%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target{top:48.3%!important;width:20.65%!important;height:12.68%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(1){left:16.68%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(2){left:39.68%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(3){left:62.68%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target{top:47.3%!important;width:22.99%!important;height:14.26%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(1){left:12.51%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(2){left:38.51%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(3){left:64.51%!important}
 
  /* Hero card: arched portrait, heart (HP) top-left, ATK / shield badges at the base */
  .mobile-game.mobile-game .arena-board .arena-hero{
