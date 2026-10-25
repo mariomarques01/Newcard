@@ -1,0 +1,31 @@
+/* V70 — The user's actual uploaded board artwork. Keep original pixels and proportions.
+   Place the complete illustration behind the gameplay HUD, cards and buttons. */
+@media(orientation:portrait) and (max-width:600px){
+ .mobile-game{
+  position:relative!important;
+  background:#171412 url('/Newcard/arena-medieval-original.jpg') center center / 100% 100% no-repeat!important;
+ }
+ .mobile-game::before{
+  content:"";position:absolute!important;
+  inset:0!important;z-index:0!important;pointer-events:none!important;
+  border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;
+ }
+ .mobile-game>.arena-header{
+  background:linear-gradient(#112c4399,#071b2a99)!important;
+  border-color:#c6a36b70!important;box-shadow:none!important;
+ }
+ .mobile-game>.arena-score{background:transparent!important}
+ .arena-board .enemy-row,.arena-board .player-row{background:transparent!important}
+ .mobile-game>.arena-board{background:transparent!important}
+ .arena-board .battle-divider{
+  background:linear-gradient(#303b40e6,#172127e6)!important;
+  box-shadow:0 1px 3px #0008!important;
+ }
+ .mobile-game>.arena-hand{background:transparent!important}
+ .arena-hand>.row-caption{background:linear-gradient(#303538c9,#171e23d4)!important}
+ .mobile-game>.arena-hint{
+  background:linear-gradient(90deg,#e4c99800,#efd8a9c9 14%,#efd8a9d9 86%,#e4c99800)!important;
+ }
+ .mobile-game>.arena-actions{background:transparent!important}
+}
