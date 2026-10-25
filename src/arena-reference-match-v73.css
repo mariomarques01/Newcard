@@ -92,19 +92,19 @@
  .mobile-game.mobile-game .arena-board .row-caption span{font:800 calc(var(--u)*3.3)/1.1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.12)!important;color:#3a2814!important;text-shadow:0 1px 0 #f1dcaa88}
  .mobile-game.mobile-game .arena-board .row-caption small{font:600 calc(var(--u)*2.4)/1.2 Cinzel,serif!important;color:#4d3822!important;text-shadow:0 1px 0 #f1dcaa66}
  .mobile-game.mobile-game .arena-board .enemy-row .row-caption{left:27%!important;right:27%!important;top:17.6%!important;height:4.4%!important}
- .mobile-game.mobile-game .arena-board .player-row .row-caption{left:8.2%!important;width:17%!important;top:45.6%!important;height:3%!important;align-items:flex-start}
+ .mobile-game.mobile-game .arena-board .player-row .row-caption{left:8.2%!important;width:83.6%!important;top:44.9%!important;height:2.2%!important;align-items:center}
  .mobile-game.mobile-game .arena-board .player-row .row-caption span{font-size:calc(var(--u)*2.7)!important}
  .mobile-game.mobile-game .arena-board .player-row .row-caption small{display:none}
 
  .mobile-game.mobile-game .arena-board .arena-effect-target{position:absolute!important;margin:0!important;padding:0!important;max-height:none!important;flex:none!important;pointer-events:auto;z-index:1}
- .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target{top:27.27%!important;width:20.9%!important;height:12.96%!important}
- .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(1){left:16.55%!important}
- .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(2){left:39.55%!important}
- .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(3){left:62.55%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target{top:46.09%!important;width:18.77%!important;height:11.53%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(1){left:20.12%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(2){left:40.62%!important}
- .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(3){left:61.12%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target{top:25.5%!important;width:22.99%!important;height:14.26%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(1){left:12.51%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(2){left:38.51%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(3){left:64.51%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target{top:48.3%!important;width:20.65%!important;height:12.68%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(1){left:16.68%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(2){left:39.68%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(3){left:62.68%!important}
 
  /* Hero card: arched portrait, heart (HP) top-left, ATK / shield badges at the base */
  .mobile-game.mobile-game .arena-board .arena-hero{
@@ -189,7 +189,7 @@
  /* Rival hero attack preview, to the right of the targeted card (as in the reference) */
  .mobile-game.mobile-game .arena-board .arena-attack-preview{
   display:flex!important;flex-direction:column!important;align-items:center;gap:calc(var(--u)*.4);
-  position:absolute!important;left:calc(100% + var(--u)*.7)!important;top:42%!important;width:calc(var(--u)*14.8)!important;
+  position:absolute!important;left:50%!important;top:auto!important;bottom:calc(100% + var(--u)*2)!important;transform:translateX(-50%)!important;width:calc(var(--u)*14.8)!important;
   padding:calc(var(--u)*.9) calc(var(--u)*.8)!important;border:calc(var(--u)*.3) solid #7d5a2c!important;border-radius:calc(var(--u)*1.2)!important;
   background:linear-gradient(#ecdcb4,#d8c08c)!important;color:#3a2814!important;z-index:12;pointer-events:none;
   font:800 calc(var(--u)*2.2)/1.1 Cinzel,serif!important;text-align:center;box-shadow:0 1px 3px #0007;
@@ -216,14 +216,14 @@
  .mobile-game.mobile-game .arena-hand>.row-caption{display:contents!important}
  .mobile-game.mobile-game .arena-hand>.row-caption span{position:absolute;left:7.4%!important;top:76.35%!important;height:2.7%!important;display:flex;align-items:center;
   font:800 calc(var(--u)*3)/1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.15)!important;color:#ecd7a4!important;text-shadow:0 1px 2px #000}
- .mobile-game.mobile-game .arena-hand>.row-caption small{position:absolute;left:0!important;right:0!important;width:100%!important;max-width:none;top:66.7%!important;height:2.6%!important;display:flex;align-items:center;justify-content:center;
+ .mobile-game.mobile-game .arena-hand>.row-caption small{position:absolute;left:0!important;right:0!important;width:100%!important;max-width:none;top:62.9%!important;height:2.6%!important;display:flex;align-items:center;justify-content:center;
   font:700 calc(var(--u)*2.6)/1 Cinzel,serif!important;color:#3a2814!important;text-shadow:0 1px 0 #f1dcaa88}
  .mobile-game.mobile-game .arena-hand>.hand-cards{
-  position:absolute!important;left:0!important;right:0!important;top:69.57%!important;height:11.53%!important;width:auto!important;max-height:none!important;
+  position:absolute!important;left:0!important;right:0!important;top:66.02%!important;height:12.68%!important;width:auto!important;max-height:none!important;
   display:flex!important;justify-content:center;align-items:stretch;gap:.9%!important;padding:0!important;margin:0!important;overflow:visible!important;pointer-events:none;
  }
  .mobile-game.mobile-game .arena-hand .arena-hand-card{
-  position:relative!important;flex:none!important;width:14.73%!important;height:100%!important;max-height:none!important;aspect-ratio:auto!important;margin:0!important;padding:0!important;
+  position:relative!important;flex:none!important;width:16.2%!important;height:100%!important;max-height:none!important;aspect-ratio:auto!important;margin:0!important;padding:0!important;
   left:auto!important;top:auto!important;transform:none!important;overflow:visible!important;pointer-events:auto;border:0!important;background:none!important;box-shadow:none!important;border-radius:calc(var(--u)*1.7)!important;
   --ring:#c28cff;
  }
