@@ -41,10 +41,10 @@ export function ArenaHero({hero:liveHero, active, targeted, valid, hovered, hit,
       <span className="hero-evolution" aria-label={evolutionVisible?'Carta evoluída: +1 de ataque e +2 de escudo nesta batalha':`Evolução: ${charge} de ${EVOLUTION_ACTIONS} ações`} title={evolutionVisible?'Evoluída nesta batalha':`${charge}/${EVOLUTION_ACTIONS} ações para evoluir`}><b>{evolutionVisible?'✦':'✧'}</b>{evolutionVisible?'EVO':`${charge}/${EVOLUTION_ACTIONS}`}</span>
       {evolutionFlash&&<span className="evolution-transformation" aria-hidden="true"/>}
       {hero.shield>0&&hero.isAlive&&<span className="hero-barrier" aria-label={`Protegido por ${hero.shield} de escudo`}><span>⛨</span></span>}
-      <span className="hero-hp" aria-label={`Vida ${hero.currentHp} de ${hero.maxHp}`}>♥ {hero.currentHp}<small>/{hero.maxHp}</small></span>
+      <span className="hero-hp" aria-label={`Vida ${hero.currentHp} de ${hero.maxHp}`}><b>{hero.currentHp}</b><small>/{hero.maxHp}</small></span>
       <span className="hero-condition">{!hero.isAlive?'ABATIDO':hero.isDefending?'DEFENDENDO':hero.hasAttacked?'AGIU':active?'ATIVO':targeted?'ALVO':''}</span>
       <span className="hero-name">{hero.name}</span>
-      <span className="hero-stats"><span className="atk-stat" aria-label={`Ataque ${hero.atk}`}>⚔ {hero.atk}</span><span className="shield-stat" aria-label={`Escudo ${hero.shield}`}>⛨ {hero.shield}</span></span>
+      <span className="hero-stats"><span className="atk-stat" aria-label={`Ataque ${hero.atk}`}><i aria-hidden="true">⚔</i><b>{hero.atk}</b></span><span className="shield-stat" aria-label={`Escudo ${hero.shield}`}><b>{hero.shield}</b></span></span>
       <span className="hero-health"><i style={{width:`${ratio*100}%`}}/></span>
     </button>
     {defeatBurst&&<div className="hero-defeat-burst" aria-hidden="true"><span className="defeat-flash"/>{Array.from({length:10},(_,i)=><i key={i} style={{'--piece':i} as CSSProperties}/>)}</div>}

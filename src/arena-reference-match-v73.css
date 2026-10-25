@@ -1,0 +1,310 @@
+/* V73 — Reference match. The whole portrait scene is a fixed-aspect "stage" that is the
+   artwork itself (arena-medieval-original.jpg). Every HUD element, card row, hand card and
+   action button is positioned in % of that stage, so each one lands exactly on the
+   frame/slots baked into the artwork on every phone size (same layout as the reference).
+   Gameplay DOM is untouched; this file supersedes the grid layouts of v4–v72 in portrait. */
+@media(orientation:portrait) and (max-width:600px){
+ .mobile-game.mobile-game{
+  --sh:min(100dvh,200vw);
+  --sw:min(100vw,calc(var(--sh)*.62));
+  --u:calc(var(--sw)/100);
+  display:block!important;position:relative!important;
+  width:var(--sw)!important;height:var(--sh)!important;min-height:0!important;max-height:none!important;
+  margin:max(0px,calc((100dvh - var(--sh))/2)) auto 0!important;
+  padding:0!important;gap:0!important;row-gap:0!important;grid-template-rows:none!important;
+  overflow:hidden!important;isolation:isolate;
+  background:#171412 url('/arena-medieval-original.jpg') center center/100% 100% no-repeat!important;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+ }
+ .mobile-game.mobile-game::before,.mobile-game.mobile-game::after{display:none!important}
+ .mobile-game.mobile-game>*{min-width:0;min-height:0}
+
+ /* ───────── Header: title on the baked top bar, gear on the baked gear slot ───────── */
+ .mobile-game.mobile-game>.arena-header{
+  position:absolute!important;inset:0!important;height:auto!important;margin:0!important;padding:0!important;
+  border:0!important;background:none!important;box-shadow:none!important;overflow:visible!important;
+  pointer-events:none;z-index:90!important;
+ }
+ .mobile-game.mobile-game .arena-header .arena-brand{
+  position:absolute;left:3.4%!important;top:1.3%!important;height:5.3%!important;width:60%!important;
+  display:flex;align-items:center;gap:calc(var(--u)*1.6);color:#f2dca4;
+ }
+ .mobile-game.mobile-game .arena-header .arena-brand svg{width:calc(var(--u)*6.4)!important;height:calc(var(--u)*6.4)!important;color:#f0cf86;flex:none;filter:drop-shadow(0 1px 1px #000a)}
+ .mobile-game.mobile-game .arena-header .arena-brand span{display:block;width:max-content!important;white-space:nowrap;font:800 calc(var(--u)*5.3)/.9 Cinzel,serif!important;letter-spacing:calc(var(--u)*.35);
+  background:linear-gradient(#fff0c4,#d9b469 55%,#a47a33);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 1px 1px #000c)}
+ .mobile-game.mobile-game .arena-header .arena-brand small{display:block;white-space:nowrap;margin-top:calc(var(--u)*.5);font:700 calc(var(--u)*2.5)/1 Cinzel,serif!important;letter-spacing:calc(var(--u)*1.05)!important;
+  -webkit-text-fill-color:#e8cd93;color:#e8cd93}
+ .mobile-game.mobile-game .arena-header .arena-menu{position:absolute;left:88.7%!important;top:1.25%!important;width:10.2%!important;height:5.4%!important;display:block;pointer-events:auto;z-index:91!important}
+ .mobile-game.mobile-game .arena-header .arena-menu-trigger{
+  position:absolute!important;inset:0;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
+  padding:0!important;border:0!important;border-radius:calc(var(--u)*2)!important;background:transparent!important;box-shadow:none!important;
+  color:transparent!important;font-size:0!important;
+ }
+ .mobile-game.mobile-game .arena-header .arena-menu-trigger::before,.mobile-game.mobile-game .arena-header .arena-menu-trigger::after{content:none!important;display:none!important}
+
+ /* ───────── Score: values sit on the baked blue / red bars ───────── */
+ .mobile-game.mobile-game>.arena-score{position:absolute!important;inset:0!important;margin:0!important;padding:0!important;display:block!important;
+  border:0!important;background:none!important;box-shadow:none!important;overflow:visible!important;pointer-events:none;z-index:5}
+ .mobile-game.mobile-game .arena-score .score-side{position:absolute;display:block!important;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;overflow:visible!important}
+ .mobile-game.mobile-game .arena-score .score-player{left:9.5%!important;top:7.2%!important;width:26.5%!important;height:4.3%!important}
+ .mobile-game.mobile-game .arena-score .score-rival{left:64.5%!important;top:7.2%!important;width:26.5%!important;height:4.3%!important}
+ .mobile-game.mobile-game .arena-score .score-head{position:absolute;inset:0;flex-direction:row!important;display:flex!important;align-items:center;justify-content:center;gap:calc(var(--u)*1.1)!important;white-space:nowrap;flex-wrap:nowrap!important}
+ .mobile-game.mobile-game .arena-score .score-head span{font:800 calc(var(--u)*3.1) Cinzel,serif!important;letter-spacing:calc(var(--u)*.1)!important;color:#f6fbff;text-shadow:0 1px 2px #000c,0 0 6px #0a4a6a}
+ .mobile-game.mobile-game .arena-score .score-rival .score-head span{color:#ffe9e4;text-shadow:0 1px 2px #000c,0 0 6px #6a0a0a}
+ .mobile-game.mobile-game .arena-score .score-head strong{font:800 calc(var(--u)*4.6)/1 Cinzel,serif!important;color:#fff;text-shadow:0 1px 2px #000c;display:flex;align-items:baseline;gap:calc(var(--u)*.3)}
+ .mobile-game.mobile-game .arena-score .score-rival .score-head strong{color:#ffd9d4}
+ .mobile-game.mobile-game .arena-score .score-head strong small{font:700 calc(var(--u)*2.5)/1 Cinzel,serif!important;opacity:.95}
+ .mobile-game.mobile-game .arena-score .pg-track{display:none!important}
+ .mobile-game.mobile-game .arena-score .energy-track{
+  flex-direction:row!important;position:absolute;top:calc(100% + 4.1%*1)!important;height:calc(var(--u)*4.1)!important;left:5%!important;display:flex!important;align-items:center;gap:calc(var(--u)*.9)!important;
+  padding:0 calc(var(--u)*1.6)!important;border-radius:999px;overflow:visible!important;
+  background:linear-gradient(#0a2236,#06182a);box-shadow:inset 0 0 0 1px #1d4c6e66;
+ }
+ .mobile-game.mobile-game .arena-score .score-player .energy-track{left:3%!important;width:84%!important}
+ .mobile-game.mobile-game .arena-score .score-rival .energy-track{left:3%!important;width:91%!important;background:linear-gradient(#2a0f14,#190a0e);box-shadow:inset 0 0 0 1px #6e2a2a66}
+ .mobile-game.mobile-game .arena-score .energy-track i{width:calc(var(--u)*2.5)!important;height:calc(var(--u)*2.5)!important;border-radius:50%!important;flex:none;
+  background:#10243a!important;border:1px solid #2c4a63!important;box-shadow:none!important}
+ .mobile-game.mobile-game .arena-score .energy-track i.on{background:radial-gradient(circle at 35% 30%,#d6f4ff,#37b6ff 55%,#0b6ab6)!important;border-color:#8fdcff!important;box-shadow:0 0 5px #40b8ff!important}
+ .mobile-game.mobile-game .arena-score .score-rival .energy-track i.on{background:radial-gradient(circle at 35% 30%,#ffe3b0,#ff8a3c 55%,#c0360f)!important;border-color:#ffc08a!important;box-shadow:0 0 5px #ff7a2a!important}
+ .mobile-game.mobile-game .arena-score .energy-track b{order:2;margin-left:auto;font:800 calc(var(--u)*2.6)/1 Cinzel,serif!important;color:#e8f6ff}
+ .mobile-game.mobile-game .arena-score .score-rival .energy-track b{color:#ffe3d6}
+ .mobile-game.mobile-game .arena-score .score-turn{
+  position:absolute!important;left:37.2%!important;width:25.6%!important;top:7.4%!important;height:7.3%!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;display:block!important;overflow:visible!important;
+ }
+ .mobile-game.mobile-game .arena-score .score-turn .turn-owner-symbol{display:none!important}
+ .mobile-game.mobile-game .arena-score .score-turn small{position:absolute;left:0!important;right:0!important;top:12%!important;text-align:center;font:800 calc(var(--u)*3)/1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.15);color:#f0d9a0;text-shadow:0 1px 2px #000d}
+ .mobile-game.mobile-game .arena-score .score-turn strong{position:absolute;left:0!important;right:0!important;top:50%!important;height:42%!important;display:flex;align-items:center;justify-content:center;padding:0!important;
+  font:900 calc(var(--u)*4)/1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.2);color:#3a2410!important;background:none!important;border:0!important;text-shadow:0 1px 0 #f6e2b0}
+ .mobile-game.mobile-game[data-turn="rival"] .arena-score .score-turn strong{color:#6a1c14!important}
+
+ /* ───────── Board (battlefield) ───────── */
+ .mobile-game.mobile-game>.arena-board{position:absolute!important;inset:0!important;margin:0!important;padding:0!important;display:block!important;
+  overflow:visible!important;background:none!important;border:0!important;box-shadow:none!important;pointer-events:none;z-index:2}
+ .mobile-game.mobile-game .arena-board::before{content:""!important;display:block!important;position:absolute;left:5%!important;right:5%!important;top:14%!important;height:62%!important;pointer-events:auto;z-index:0}
+ .mobile-game.mobile-game .arena-board .battle-atmosphere{position:absolute;inset:0;pointer-events:none}
+ .mobile-game.mobile-game .arena-board .enemy-row,.mobile-game.mobile-game .arena-board .player-row{position:absolute!important;inset:0!important;display:block!important;margin:0!important;padding:0!important;
+  background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important;pointer-events:none}
+ .mobile-game.mobile-game .arena-board .hero-row{display:contents!important}
+ .mobile-game.mobile-game .arena-board .row-caption{position:absolute;display:flex;flex-direction:column!important;align-items:center;justify-content:center;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;text-align:center;pointer-events:none}
+ .mobile-game.mobile-game .arena-board .row-caption::before,.mobile-game.mobile-game .arena-board .row-caption::after,.mobile-game.mobile-game .arena-hand .row-caption::before,.mobile-game.mobile-game .arena-hand .row-caption::after{content:none!important;display:none!important}
+ .mobile-game.mobile-game .arena-board .row-caption span{font:800 calc(var(--u)*3.3)/1.1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.12)!important;color:#3a2814!important;text-shadow:0 1px 0 #f1dcaa88}
+ .mobile-game.mobile-game .arena-board .row-caption small{font:600 calc(var(--u)*2.4)/1.2 Cinzel,serif!important;color:#4d3822!important;text-shadow:0 1px 0 #f1dcaa66}
+ .mobile-game.mobile-game .arena-board .enemy-row .row-caption{left:27%!important;right:27%!important;top:17.6%!important;height:4.4%!important}
+ .mobile-game.mobile-game .arena-board .player-row .row-caption{left:8.2%!important;width:17%!important;top:45.6%!important;height:3%!important;align-items:flex-start}
+ .mobile-game.mobile-game .arena-board .player-row .row-caption span{font-size:calc(var(--u)*2.7)!important}
+ .mobile-game.mobile-game .arena-board .player-row .row-caption small{display:none}
+
+ .mobile-game.mobile-game .arena-board .arena-effect-target{position:absolute!important;margin:0!important;padding:0!important;max-height:none!important;flex:none!important;pointer-events:auto;z-index:1}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target{top:28.3%!important;width:17.6%!important;height:10.9%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(1){left:19.9%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(2){left:41.2%!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-effect-target:nth-child(3){left:62.5%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target{top:47%!important;width:15.8%!important;height:9.7%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(1){left:25.4%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(2){left:42.1%!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-effect-target:nth-child(3){left:58.8%!important}
+
+ /* Hero card: arched portrait, heart (HP) top-left, ATK / shield badges at the base */
+ .mobile-game.mobile-game .arena-board .arena-hero{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;
+  border:0!important;background:none!important;overflow:visible!important;box-shadow:none!important;border-radius:0!important;outline:0!important;
+  --arch:47% 47% 7% 7% / 33% 33% 5% 5%;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-face{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;padding:0!important;border:0!important;
+  background:none!important;overflow:visible!important;border-radius:var(--arch)!important;box-shadow:none!important;cursor:pointer}
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-face::before{display:none!important}
+ /* gold frame + shade over the art */
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-face::after{
+  content:""!important;display:block!important;position:absolute!important;inset:0!important;top:0!important;height:auto!important;z-index:3!important;pointer-events:none;
+  border-radius:var(--arch)!important;
+  background:linear-gradient(180deg,transparent 52%,#120b06d9 100%)!important;
+  box-shadow:inset 0 0 0 calc(var(--u)*.45) #8d6a33,inset 0 0 0 calc(var(--u)*.8) #e9cb8a,inset 0 0 0 calc(var(--u)*1.1) #3a2711,0 calc(var(--u)*.6) calc(var(--u)*1.4) #000a!important;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-face>img.hero-original-art{
+  position:absolute!important;display:block!important;max-width:none!important;
+  width:190%!important;height:257%!important;left:-44.8%!important;top:-29%!important;right:auto!important;bottom:auto!important;
+  object-fit:fill!important;transform:none!important;opacity:1!important;visibility:visible!important;z-index:1!important;
+  clip-path:inset(11.3% 23.8% 49.8% 23.6% round 47% 47% 7% 7% / 33% 33% 5% 5%);-webkit-clip-path:inset(11.3% 23.8% 49.8% 23.6% round 47% 47% 7% 7% / 33% 33% 5% 5%);filter:none;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero.active:not(.fallen) .hero-face::after{box-shadow:inset 0 0 0 calc(var(--u)*.45) #2e8fb0,inset 0 0 0 calc(var(--u)*.8) #8cecff,inset 0 0 0 calc(var(--u)*1.1) #0a2a38,0 0 calc(var(--u)*2.4) #4fd0f0!important}
+ .mobile-game.mobile-game .arena-board .arena-hero.targeted:not(.fallen) .hero-face::after{box-shadow:inset 0 0 0 calc(var(--u)*.45) #b04a63,inset 0 0 0 calc(var(--u)*.8) #ffa6b8,inset 0 0 0 calc(var(--u)*1.1) #38101a,0 0 calc(var(--u)*2.4) #ff7a98!important}
+ .mobile-game.mobile-game .arena-board .arena-hero.fallen .hero-face>img.hero-original-art{filter:grayscale(1) brightness(.45)!important}
+ .mobile-game.mobile-game .arena-board .arena-hero.hero-under-attack .hero-face::after{box-shadow:inset 0 0 0 calc(var(--u)*.8) #ff6a5a,0 0 calc(var(--u)*3) #ff3a2a!important}
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-evolution,.mobile-game.mobile-game .arena-board .arena-hero .hero-health,.mobile-game.mobile-game .arena-board .arena-hero .hero-info{display:none!important}
+
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-hp{
+  position:absolute!important;left:-5.5%!important;top:-6%!important;right:auto!important;bottom:auto!important;z-index:10!important;
+  width:27%!important;height:auto!important;aspect-ratio:1/.92;min-width:0!important;margin:0!important;padding:0 0 4% 0!important;
+  display:flex!important;align-items:center;justify-content:center;border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:center/100% 100% no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 37'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ff6d63'/%3E%3Cstop offset='1' stop-color='%23a3101b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M20 35C8 27 2 20.5 2 12.5 2 7 6 3 11 3c3.5 0 7 2 9 5.200C22 5 25.500 3 29 3c5 0 9 4 9 9.500C38 20.500 32 27 20 35z' fill='url(%23g)' stroke='%23f0d08a' stroke-width='2.200'/%3E%3C/svg%3E")!important;
+  font:900 calc(var(--u)*2.9)/1 Cinzel,serif!important;color:#fff!important;text-shadow:0 1px 2px #000;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-hp small{display:none!important}
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-name{
+  position:absolute!important;left:6%!important;right:6%!important;bottom:25%!important;top:auto!important;z-index:7!important;
+  padding:0!important;background:none!important;border:0!important;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font:800 calc(var(--u)*1.95)/1 Cinzel,serif!important;letter-spacing:0!important;color:#f7ead0!important;text-shadow:0 1px 2px #000,0 0 3px #000;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-stats{
+  position:absolute!important;left:-4%!important;right:-4%!important;bottom:-6%!important;top:auto!important;z-index:10!important;
+  display:flex!important;justify-content:space-between!important;align-items:flex-end;gap:0!important;padding:0!important;margin:0!important;background:none!important;border:0!important;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-stats>span{
+  display:flex!important;align-items:center;justify-content:center;gap:calc(var(--u)*.3);flex-direction:row!important;
+  min-width:0!important;max-width:none!important;margin:0!important;border-radius:0!important;border:0!important;box-shadow:none!important;
+  font:900 calc(var(--u)*2.5)/1 Cinzel,serif!important;letter-spacing:0!important;text-shadow:0 1px 1px #0009;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-stats>.atk-stat{
+  width:calc(var(--u)*5.4)!important;height:calc(var(--u)*5.4)!important;border-radius:50%!important;padding:0!important;
+  background:radial-gradient(circle at 35% 28%,#fff0bd,#e0b655 48%,#8e6420)!important;border:calc(var(--u)*.45) solid #5a3c12!important;color:#2a1805!important;
+  font-size:calc(var(--u)*2.5)!important;text-shadow:0 1px 0 #fff6;box-shadow:0 1px 3px #000b!important;
+ }
+
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-stats>.shield-stat{
+  width:calc(var(--u)*5.4)!important;height:calc(var(--u)*6.2)!important;padding:0 0 calc(var(--u)*.7) 0!important;color:#fff!important;
+  background:center/100% 100% no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 34'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ff5a58'/%3E%3Cstop offset='1' stop-color='%23a40f22'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M15 32C6 26 3 17 5 9c2.500-3 6.500-6 10-7 3.500 1 7.500 4 10 7 2 8-1 17-10 23z' fill='url(%23g)' stroke='%23f2d28e' stroke-width='1.800'/%3E%3C/svg%3E")!important;
+ }
+ .mobile-game.mobile-game .arena-board .player-row .arena-hero .hero-stats>.shield-stat{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 34'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23d8dce2'/%3E%3Cstop offset='1' stop-color='%23666d78'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M15 32C6 26 3 17 5 9c2.500-3 6.500-6 10-7 3.500 1 7.500 4 10 7 2 8-1 17-10 23z' fill='url(%23g)' stroke='%23f2d28e' stroke-width='1.800'/%3E%3C/svg%3E")!important;color:#1b1f26!important;text-shadow:0 1px 0 #fff7!important;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero .atk-stat{position:relative}
+ .mobile-game.mobile-game .arena-board .arena-hero .atk-stat i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:calc(var(--u)*3.8);opacity:.22;color:#3a2408;line-height:1}
+ .mobile-game.mobile-game .arena-board .arena-hero .atk-stat b,.mobile-game.mobile-game .arena-board .arena-hero .shield-stat b{position:relative;font-weight:900}
+ .mobile-game.mobile-game .arena-board .arena-hero.fallen .hero-stats,.mobile-game.mobile-game .arena-board .arena-hero.fallen .hero-hp{opacity:.6}
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-barrier{display:none!important}
+ /* Status tag (ATIVO / AGIU / DEFENDENDO) as a dark pill across the art */
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-condition{
+  position:absolute!important;left:50%!important;top:49%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;z-index:11!important;
+  max-width:92%;padding:calc(var(--u)*.45) calc(var(--u)*1.5)!important;border-radius:calc(var(--u)*1.2)!important;
+  border:1px solid #9fdcec!important;background:#0d2434e6!important;color:#e9f9ff!important;
+  font:800 calc(var(--u)*1.9)/1.1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.1)!important;white-space:nowrap;box-shadow:0 1px 3px #000a!important;
+ }
+ .mobile-game.mobile-game .arena-board .arena-hero .hero-condition:empty{display:none!important}
+ .mobile-game.mobile-game .arena-board .player-row .arena-hero .hero-condition:not(:empty){display:block!important}
+ .mobile-game.mobile-game .arena-board .enemy-row .arena-hero:not(.fallen) .hero-condition{display:none!important}
+ .mobile-game.mobile-game .arena-board .arena-hero.fallen .hero-condition{display:block!important;background:#1a1923f2!important;border-color:#c9a3aa!important;color:#f4d4da!important}
+
+ /* Rival hero attack preview, to the right of the targeted card (as in the reference) */
+ .mobile-game.mobile-game .arena-board .arena-attack-preview{
+  display:flex!important;flex-direction:column!important;align-items:center;gap:calc(var(--u)*.4);
+  position:absolute!important;left:calc(100% + var(--u)*.7)!important;top:42%!important;width:calc(var(--u)*14.8)!important;
+  padding:calc(var(--u)*.9) calc(var(--u)*.8)!important;border:calc(var(--u)*.3) solid #7d5a2c!important;border-radius:calc(var(--u)*1.2)!important;
+  background:linear-gradient(#ecdcb4,#d8c08c)!important;color:#3a2814!important;z-index:12;pointer-events:none;
+  font:800 calc(var(--u)*2.2)/1.1 Cinzel,serif!important;text-align:center;box-shadow:0 1px 3px #0007;
+ }
+ .mobile-game.mobile-game .arena-board .arena-attack-preview b{font-size:calc(var(--u)*2.3);white-space:nowrap}
+ .mobile-game.mobile-game .arena-board .arena-attack-preview span{white-space:nowrap}
+ .mobile-game.mobile-game .arena-board .arena-attack-preview span{font:800 calc(var(--u)*2)/1.1 'Plus Jakarta Sans',sans-serif!important}
+ .mobile-game.mobile-game .arena-board .arena-attack-preview em{font-style:normal;font-size:calc(var(--u)*2.1);color:#1f6a2e}
+ .mobile-game.mobile-game .arena-board .arena-effect-marker,.mobile-game.mobile-game .arena-board .arena-combat-hud{display:none!important}
+
+ /* Divider: BARALHO · ARENA DOS REINOS · DESCARTE */
+ .mobile-game.mobile-game .arena-board .battle-divider{
+  position:absolute!important;left:8%!important;right:8%!important;top:41.2%!important;height:3.4%!important;min-height:0!important;margin:0!important;
+  display:flex!important;align-items:center;justify-content:space-between;padding:0 calc(var(--u)*1.2)!important;overflow:hidden!important;pointer-events:none;z-index:1;
+  background:linear-gradient(#323a3a,#1e2626)!important;border:calc(var(--u)*.3) solid #8c7448!important;border-radius:calc(var(--u)*1.6)!important;box-shadow:0 1px 3px #0009,inset 0 1px #ffffff1c!important;
+ }
+ .mobile-game.mobile-game .arena-board .battle-divider .pile{font:800 calc(var(--u)*2.5)/1 Cinzel,serif!important;color:#e8d4a2!important;padding:calc(var(--u)*.6) calc(var(--u)*1.3)!important;border:calc(var(--u)*.25) solid #6c5a3a!important;border-radius:calc(var(--u)*1)!important;background:#161c1c!important;white-space:nowrap}
+ .mobile-game.mobile-game .arena-board .battle-divider .pile b{font-size:calc(var(--u)*3);color:#fff2cf;margin-left:calc(var(--u)*.6)}
+ .mobile-game.mobile-game .arena-board .battle-divider p{margin:0;font:800 calc(var(--u)*3.1)/1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.2);color:#ecd7a4;text-shadow:0 1px 2px #000}
+ .mobile-game.mobile-game .arena-board .battle-divider.board-ready{box-shadow:0 0 0 2px #7bf0c4,0 0 10px #46d8a0!important}
+
+ /* ───────── Hand ───────── */
+ .mobile-game.mobile-game>.arena-hand{position:absolute!important;inset:0!important;margin:0!important;padding:0!important;display:block!important;background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important;pointer-events:none;z-index:3}
+ .mobile-game.mobile-game .arena-hand>.row-caption{display:contents!important}
+ .mobile-game.mobile-game .arena-hand>.row-caption span{position:absolute;left:7.4%!important;top:76.35%!important;height:2.7%!important;display:flex;align-items:center;
+  font:800 calc(var(--u)*3)/1 Cinzel,serif!important;letter-spacing:calc(var(--u)*.15)!important;color:#ecd7a4!important;text-shadow:0 1px 2px #000}
+ .mobile-game.mobile-game .arena-hand>.row-caption small{position:absolute;left:0!important;right:0!important;width:100%!important;max-width:none;top:68.3%!important;height:2.6%!important;display:flex;align-items:center;justify-content:center;
+  font:700 calc(var(--u)*2.6)/1 Cinzel,serif!important;color:#3a2814!important;text-shadow:0 1px 0 #f1dcaa88}
+ .mobile-game.mobile-game .arena-hand>.hand-cards{
+  position:absolute!important;left:0!important;right:0!important;top:71.4%!important;height:9.7%!important;width:auto!important;max-height:none!important;
+  display:flex!important;justify-content:center;align-items:stretch;gap:.9%!important;padding:0!important;margin:0!important;overflow:visible!important;pointer-events:none;
+ }
+ .mobile-game.mobile-game .arena-hand .arena-hand-card{
+  position:relative!important;flex:none!important;width:12.4%!important;height:100%!important;max-height:none!important;aspect-ratio:auto!important;margin:0!important;padding:0!important;
+  left:auto!important;top:auto!important;transform:none!important;overflow:visible!important;pointer-events:auto;border:0!important;background:none!important;box-shadow:none!important;border-radius:calc(var(--u)*1.7)!important;
+  --ring:#c28cff;
+ }
+ .mobile-game.mobile-game .arena-hand .arena-hand-card[data-suit="spades"]{--ring:#67d3ff}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card[data-suit="hearts"]{--ring:#ff8aa8}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card[data-suit="clubs"]{--ring:#92e07a}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card[data-suit="diamonds"]{--ring:#ffd067}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card.special-joker{--ring:#c28cff}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card.special-ace{--ring:#ffd067}
+ .mobile-game.mobile-game .arena-hand .hand-face{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;padding:0!important;margin:0!important;
+  border:calc(var(--u)*.55) solid #e4c883!important;border-radius:calc(var(--u)*1.7)!important;overflow:hidden!important;background:#1a120b!important;cursor:pointer;
+  box-shadow:0 0 0 calc(var(--u)*.35) var(--ring),0 0 calc(var(--u)*2.2) var(--ring),0 2px 4px #000a!important}
+ .mobile-game.mobile-game .arena-hand .hand-face::before,.mobile-game.mobile-game .arena-hand .hand-face::after{display:none!important}
+ .mobile-game.mobile-game .arena-hand .hand-face>img{position:absolute!important;display:block!important;max-width:none!important;
+  width:213%!important;height:234%!important;left:-56.4%!important;top:-19.9%!important;right:auto!important;bottom:auto!important;
+  object-fit:fill!important;transform:none!important;opacity:1!important;visibility:visible!important;z-index:1!important}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card.unaffordable .hand-face>img{filter:grayscale(.55) brightness(.7)!important}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card .energy-cost{
+  position:absolute!important;left:-7%!important;top:-5%!important;right:auto!important;bottom:auto!important;z-index:6;
+  width:calc(var(--u)*5.6)!important;height:calc(var(--u)*5.6)!important;display:grid!important;place-items:center;margin:0!important;padding:0!important;
+  border-radius:50%!important;border:calc(var(--u)*.4) solid #e4c883!important;background:radial-gradient(circle at 35% 28%,#2f4f7a,#0f1d33)!important;
+  font:900 calc(var(--u)*3.2)/1 Cinzel,serif!important;color:#fff!important;box-shadow:0 1px 3px #000b!important;
+ }
+ .mobile-game.mobile-game .arena-hand .arena-hand-card .hand-info{
+  position:absolute!important;right:-7%!important;top:-5%!important;left:auto!important;bottom:auto!important;z-index:7;
+  width:calc(var(--u)*5)!important;height:calc(var(--u)*5)!important;min-width:0!important;min-height:0!important;padding:0!important;display:grid!important;place-items:center;
+  border-radius:50%!important;border:calc(var(--u)*.4) solid #e4c883!important;background:#101b2d!important;color:#fff!important;
+  font:italic 800 calc(var(--u)*2.9)/1 Georgia,serif!important;
+ }
+ .mobile-game.mobile-game .arena-hand .hand-name,.mobile-game.mobile-game .arena-hand .hand-lack,.mobile-game.mobile-game .arena-hand .hand-ability,.mobile-game.mobile-game .arena-hand .hand-selected-indicator{display:none!important}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card.selected{z-index:5}
+ .mobile-game.mobile-game .arena-hand .arena-hand-card.selected .hand-face{transform:translateY(-6%);box-shadow:0 0 0 calc(var(--u)*.6) #fff2c0,0 0 calc(var(--u)*3.4) var(--ring),0 3px 6px #000b!important}
+
+ /* ───────── Hint / selected-card strip on the baked parchment panel ───────── */
+ .mobile-game.mobile-game>.arena-hint{
+  position:absolute!important;left:9.5%!important;right:9.5%!important;top:81.4%!important;height:3.9%!important;margin:0!important;padding:0!important;
+  display:flex!important;align-items:center;justify-content:center;text-align:center;overflow:hidden!important;border:0!important;border-radius:0!important;
+  background:none!important;box-shadow:none!important;color:#3a2814!important;z-index:3;
+  font:700 calc(var(--u)*2.7)/1.18 Cinzel,serif!important;letter-spacing:0!important;pointer-events:none;
+ }
+ .mobile-game.mobile-game .arena-hint span,.mobile-game.mobile-game .arena-hint strong{color:#3a2814!important;text-shadow:0 1px 0 #f1dcaa88}
+ .mobile-game.mobile-game .arena-hint .arena-inline-selection{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0 calc(var(--u)*1.2);max-height:100%;overflow:hidden;pointer-events:auto}
+ .mobile-game.mobile-game .arena-hint .arena-inline-selection strong{font-size:calc(var(--u)*2.8)}
+ .mobile-game.mobile-game .arena-hint .arena-inline-selection span{font-size:calc(var(--u)*2.4);font-weight:700}
+ .mobile-game.mobile-game .arena-hint .arena-inline-selection button{width:calc(var(--u)*5)!important;height:calc(var(--u)*5)!important;padding:0;border:calc(var(--u)*.3) solid #7d5a2c;border-radius:50%;background:#ead7a8;color:#3a2814;font:800 calc(var(--u)*3)/1 sans-serif}
+
+ /* ───────── Action buttons sit exactly on the five baked slots ───────── */
+ .mobile-game.mobile-game>.arena-actions{position:absolute!important;inset:0!important;margin:0!important;padding:0!important;background:none!important;overflow:visible!important;pointer-events:none;z-index:4;isolation:auto!important}
+ .mobile-game.mobile-game .arena-actions>div,.mobile-game.mobile-game .arena-actions>div>div{display:contents!important}
+ .mobile-game.mobile-game .arena-actions button{
+  position:absolute!important;top:85.6%!important;height:9.8%!important;margin:0!important;min-height:0!important;min-width:0!important;max-height:none!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:calc(var(--u)*.6);padding:0 0 1%!important;
+  border:0!important;border-radius:calc(var(--u)*3)!important;background:none!important;box-shadow:none!important;opacity:1!important;overflow:visible!important;pointer-events:auto;
+  font:800 calc(var(--u)*2.45)/1.05 Cinzel,serif!important;letter-spacing:0!important;text-transform:uppercase;text-shadow:0 1px 2px #000,0 0 4px #000a;
+  transition:filter .15s,transform .1s;cursor:pointer;
+ }
+ .mobile-game.mobile-game .arena-actions button:active:not(:disabled){transform:scale(.97)}
+ .mobile-game.mobile-game .arena-actions button>div{display:flex!important;flex-direction:column!important;align-items:center;gap:calc(var(--u)*.7)!important;max-width:100%}
+ .mobile-game.mobile-game .arena-actions button>div svg{width:calc(var(--u)*6.4)!important;height:calc(var(--u)*6.4)!important;filter:drop-shadow(0 1px 2px #000)}
+ .mobile-game.mobile-game .arena-actions button>div span{font-size:calc(var(--u)*2.45)!important;white-space:nowrap}
+ .mobile-game.mobile-game .arena-actions button>span{font:700 calc(var(--u)*1.95)/1.05 Cinzel,serif!important;max-width:100%!important;white-space:nowrap;text-transform:uppercase;opacity:.95!important;text-overflow:clip!important}
+ .mobile-game.mobile-game .arena-actions button[data-action="play"]{left:5%!important;width:20.5%!important;color:#d6cdb8!important}
+ .mobile-game.mobile-game .arena-actions button[data-action="attack"]{left:29.7%!important;width:12.3%!important;color:#fbe7d6!important}
+ .mobile-game.mobile-game .arena-actions button[data-action="defend"]{left:44.5%!important;width:12.3%!important;color:#e4f1ff!important}
+ .mobile-game.mobile-game .arena-actions button[data-action="ace"]{left:59.3%!important;width:12.3%!important;color:#e9f7e3!important}
+ .mobile-game.mobile-game .arena-actions button[data-action="end"]{left:75.8%!important;width:19.6%!important;justify-content:flex-end!important;padding-bottom:1.1%!important;color:#ecc983!important;gap:0}
+ .mobile-game.mobile-game .arena-actions button[data-action="end"]>div svg{display:none!important}
+ .mobile-game.mobile-game .arena-actions button[data-action="end"]>div span{font-size:calc(var(--u)*2.9)!important}
+ .mobile-game.mobile-game .arena-actions button[data-action="play"]>div svg{display:none!important}
+ .mobile-game.mobile-game .arena-actions button[data-action="ace"]>div svg{color:#ffe777!important}
+ /* attack/defend: subtitle only when the button is not ready (it then explains why) */
+ .mobile-game.mobile-game .arena-actions button[data-action="attack"][data-ready="true"]>span,.mobile-game.mobile-game .arena-actions button[data-action="defend"][data-ready="true"]>span{display:none}
+ /* disabled = dimmed, ready = glowing slot */
+ .mobile-game.mobile-game .arena-actions button:disabled{filter:grayscale(.45) brightness(.72);cursor:default}
+ .mobile-game.mobile-game .arena-actions button[data-ready="true"]{filter:none}
+ .mobile-game.mobile-game .arena-actions button[data-ready="true"]::before{content:"";position:absolute;inset:3% 4% 6%;border-radius:calc(var(--u)*3);pointer-events:none;z-index:-1;
+  background:radial-gradient(closest-side,var(--glow,#fff3),transparent 92%);animation:v73-pulse 2.2s ease-in-out infinite}
+ .mobile-game.mobile-game .arena-actions button[data-action="play"]{--glow:#ffe9a855}
+ .mobile-game.mobile-game .arena-actions button[data-action="attack"]{--glow:#ff6a5a66}
+ .mobile-game.mobile-game .arena-actions button[data-action="defend"]{--glow:#58b4ff66}
+ .mobile-game.mobile-game .arena-actions button[data-action="ace"]{--glow:#5eea8666}
+ .mobile-game.mobile-game .arena-actions button[data-action="end"]{--glow:#ffc86a55}
+ @keyframes v73-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+}
