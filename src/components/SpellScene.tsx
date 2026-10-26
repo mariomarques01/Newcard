@@ -1,6 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
 import {spellFlight,SPELL_CHARGE_MS} from '../game/spellFlight';
+import {drawElementalSpell} from './elementalSpellDrawing';
 import {drawCombatImpact} from './impactDrawing';
 import type {BattleEffect} from './CombatParticleCanvas';
 const palette=(e:BattleEffect)=>e.school==='fogo'?['#ff771e','#fff1a0']:e.school==='agua'?['#38cfff','#e2fbff']:e.school==='terra'?['#82d34c','#f0ffd6']:['#c4eaff','#ffffff'];
@@ -60,6 +61,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
     }
     if(age<0||age>1.6)continue;
     const fade=Math.max(0,1-age/1.3),x=e.to.x,y=e.to.y;
+    drawElementalSpell(ctx,e,age,color,light,reduce);
     if(reduce){glow(x,y,board?radius:48,color,fade*.3);continue;}
     if(legendary){
      // A second rotating seal distinguishes rare powers without a full-screen flash.
@@ -69,7 +71,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
      ctx.restore();
     }
     // School-specific silhouettes stay around the recipient instead of washing out the arena.
-    ctx.save();ctx.translate(x,y);ctx.globalAlpha=fade;ctx.strokeStyle=light;ctx.fillStyle=color;ctx.lineWidth=2;
+    if(!e.variant){ctx.save();ctx.translate(x,y);ctx.globalAlpha=fade;ctx.strokeStyle=light;ctx.fillStyle=color;ctx.lineWidth=2;
     if(e.type==='shield'){
      const r=42+Math.min(age*30,12);ctx.globalAlpha=fade*.35;
      ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(r*.75,-r*.55);ctx.lineTo(r*.6,r*.4);ctx.quadraticCurveTo(0,r*1.2,-r*.6,r*.4);ctx.lineTo(-r*.75,-r*.55);ctx.closePath();ctx.fill();ctx.globalAlpha=fade;ctx.stroke();
@@ -85,7 +87,7 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
     }else if(e.school==='ar'){
      ctx.rotate(-age);for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);ctx.strokeRect(22,-8,16,16);}ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
     }
-    ctx.restore();
+    ctx.restore();}
     if(age<.65){
      ctx.save();ctx.translate(x,y);ctx.globalAlpha=(1-age/.65)*.75;ctx.strokeStyle=color;ctx.lineWidth=2;
      if(e.type==='shield'){
