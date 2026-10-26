@@ -42,3 +42,11 @@ Criaturas exibem os modificadores reais ainda ativos: ataque/defesa reduzidos, a
 Os números de dano ficam junto ao alvo, em vez de aparecerem no topo da tela. A preferência por movimento reduzido remove projéteis e animações intensas e mantém a informação do resultado. O custo, o dano, a cura, a defesa e as regras impressas nas cartas foram preservados.
 
 Validação: TypeScript, build e dez arquivos de teste passaram. Chromium verificou as sete magias, renovação do Ent, barreira do Grifo, chegada dos indicadores no impacto, término do bloqueio de ataque e movimento reduzido; sem erros de JavaScript. As capturas `wave-evolved.png` e `tornado-evolved.png` mostram cenários automatizados de teste.
+
+## Arena com foco nas criaturas
+
+Remodela o layout para impedir o achatamento das cartas quando o navegador reduz a altura disponível. As criaturas têm uma janela de arte independente, com enquadramento ampliado; nome e atributos ficam em um rodapé próprio. Vida, elemento, escudo e informações não dependem dos valores impressos na imagem. As animações usam o mesmo enquadramento das cartas da arena.
+
+O placar foi compactado e impede a quebra dos valores de PG. As seis criaturas mantêm proporções e altura mínima; em telas baixas a página pode rolar em vez de reduzir a arte a uma faixa. O layout também deixa de herdar as duas colunas antigas em paisagem.
+
+Validação em Chromium: 320×640, 390×844, 393×695, 430×932, 960×1280 e 1280×800. Todas as cartas medem no mínimo 175 px de altura; em 393×695 medem aproximadamente 193 px, com 129 px exclusivos para a arte. Sem corte horizontal, quebra interna do placar ou sobreposição do placar com a legenda. Seleção, ataque, magia em área, indicadores e troca de turno passaram sem erros de JavaScript. TypeScript, build e dez arquivos de testes passaram. Capturas: `creatures-mobile-remodel.png` e `creatures-desktop-remodel.png`.

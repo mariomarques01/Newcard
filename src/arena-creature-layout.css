@@ -1,0 +1,184 @@
+/* Creature-first arena: keep real portrait space even when browser chrome reduces height. */
+html,body,#root { min-height:100%; height:auto; overflow-x:hidden; overflow-y:auto; }
+.mobile-game {
+  width:100%; max-width:960px!important; height:auto!important;
+  min-height:100svh!important; overflow:visible!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:48px 64px auto 126px 58px 76px!important;
+  gap:9px!important; padding:10px 20px calc(10px + env(safe-area-inset-bottom))!important;
+}
+.mobile-game>.arena-header,.mobile-game>.arena-score,.mobile-game>.arena-board,
+.mobile-game>.arena-hand,.mobile-game>.arena-hint,.mobile-game>.arena-actions {
+  grid-column:1!important; grid-row:auto!important; min-width:0;
+}
+.mobile-game .arena-board {
+  display:grid!important; grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto 30px auto!important; gap:8px!important;
+  padding:0 5px!important; min-height:0!important;
+}
+.arena-board .arena-row {
+  display:grid!important; grid-template-rows:25px auto!important;
+  padding:0!important; gap:7px!important;
+}
+.arena-board .hero-row {
+  display:grid!important; grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  width:100%!important; max-width:800px!important; gap:20px!important;
+  height:auto!important; align-items:stretch!important;
+}
+.arena-board .arena-effect-target {
+  width:100%!important; height:auto!important; max-height:none!important;
+  min-width:0!important; aspect-ratio:0.65; position:relative;
+}
+.arena-board .arena-hero {
+  height:100%!important; border:2px solid #be9652!important;
+  border-radius:16px!important; box-shadow:0 4px 10px #36230f88!important;
+}
+.arena-board .hero-face {
+  position:relative!important; height:100%!important;
+  border-radius:13px!important; background:#142019!important;
+}
+.arena-board [data-hero-id=p_rainha_copas] .hero-face,
+.arena-board [data-hero-id=p_valete_paus] .hero-face {background:#142019!important;}
+.arena-board .hero-face>img.hero-original-art {
+  position:absolute!important; width:1px!important; height:1px!important;
+  inset:auto!important; opacity:0!important; visibility:visible!important;
+}
+.creature-artwork {
+  position:absolute; inset:0 0 60px; display:block;
+  background-repeat:no-repeat; background-color:#15221b;
+  border-radius:12px 12px 0 0;
+}
+.arena-board .hero-name {
+  display:flex!important; align-items:center; justify-content:center;
+  bottom:29px!important; height:31px!important; padding:2px 4px!important;
+  white-space:normal!important; overflow:hidden!important;
+  text-overflow:clip!important; font:700 clamp(11px,1.8vw,18px)/1.08 Georgia,serif!important;
+  text-transform:none!important; background:#151e19!important;
+  border-top:1px solid #c09b5266;
+}
+.arena-board .hero-stats {
+  height:29px!important; bottom:0!important; gap:0!important;
+  background:#0c1513!important; border-radius:0 0 12px 12px;
+}
+.arena-board .hero-stats>span {
+  border:0!important; border-radius:0!important; background:none!important;
+  padding:2px!important; gap:7px!important; font:700 23px/1 Georgia!important;
+}
+.arena-board .hero-stats>span+span {border-left:1px solid #c09b5255!important;}
+.arena-board .hero-hp {
+  top:5px!important; left:5px!important; min-width:30px;
+  font:700 22px/1 Georgia!important; padding:5px!important;
+  box-shadow:0 2px 6px #0009;
+}
+.hero-element {top:5px!important; right:5px!important;}
+.hero-element .element-icon {width:31px;height:31px;box-shadow:0 2px 6px #0008;}
+.arena-board .hero-info {
+  display:block!important; top:auto!important; right:5px!important;
+  bottom:65px!important; width:23px!important; height:23px!important;
+  border:1px solid #ccb47588; z-index:16!important;
+}
+.elemental-shield {
+  top:auto!important; bottom:65px!important; left:5px!important;
+  transform:none!important; font:700 10px/1.2 system-ui!important;
+  background:#123744ed; border:1px solid #79bedb88; padding:3px 5px!important;
+}
+.creature-statuses {
+  top:45px!important; bottom:auto!important; left:5px!important; right:5px!important;
+  align-items:flex-start!important; gap:3px!important;
+}
+.creature-statuses>span {max-width:100%;font-size:9px!important;padding:3px 4px!important;}
+.creature-statuses small {font-size:8px!important;}
+.arena-board .battle-divider {
+  display:grid!important; grid-column:1!important; grid-row:auto!important;
+  grid-template-columns:auto minmax(0,1fr) auto!important;
+  height:30px!important; min-height:30px!important;
+}
+.arena-score .score-side {gap:4px!important; padding:6px 12px!important; overflow:hidden;}
+.arena-score .score-head,.arena-score .score-rival .score-head {
+  display:flex!important; flex-direction:row!important; flex-wrap:nowrap!important;
+  justify-content:space-between!important; align-items:baseline!important; gap:4px!important;
+  white-space:nowrap!important; min-width:0;
+}
+.arena-score .score-head span {font:700 15px/1 Georgia!important;letter-spacing:.4px!important;}
+.arena-score .score-head strong {font:700 24px/1 Georgia!important;white-space:nowrap!important;}
+.arena-score .score-head strong small {font:700 12px/1 Georgia!important;white-space:nowrap!important;}
+.energy-track {gap:5px!important;flex-wrap:nowrap!important;flex-direction:row!important;}
+.energy-track i {width:11px!important;height:11px!important;flex:0 0 11px;}
+.energy-track b {font-size:11px!important;white-space:nowrap;}
+.score-turn strong {white-space:nowrap!important;}
+.mobile-game .arena-header {padding:0 10px!important;}
+.arena-brand {font-size:24px!important;gap:10px!important;}
+.arena-brand svg {width:32px!important;height:32px!important;flex-shrink:0;}
+.arena-brand small {display:block!important;margin:3px 0 0!important;font-size:9px!important;letter-spacing:4px!important;}
+.mobile-game .arena-actions {height:76px!important;}
+.arena-actions button {font-size:14px!important;}
+.arena-hand .hand-cards {padding:5px 4px!important;gap:12px!important;}
+.arena-hand .hand-name {font-size:12px!important;}
+.elemental-selection strong {font-size:15px;}
+.elemental-selection div>span {font-size:11px;}
+@media(max-width:600px) {
+  .mobile-game {
+    grid-template-rows:42px 55px auto 105px 47px 67px!important;
+    gap:7px!important; padding:7px 10px calc(7px + env(safe-area-inset-bottom))!important;
+    border-width:4px!important;
+  }
+  .mobile-game .arena-score {grid-template-columns:minmax(0,1fr) 77px minmax(0,1fr)!important;gap:5px!important;}
+  .arena-score .score-side {padding:6px 7px!important;border-width:2px!important;}
+  .arena-score .score-head span {font-size:11px!important;letter-spacing:0!important;}
+  .arena-score .score-head strong {font-size:19px!important;}
+  .arena-score .score-head strong small {font-size:9px!important;margin-left:1px!important;}
+  .energy-track {gap:3px!important;}
+  .energy-track i {width:9px!important;height:9px!important;flex-basis:9px;}
+  .energy-track b {font-size:10px!important;margin:0 0 0 2px!important;}
+  .score-turn small {font-size:9px!important;letter-spacing:1px!important;}
+  .score-turn strong {font-size:13px!important;margin-top:4px!important;padding:0!important;}
+  .arena-brand {font-size:clamp(13px,4vw,19px)!important;gap:7px!important;text-align:left!important;}
+  .arena-brand svg {width:25px!important;height:25px!important;}
+  .arena-brand small {font-size:7px!important;letter-spacing:2.5px!important;}
+  .arena-header .arena-menu-trigger {width:29px!important;height:29px!important;}
+  .mobile-game .arena-board {padding:0 2px!important;gap:7px!important;}
+  .arena-board .arena-row {grid-template-rows:21px auto!important;gap:6px!important;}
+  .arena-board .hero-row {gap:10px!important;}
+  .arena-board .arena-effect-target {aspect-ratio:.59;min-height:175px;}
+  .arena-board .hero-name {height:33px!important;bottom:27px!important;font-size:11px!important;line-height:1.08!important;}
+  .arena-board .hero-stats {height:27px!important;}
+  .arena-board .hero-stats>span {font-size:21px!important;gap:4px!important;}
+  .arena-board .hero-stats svg {width:15px;height:15px;}
+  .arena-board .hero-hp {top:4px!important;left:4px!important;min-width:25px;font-size:18px!important;padding:4px!important;}
+  .hero-element {top:4px!important;right:4px!important;}
+  .hero-element .element-icon {width:25px;height:25px;}
+  .hero-element svg {width:16px;height:16px;}
+  .creature-statuses {top:37px!important;left:3px!important;right:3px!important;}
+  .creature-statuses>span {font-size:8px!important;gap:3px!important;padding:3px!important;}
+  .creature-statuses small {font-size:7px!important;}
+  .elemental-shield {font-size:8px!important;padding:2px 4px!important;}
+  .arena-board .row-caption span {font-size:16px!important;line-height:1!important;}
+  .arena-board .battle-divider {padding:0 5px!important;gap:4px!important;}
+  .battle-divider p {font-size:11px!important;}
+  .battle-divider .pile {font-size:8px!important;}
+  .battle-divider .pile b {font-size:12px!important;}
+  .arena-hand>.row-caption {height:23px!important;min-height:23px!important;flex-basis:23px!important;}
+  .arena-hand .row-caption span {font-size:16px!important;}
+  .arena-hand .hand-cards {gap:8px!important;}
+  .arena-hand .hand-name {font-size:9px!important;}
+  .mobile-game .arena-hint {padding:4px 7px!important;}
+  .elemental-selection {gap:7px!important;}
+  .elemental-selection>.element-icon {width:29px!important;height:29px!important;flex-shrink:0;}
+  .elemental-selection strong {font-size:11px!important;line-height:1.1;}
+  .elemental-selection div>span {font-size:9px!important;line-height:1.15!important;margin-top:2px;}
+  .elemental-selection button {width:24px!important;height:24px!important;flex-shrink:0;}
+  .mobile-game .arena-actions {height:67px!important;}
+  .arena-actions button {font-size:10px!important;border-width:2px!important;border-radius:11px!important;}
+  .arena-actions button svg {width:23px!important;height:23px!important;}
+  .arena-actions button>span {font-size:8px!important;}
+}
+@media(max-width:359px) {
+  .mobile-game {padding-left:6px!important;padding-right:6px!important;}
+  .arena-board .hero-row {gap:7px!important;}
+  .arena-score .score-head span {font-size:9px!important;}
+  .arena-score .score-head strong {font-size:17px!important;}
+  .arena-brand small {letter-spacing:2px!important;}
+  .arena-actions button {font-size:9px!important;}
+}
+/* Combat performances use the same creature close-up as the live arena. */
+.battle-actor .elemental-actor-art .creature-artwork {inset:0;border-radius:inherit;}
