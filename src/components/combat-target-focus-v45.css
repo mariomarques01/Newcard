@@ -20,8 +20,7 @@
 .combat-fx[data-travel="true"] .fx-ring,
 .combat-fx[data-travel="true"] .fx-spark,
 .combat-fx[data-travel="true"] .fx-symbol{display:none!important}
-.combat-fx[data-school="steel"]{--fx-color:#8bdcff;--fx-light:#e7faff}
-.combat-fx[data-school="nature"]{--fx-color:#79efb4;--fx-light:#effff2}
-.combat-fx[data-school="solar"]{--fx-color:#ffcf68;--fx-light:#fff6d2}
-.combat-fx[data-school="storm"]{--fx-color:#bb93ff;--fx-light:#f3e8ff}
-.combat-fx[data-school="wild"]{--fx-color:#ff9edb;--fx-light:#ffe7f7}
+.combat-fx[data-school="fogo"]{--fx-color:#ff771e;--fx-light:#fff1a0}
+.combat-fx[data-school="agua"]{--fx-color:#38cfff;--fx-light:#e2fbff}
+.combat-fx[data-school="terra"]{--fx-color:#82d34c;--fx-light:#f0ffd6}
+.combat-fx[data-school="ar"]{--fx-color:#c4eaff;--fx-light:#ffffff}

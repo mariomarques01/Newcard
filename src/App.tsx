@@ -16,6 +16,7 @@ import { Crown } from 'lucide-react';
 import { elementalCards, expireElementalEffects, creaturePower, targetFor, makeDeck, resolveCard, abilityFor } from './game/cards';
 import { ArenaHero, ArenaHand } from './components/MobileArena';
 import {advanceEvolution} from './game/evolution';
+import {heroPowerTargets} from './game/heroPowerPresentation';
 import { PROJECTILE_IMPACT_MS, HIT_REACTION_MS } from './game/combatTiming';
 import { ElementIcon } from './components/ElementIcon';
 
@@ -562,10 +563,11 @@ export default function App() {
     if(!activePlayerHero.element&&activePlayerHero.id==='p_rei_espadas'&&!targetedRivalHero?.isAlive)return;
     beginCombat();sound.playAcePower();
     const result=creaturePower(activePlayerHero,playerHeroes,rivalHeroes,targetedRivalHero?.id);
+    particleCanvasRef.current?.triggerHeroPower(activePlayerHero,heroPowerTargets(activePlayerHero,playerHeroes,targetedRivalHero,rivalHeroes));
     setPlayerEnergy(e=>Math.min(maxEnergy,e-2+(result.ability.energy||0)));setPlayerHeroes(result.allies);setRivalHeroes(result.enemies);
     const pg=Math.min(12,playerPg+result.killGlory);setPlayerPg(pg);
-    result.enemies.forEach((next,i)=>{const before=rivalHeroes[i];if(next.currentHp<before.currentHp){triggerHeroDamageHit(next.id);showCombatOutcome(next.id,0,before.currentHp-next.currentHp,!next.isAlive);particleCanvasRef.current?.triggerAttack(`hero-card-${activePlayerHero.id}`,`hero-card-${next.id}`,'pierce');}});
-    result.allies.forEach((next,i)=>{const before=playerHeroes[i];if(next.shield>before.shield)particleCanvasRef.current?.triggerCardBurst(`hero-card-${next.id}`,'shield',`+${next.shield-before.shield} ESCUDO`);if(next.currentHp>before.currentHp)particleCanvasRef.current?.triggerCardBurst(`hero-card-${next.id}`,'heal',`+${next.currentHp-before.currentHp} VIDA`);});
+    result.enemies.forEach((next,i)=>{const before=rivalHeroes[i];if(next.currentHp<before.currentHp){triggerHeroDamageHit(next.id);showCombatOutcome(next.id,0,before.currentHp-next.currentHp,!next.isAlive);}});
+
     addLog(activePlayerHero.name,activePlayerHero.acePowerDescription,'ace');
     checkWinConditions(pg,rivalPg,result.allies,result.enemies);
   };
@@ -595,6 +597,7 @@ export default function App() {
       const bossBonus=bossRival&&chapter>=3?1:0;
       const usePower=!attacker.stunned&&rivalEnergy>=2;
       const power=usePower?creaturePower(attacker,rivalHeroes,playerCourt,target.id):null;
+      if(usePower)particleCanvasRef.current?.triggerHeroPower(attacker,heroPowerTargets(attacker,rivalHeroes,target,playerCourt));
       const damage=attacker.stunned?0:Math.max(1,attacker.atk+bossBonus-Math.floor(target.def/2));
       const absorbed=Math.min(target.shield,damage);
       const hp=Math.max(0,target.currentHp-damage+absorbed);
@@ -603,7 +606,7 @@ export default function App() {
       const nextRivals=evolveCourt((power?power.allies:rivalHeroes).map(expireElementalEffects).map(h=>({...h,isDefending:false,def:h.def-(h.isDefending?1:0)})),attacker.id,PROJECTILE_IMPACT_MS);
       const pg=Math.min(12,rivalPg+gained);
       setPlayerHeroes(nextPlayers);setRivalHeroes(nextRivals);setRivalPg(pg);setRivalEnergy(usePower?rivalEnergy-2:rivalEnergy);
-      nextPlayers.forEach((next,i)=>{const before=playerCourt[i];const lost=before.currentHp-next.currentHp;if(lost>0){showCombatOutcome(next.id,power?0:absorbed,lost,!next.isAlive);triggerHeroDamageHit(next.id);particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${next.id}`,power?'pierce':'slash');}});
+      nextPlayers.forEach((next,i)=>{const before=playerCourt[i];const lost=before.currentHp-next.currentHp;if(lost>0){showCombatOutcome(next.id,power?0:absorbed,lost,!next.isAlive);triggerHeroDamageHit(next.id);if(!power)particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${next.id}`,'slash');}});
       sound.playAttack();
       addLog(attacker.name,attacker.stunned?'Ataque impedido pelo Tornado Ventoso.':usePower?attacker.acePowerDescription:`Atacou ${target.name}: ${damage-absorbed} de dano.`,'attack');
       if(checkWinConditions(playerPg,pg,nextPlayers,nextRivals)) return;

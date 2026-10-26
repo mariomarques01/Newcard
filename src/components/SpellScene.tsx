@@ -3,7 +3,7 @@ import {PROJECTILE_IMPACT_MS} from '../game/combatTiming';
 import {spellFlight,SPELL_CHARGE_MS} from '../game/spellFlight';
 import {drawCombatImpact} from './impactDrawing';
 import type {BattleEffect} from './CombatParticleCanvas';
-const palette=(e:BattleEffect)=>e.school==='steel'?['#71cfff','#e7faff']:e.school==='nature'?['#62e9aa','#effff2']:e.school==='solar'?['#ffca5b','#fff6d2']:e.school==='storm'?['#b58aff','#f3e8ff']:e.school==='wild'?['#ff79c5','#ffe7f7']:e.type==='heal'?['#56ffb7','#ddffef']:e.type==='shield'?['#48ceff','#d9f9ff']:e.flavor==='flame'?['#ff771e','#fff1a0']:e.flavor==='blade'?['#67cbff','#ecfaff']:e.type==='gold_blast'||e.flavor==='coin'?['#ffd34b','#fff6c4']:['#b967ff','#f4ddff'];
+const palette=(e:BattleEffect)=>e.school==='fogo'?['#ff771e','#fff1a0']:e.school==='agua'?['#38cfff','#e2fbff']:e.school==='terra'?['#82d34c','#f0ffd6']:['#c4eaff','#ffffff'];
 const noise=(n:number)=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v)};
 export function SpellScene({effects}:{effects:BattleEffect[]}){
  const canvas=useRef<HTMLCanvasElement>(null),live=useRef(effects),raf=useRef(0);
@@ -42,14 +42,14 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
       for(let j=10;j>=0;j--){const tail=spellFlight(e.from,e.to,elapsed-j*13);glow(tail.x,tail.y,3+(10-j)*.9,color,(1-j/11)*.5);}
       glow(f.x,f.y,24,color,.95);glow(f.x,f.y,7,light,1);
       ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.angle);ctx.globalAlpha=1;ctx.strokeStyle=light;ctx.fillStyle=color;ctx.lineWidth=2;
-      if(e.flavor==='blade'){
+      if(e.flavor==='ar'){
        // A narrow cutting crescent, rather than a large ring over neighboring cards.
        ctx.beginPath();ctx.moveTo(14,0);ctx.quadraticCurveTo(-10,-38,-24,-25);ctx.quadraticCurveTo(-4,0,-24,25);ctx.quadraticCurveTo(-10,38,14,0);ctx.fill();ctx.stroke();
-      }else if(e.flavor==='flame'){
+      }else if(e.flavor==='fogo'){
        for(let k=0;k<7;k++)glow(-k*7,Math.sin(k*2+elapsed*.025)*(3+k),18-k,color,.7);
-      }else if(e.flavor==='coin'){
+      }else if(e.flavor==='terra'){
        for(let k=0;k<4;k++){const a=k*Math.PI/2+elapsed*.01;ctx.save();ctx.translate(Math.cos(a)*17-10,Math.sin(a)*17);ctx.rotate(Math.PI/4);ctx.fillRect(-5,-5,10,10);ctx.strokeRect(-5,-5,10,10);ctx.restore();}
-      }else if(e.flavor==='heart'){
+      }else if(e.flavor==='agua'){
        for(let k=0;k<5;k++){const a=k*Math.PI*2/5+elapsed*.006;ctx.save();ctx.translate(Math.cos(a)*18,Math.sin(a)*18);ctx.rotate(a);ctx.beginPath();ctx.ellipse(0,0,9,3,0,0,Math.PI*2);ctx.fill();ctx.restore();}
       }else{
        // Two braided arcs visibly converge at the spell core.
@@ -73,16 +73,16 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
     if(e.type==='shield'){
      const r=42+Math.min(age*30,12);ctx.globalAlpha=fade*.35;
      ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(r*.75,-r*.55);ctx.lineTo(r*.6,r*.4);ctx.quadraticCurveTo(0,r*1.2,-r*.6,r*.4);ctx.lineTo(-r*.75,-r*.55);ctx.closePath();ctx.fill();ctx.globalAlpha=fade;ctx.stroke();
-    }else if(e.school==='steel'||(!e.school&&(e.type==='slash'||e.type==='pierce'))){
+    }else if(e.school==='ar'){
      ctx.rotate(-.6);for(let i=0;i<3;i++){ctx.globalAlpha=fade*(1-i*.2);ctx.lineWidth=5-i;ctx.beginPath();ctx.moveTo(-38+i*12,-35);ctx.quadraticCurveTo(-6+i*12,0,28+i*12,38);ctx.stroke();}
-    }else if(e.school==='nature'||e.type==='heal'){
+    }else if(e.school==='agua'||e.type==='heal'){
      for(let i=0;i<7;i++){const a=i*Math.PI*2/7+age*.8,r=25+age*18;ctx.save();ctx.translate(Math.cos(a)*r,Math.sin(a)*r-age*16);ctx.rotate(a);ctx.beginPath();ctx.ellipse(0,0,9,4,0,0,Math.PI*2);ctx.fill();ctx.restore();}
-     ctx.fillStyle=light;ctx.fillRect(-3,-16,6,32);ctx.fillRect(-16,-3,32,6);
-    }else if(e.school==='solar'){
-     ctx.rotate(age*.5);for(let i=0;i<8;i++){ctx.rotate(Math.PI/4);ctx.beginPath();ctx.moveTo(20,0);ctx.lineTo(38+age*15,-4);ctx.lineTo(32+age*15,5);ctx.closePath();ctx.fill();}ctx.strokeRect(-15,-15,30,30);
-    }else if(e.school==='storm'){
-     for(let i=0;i<4;i++){ctx.save();ctx.rotate(i*Math.PI/2);ctx.beginPath();ctx.moveTo(-8,-60);for(let j=1;j<=6;j++)ctx.lineTo((noise(e.id+i*11+j+Math.floor(age*12))*2-1)*15,-60+j*10);ctx.stroke();ctx.restore();}
-    }else if(e.school==='wild'){
+     if(e.type==='heal'){ctx.fillStyle=light;ctx.fillRect(-3,-16,6,32);ctx.fillRect(-16,-3,32,6);}
+    }else if(e.school==='terra'){
+     for(let i=0;i<7;i++){ctx.save();ctx.rotate(i*Math.PI*2/7);ctx.translate(24+age*20,0);ctx.rotate(i);ctx.fillRect(-6,-5,12,10);ctx.strokeRect(-6,-5,12,10);ctx.restore();}
+    }else if(e.school==='fogo'){
+     for(let i=0;i<8;i++){const a=i*Math.PI/4;glow(Math.cos(a)*(15+age*30),Math.sin(a)*(15+age*30)-age*25,15,color,fade*.8);}
+    }else if(e.school==='ar'){
      ctx.rotate(-age);for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);ctx.strokeRect(22,-8,16,16);}ctx.beginPath();ctx.arc(0,0,28,0,Math.PI*2);ctx.stroke();
     }
     ctx.restore();
@@ -91,17 +91,17 @@ export function SpellScene({effects}:{effects:BattleEffect[]}){
      if(e.type==='shield'){
       // Ripples visibly propagate around the barrier where the hit was absorbed.
       for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(0,0,22+age*55+k*7,30+age*40+k*7,0,-Math.PI*.9,Math.PI*.7);ctx.stroke();}
-     }else if(e.school==='storm'){
+     }else if(e.school==='fogo'){
       for(let k=0;k<6;k++){ctx.save();ctx.rotate(k*Math.PI/3);ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(-6,-22);ctx.lineTo(4,-30);ctx.lineTo(0,-48-age*20);ctx.stroke();ctx.restore();}
-     }else if(e.school==='wild'){
+     }else if(e.school==='ar'){
       for(let k=0;k<2;k++){ctx.beginPath();for(let j=0;j<35;j++){const a=j*.2+age*4+k*Math.PI,r=8+j*.9;const px=Math.cos(a)*r,py=Math.sin(a)*r;j?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();}
      }
      ctx.restore();
     }
     const atlas=texture.current;
-    if(atlas&&board&&age<1.45){
-     const cellX=e.type==='shield'||e.flavor==='blade'?1:e.type==='gold_blast'||e.flavor==='coin'||e.type==='heal'?1:0;
-     const cellY=e.type==='shield'||e.flavor==='blade'||e.flavor==='flame'?0:1;
+    if(atlas&&board&&(e.school==='fogo'||e.school==='agua')&&age<1.45){
+     const cellX=e.school==='agua'?1:0;
+     const cellY=0;
      const halfW=atlas.naturalWidth/2,halfH=atlas.naturalHeight/2;
      const r=(board?radius*.9:e.type==='shield'?100:130)*(.55+Math.min(age*2,1));
      ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=Math.max(0,Math.min(1,age*9))*(1-age/1.5)*.88;

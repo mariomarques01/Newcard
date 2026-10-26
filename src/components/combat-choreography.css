@@ -1,14 +1,14 @@
 /* Bounded character performances: only the hero taking the action leaves its frame. */
-.combat-effects .battle-actor{--actor-color:var(--actor-tone,#85dfff);z-index:4;animation:royal-cast 1500ms ease-out both;transform-origin:50% 82%}
-.combat-effects .actor-attack{animation:royal-strike 1500ms cubic-bezier(.2,.7,.3,1) both}
+.combat-effects .battle-actor{--actor-color:var(--actor-tone,#85dfff);z-index:4;animation:elemental-cast 1500ms ease-out both;transform-origin:50% 82%}
+.combat-effects .actor-attack{animation:elemental-strike 1500ms cubic-bezier(.2,.7,.3,1) both}
 .combat-effects .battle-actor .actor-sprite{filter:drop-shadow(0 2px 3px #000c) drop-shadow(0 0 6px var(--actor-color));animation-duration:1500ms;mask-image:linear-gradient(transparent,black 7% 87%,transparent)}
 .combat-effects .battle-actor .actor-nameplate,.combat-effects .battle-actor .actor-battle-cry{display:none}
 .combat-effects .battle-actor .actor-spotlight{inset:-7%;opacity:.18}
-.combat-effects .battle-actor .actor-platform{left:0;right:0;height:18%;bottom:0;border-width:1px;box-shadow:0 0 8px var(--actor-color);animation:royal-seal 1100ms ease-out both}
-.combat-effects .battle-actor .actor-power-orb{width:25px;height:25px;right:3%;top:38%;box-shadow:0 0 12px var(--actor-color);animation:royal-orb 880ms ease-in both}
+.combat-effects .battle-actor .actor-platform{left:0;right:0;height:18%;bottom:0;border-width:1px;box-shadow:0 0 8px var(--actor-color);animation:elemental-seal 1100ms ease-out both}
+.combat-effects .battle-actor .actor-power-orb{width:25px;height:25px;right:3%;top:38%;box-shadow:0 0 12px var(--actor-color);animation:elemental-orb 880ms ease-in both}
 .combat-effects .actor-attack .actor-power-orb{display:none}
 .combat-effects .battle-actor .actor-great-shield{left:12%;width:76%;height:85%;filter:drop-shadow(0 0 8px #64dfff)}
-@keyframes royal-strike{
+@keyframes elemental-strike{
  0%{opacity:0;transform:translate(0,0) scale(.9)}
  12%{opacity:.95;transform:translate(0,6px) scale(1)}
  22%{opacity:1;transform:translate(calc(var(--actor-dx) * -.08),calc(var(--actor-dy) * -.08)) rotate(-4deg) scale(.98)}
@@ -16,9 +16,9 @@
  85%{opacity:.8;transform:translate(0,0) scale(1)}
  100%{opacity:0;transform:translate(0,0) scale(.95)}
 }
-@keyframes royal-cast{0%{opacity:0;transform:translateY(5px) scale(.9)}18%,58%{opacity:1;transform:translateY(-8px) scale(1.08)}80%{opacity:.8;transform:translateY(-2px) scale(1)}100%{opacity:0;transform:translateY(0) scale(.98)}}
-@keyframes royal-seal{0%{opacity:0;transform:scale(.5)}25%,60%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(1.25)}}
-@keyframes royal-orb{0%{opacity:0;transform:scale(.1)}28%{opacity:.8;transform:scale(.8)}34%{opacity:1;transform:scale(1.3)}65%,100%{opacity:0;transform:scale(.2)}}
+@keyframes elemental-cast{0%{opacity:0;transform:translateY(5px) scale(.9)}18%,58%{opacity:1;transform:translateY(-8px) scale(1.08)}80%{opacity:.8;transform:translateY(-2px) scale(1)}100%{opacity:0;transform:translateY(0) scale(.98)}}
+@keyframes elemental-seal{0%{opacity:0;transform:scale(.5)}25%,60%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(1.25)}}
+@keyframes elemental-orb{0%{opacity:0;transform:scale(.1)}28%{opacity:.8;transform:scale(.8)}34%{opacity:1;transform:scale(1.3)}65%,100%{opacity:0;transform:scale(.2)}}
 @media(prefers-reduced-motion:reduce){.combat-effects .battle-actor{display:none}}
 
 /* Outcome seals stay on the recipient; damage numbers retain their separate lane. */
@@ -29,3 +29,7 @@
 .combat-fx[data-intensity="legendary"] .fx-label{border-color:#ffe5a1;color:#fff3ce;box-shadow:0 0 12px #e4b66680}
 @keyframes outcome-stamp{0%{opacity:0;transform:scale(.6)}12%,65%{opacity:1;transform:scale(1)}100%{opacity:0;transform:translateY(-8px) scale(.95)}}
 @media(prefers-reduced-motion:reduce){.outcome-seal{animation:none;opacity:1}}
+
+.combat-effects .battle-actor .elemental-actor-art{animation:none!important;background-repeat:no-repeat;background-position:center 30%;border:2px solid var(--actor-tone);border-radius:18px;mask-image:none;aspect-ratio:3/4;width:100%;height:100%}
+.combat-effects .battle-actor .actor-great-shield{stroke:var(--actor-tone);fill:#101c1866}
+.combat-effects .fx-bolt .element-icon{border:0;background:none;color:var(--fx-light);width:26px;height:26px}
