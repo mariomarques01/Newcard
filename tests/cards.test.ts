@@ -1,33 +1,28 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { abilityFor, makeDeck, resolveCard, targetFor } from '../src/game/cards';
+import { abilityFor, elementalCards, makeDeck, resolveCard, targetFor } from '../src/game/cards';
 import type { ActionCard, Hero } from '../src/types/game';
 const hero=(id:string,hp=5):Hero=>({id,currentHp:hp,maxHp:14,atk:4,shield:0,def:3,isAlive:true} as Hero);
-const card=(suit:string,rank:string,id='test'):ActionCard=>({id,suit,rank} as ActionCard);
-test('every numbered card and ace has an implemented ability',()=>{
- for(const suit of ['espadas','copas','paus']) for(let rank=1;rank<=10;rank++) assert.ok(Object.keys(abilityFor(card(suit,String(rank)))).length);
- for(const suit of ['espadas','copas','paus','ouros']) assert.ok(Object.keys(abilityFor(card(suit,'A'))).length);
+const fire:ActionCard={id:'elemental_fire',element:'fogo',name:'Explosão Ígnea',cost:1,suit:'paus',rank:'5',type:'attack',badgeText:'FOGO',badgeColor:'red',description:'Causa 4 de dano.',value:4};
+const water:ActionCard={...fire,id:'elemental_water',element:'agua',name:'Fonte de Cura',cost:2,suit:'copas',type:'heal'};
+const legacy:ActionCard={...fire,id:'card_5_espadas',element:undefined,suit:'espadas'};
+test('traditional numbered cards, aces and jokers have no playable abilities',()=>{
+ for(const suit of ['espadas','copas','ouros','paus','coringa']) for(const rank of ['1','5','10','A','★']) assert.deepEqual(abilityFor({...legacy,id:`card_${rank}_${suit}`,suit:suit as ActionCard['suit'],rank}),{});
+ for(const id of ['card_coringa_liberdade','card_coringa_oportunidade'])assert.deepEqual(abilityFor({...legacy,id}),{});
 });
-test('copas heals the dropped ally, without changing another hero or the input',()=>{
- const allies=[hero('a'),hero('b')]; const result=resolveCard(card('copas','2'),allies,[hero('r')],'b');
- assert.equal(result.allies[0].currentHp,5);assert.equal(result.allies[1].currentHp,7);assert.equal(result.allies[1].shield,2);assert.equal(allies[1].currentHp,5);
+test('a mixed deck contains only registered elemental cards and unique instance ids',()=>{
+ const deck=makeDeck([legacy,fire,water,{...legacy,id:'unknown',element:'fogo'}]);
+ assert.equal(deck.length,34);assert.equal(new Set(deck.map(c=>c.id)).size,34);
+ for(const card of deck){assert.ok(['elemental_fire','elemental_water'].includes(card.templateId!));assert.ok(card.element);assert.ok(Object.keys(abilityFor(card)).length);}
 });
-test('area healing applies only to living allies',()=>{
- const result=resolveCard(card('copas','A'),[hero('a'),{...hero('b',0),isAlive:false}],[hero('r')],'a');
- assert.equal(result.allies[0].currentHp,8);assert.equal(result.allies[0].shield,3);assert.equal(result.allies[1].currentHp,0);
+test('empty and traditional-only templates cannot create a deck',()=>{assert.deepEqual(makeDeck([]),[]);assert.deepEqual(makeDeck([legacy]),[]);});
+test('restored cards discard legacy entries and refresh elemental metadata without losing ids',()=>{
+ const saved=[legacy,{...fire,templateId:fire.id,id:'elemental_fire__17',name:'5 de Paus',image:'old.png'}, {...legacy,id:'card_coringa_liberdade'}];
+ const cards=elementalCards(saved,[fire,water]);assert.equal(cards.length,1);assert.equal(cards[0].id,'elemental_fire__17');assert.equal(cards[0].name,'Explosão Ígnea');assert.equal(cards[0].image,fire.image);
 });
-test('jokers have distinct effects',()=>{
- assert.deepEqual(abilityFor(card('coringa','★','card_coringa_liberdade')),{attack:3,shield:3,steal:1});
- assert.deepEqual(abilityFor(card('coringa','★','card_coringa_oportunidade')),{heal:4,shield:4,glory:1});
+test('elemental healing affects only the selected living ally and never mutates input',()=>{
+ const allies=[hero('a'),hero('b')];const r=resolveCard(water,allies,[hero('r')],'b');assert.equal(r.allies[0].currentHp,5);assert.equal(r.allies[1].currentHp,9);assert.equal(allies[1].currentHp,5);assert.equal(targetFor(water),'ally');
 });
-test('damage hits only selected rival and awards lethal glory',()=>{
- const result=resolveCard(card('espadas','5'),[hero('a')],[hero('r',3),hero('s')],'a','r');
- assert.equal(result.enemies[0].isAlive,false);assert.equal(result.enemies[1].currentHp,5);assert.equal(result.killGlory,2);
-});
-test('copies have unique ids and keep their original ability',()=>{
- const deck=makeDeck([card('coringa','★','card_coringa_oportunidade')]);
- assert.equal(new Set(deck.map(c=>c.id)).size,deck.length);assert.equal(abilityFor(deck[2]).heal,4);
-});
-test('drag targets follow actual abilities',()=>{
- assert.equal(targetFor(card('espadas','5')),'enemy');assert.equal(targetFor(card('copas','2')),'ally');assert.equal(targetFor(card('copas','A')),'board');assert.equal(targetFor(card('espadas','3')),'ally');
+test('elemental damage affects the selected enemy and awards lethal glory',()=>{
+ const r=resolveCard(fire,[hero('a')],[hero('r',4),hero('s')],'a','r');assert.equal(r.enemies[0].isAlive,false);assert.equal(r.enemies[1].currentHp,5);assert.equal(r.killGlory,2);assert.equal(targetFor(fire),'enemy');
 });
