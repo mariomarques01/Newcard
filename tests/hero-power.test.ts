@@ -1,22 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {heroPowerPresentation,heroPowerTargets} from '../src/game/heroPowerPresentation';
-import type {Hero} from '../src/types/game';
-const hero=(id:string,rank:Hero['rank'],hp=10,alive=true):Hero=>({id,rank,suit:rank==='Q'?'copas':rank==='J'?'paus':'espadas',currentHp:hp,maxHp:10,isAlive:alive} as Hero);
-test('queen targets only living wounded allies and announces actual healing',()=>{
- const queen=hero('q','Q'),allies=[queen,hero('k','K',9),hero('j','J',2),hero('dead','J',0,false)];
- assert.deepEqual(heroPowerTargets(queen,allies),[{id:'k',type:'heal',label:'+1 VIDA'},{id:'j',type:'heal',label:'+4 VIDA'}]);
- assert.equal(allies[1].currentHp,9);
-});
-test('jack requires a living enemy while king can reinforce without one',()=>{
- const jack=hero('j','J'),king=hero('k','K');
- assert.equal(heroPowerPresentation(jack).needsEnemy,true);
- assert.deepEqual(heroPowerTargets(jack,[],hero('dead','K',0,false)),[]);
- assert.equal(heroPowerTargets(jack,[],hero('enemy','K'))[0].id,'enemy');
- assert.equal(heroPowerTargets(king,[])[0].id,king.id);
-});
-test('full-health queen uses a caster aura without inventing restored HP',()=>{
- const queen=hero('q','Q');
- assert.deepEqual(heroPowerTargets(queen,[queen]),[{id:'q',type:'heal',label:'VIDA NO MÁXIMO'}]);
- assert.equal(heroPowerPresentation(queen).school,'nature');
-});
+import type {Hero,Element} from '../src/types/game';
+const hero=(id:string,element:Element,hp=10):Hero=>({id,element,rank:'K',suit:'ouros',currentHp:hp,maxHp:10,atk:3,def:2,shield:0,isAlive:hp>0,passiveName:'Poder Elemental',acePowerDescription:'Descrição elemental'} as Hero);
+test('griffin presentation matches three damage and temporary attack',()=>{const g=hero('p_rei_espadas','ar'),enemy=hero('enemy','fogo');assert.equal(heroPowerPresentation(g).school,'ar');assert.equal(heroPowerPresentation(g).needsEnemy,true);assert.deepEqual(heroPowerTargets(g,[g],enemy),[{id:'enemy',type:'pierce',label:'−3 VIDA'},{id:g.id,type:'gold_blast',label:'+1 ATQ'}]);});
+test('ent displays only actual healing on living wounded allies',()=>{const ent=hero('p_rainha_copas','terra'),allies=[ent,hero('a','ar',9),hero('b','fogo',2),hero('dead','agua',0)];assert.deepEqual(heroPowerTargets(ent,allies),[{id:'a',type:'heal',label:'+1 VIDA'},{id:'b',type:'heal',label:'+4 VIDA'}]);assert.deepEqual(heroPowerTargets(ent,[ent]),[]);});
+test('dragon includes splash recipients and golem announces both shields',()=>{const dragon=hero('r_rei_ouros','fogo'),enemies=[hero('a','ar'),hero('b','terra')];assert.deepEqual(heroPowerTargets(dragon,[dragon],enemies[0],enemies),[{id:'a',type:'pierce',label:'−4 VIDA'},{id:'b',type:'pierce',label:'−1 VIDA'}]);const golem=hero('r_valete_copas','terra');assert.deepEqual(heroPowerTargets(golem,[golem,dragon]),[{id:golem.id,type:'shield',label:'+2 ESCUDO'},{id:dragon.id,type:'shield',label:'+1 ESCUDO'}]);});
+test('old powers are never inferred from a traditional rank',()=>{assert.throws(()=>heroPowerPresentation({...hero('old','ar'),element:undefined}));assert.deepEqual(heroPowerTargets(hero('old','ar'),[hero('old','ar')]),[]);});

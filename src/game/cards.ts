@@ -7,6 +7,7 @@ const ELEMENTAL_ABILITIES: Record<string, Ability> = {
   elemental_eruption:{damage:4,defenseDown:2}, elemental_tornado:{damage:4,stun:true},
 };
 export function abilityFor(card: ActionCard): Ability {
+  if (!['fogo','agua','terra','ar'].includes(card.element||'')) return {};
   return ELEMENTAL_ABILITIES[card.templateId || card.id] || {};
 }
 /** Only registered elemental templates can enter a new or restored deck. */
@@ -60,7 +61,8 @@ export function expireElementalEffects(hero: Hero): Hero {
  return {...hero,atk:hero.atk+(hero.temporaryAttackReduction||0),def:hero.def+(hero.temporaryDefenseReduction||0),temporaryAttackReduction:0,temporaryDefenseReduction:0,stunned:false};
 }
 export function creaturePower(caster: Hero, allies: Hero[], enemies: Hero[], enemyId?: string) {
- const ability: Ability = caster.id==='r_rei_ouros'?{damage:4,splash:1}:caster.id==='r_rainha_paus'?{damage:3}:caster.id==='p_rei_espadas'?{damage:3,attack:1,temporary:true}:caster.id==='r_valete_copas'?{shield:2}:caster.rank==='J'?{damage:5,energy:1}:{heal:4,all:true};
+ if (!['fogo','agua','terra','ar'].includes(caster.element||'')) return resolveAbility({},allies,enemies,caster.id,enemyId);
+ const ability: Ability = caster.id==='r_rei_ouros'?{damage:4,splash:1}:caster.id==='r_rainha_paus'?{damage:3}:caster.id==='p_rei_espadas'?{damage:3,attack:1,temporary:true}:caster.id==='r_valete_copas'?{shield:2}:caster.id==='p_valete_paus'?{damage:5,energy:1}:caster.id==='p_rainha_copas'?{heal:4,all:true}:{};
  // Resolve through the same targeting and damage rules as action cards.
  const result=resolveAbility(ability,allies,enemies,caster.id,enemyId);
  if(caster.id==='r_rainha_paus') result.enemies=result.enemies.map(h=>{if(!h.isAlive)return h;const loss=Math.min(1,h.atk);return {...h,atk:h.atk-loss,temporaryAttackReduction:(h.temporaryAttackReduction||0)+loss};});

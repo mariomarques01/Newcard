@@ -26,3 +26,9 @@ As reduções temporárias expiram após o turno da corte afetada, sem restaurar
 ## Execução
 
 `npm install`, depois `npm run dev`. O ajuste da dependência esbuild resolve o conflito de instalação com o Vite 8 presente no projeto.
+
+## Efeitos exclusivamente elementais
+
+Ataques, defesas, magias, habilidades e evolução usam o elemento da carta/criatura e as artes elementais atuais. A animação não carrega mais `royal-actions.webp`; símbolos, anúncios e falas do baralho tradicional foram removidos desse fluxo. Os anúncios de poderes leem os resultados da mesma resolução de combate, incluindo dano em área, escudos e cura efetivamente aplicados.
+
+Validação adicional em Chromium: as quatro magias produzem `data-school` do elemento correto e anunciam a arte da carta usada; ataque, defesa e habilidade do Grifo mostram sua arte elemental; o rival anuncia suas habilidades elementais. Nenhuma requisição a `royal-actions` ou `assets/aistudio`, sem erros de JavaScript. A compilação e os testes de regressão também passaram.

@@ -1,27 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {spellPresentation,heroCombatState,schoolForSuit} from '../src/game/spellPresentation';
-import type {ActionCard,Hero} from '../src/types/game';
-const card=(suit:ActionCard['suit'],rank='5'):ActionCard=>({id:'test',name:'Carta',suit,rank,cost:2,type:'attack',badgeText:'',badgeColor:'',description:'',value:1});
-test('each suit has distinct spell presentation',()=>{
- const tones=new Set((['espadas','copas','ouros','paus','coringa'] as const).map(s=>spellPresentation(card(s)).tone));
- assert.equal(tones.size,5);
+import {spellPresentation,heroCombatState,schoolForElement} from '../src/game/spellPresentation';
+import type {ActionCard,Hero,Element} from '../src/types/game';
+const card=(element:Element):ActionCard=>({id:'elemental_fire',name:'Magia',element,suit:'copas',rank:'A',cost:2,type:'attack',badgeText:'',badgeColor:'',description:'',value:1});
+test('four elements have distinct palettes independently of former suit and rank',()=>{
+ const tones=new Set<string>();for(const element of ['fogo','agua','terra','ar'] as const){const presentation=spellPresentation(card(element));assert.equal(presentation.school,element);assert.equal(schoolForElement(element),element);assert.equal(presentation.intensity,'normal');tones.add(presentation.tone);}assert.equal(tones.size,4);
 });
-test('aces and jokers display legendary intensity',()=>{
- assert.equal(spellPresentation(card('copas','A')).intensity,'legendary');
- assert.equal(spellPresentation({...card('coringa'),type:'joker'}).intensity,'legendary');
-});
-test('combat-state thresholds',()=>{
- const hero={isAlive:true,currentHp:4,maxHp:10} as Hero;
- assert.equal(heroCombatState(hero),'wounded');
- assert.equal(heroCombatState({...hero,currentHp:3}),'critical');
- assert.equal(heroCombatState({...hero,isAlive:false}),'fallen');
-});
-
-test('spell school follows the played card across every rank',()=>{
- const expected={espadas:'steel',copas:'nature',ouros:'solar',paus:'storm',coringa:'wild'} as const;
- for(const suit of Object.keys(expected) as ActionCard['suit'][]){
-  assert.equal(schoolForSuit(suit),expected[suit]);
-  for(const rank of ['A','2','5','10']) assert.equal(spellPresentation(card(suit,rank)).school,expected[suit]);
- }
-});
+test('a traditional card without an element cannot choose a visual effect',()=>{assert.throws(()=>spellPresentation({...card('fogo'),element:undefined,id:'card_as_copas'}));assert.throws(()=>schoolForElement(undefined));});
+test('combat-state thresholds',()=>{const hero={isAlive:true,currentHp:4,maxHp:10} as Hero;assert.equal(heroCombatState(hero),'wounded');assert.equal(heroCombatState({...hero,currentHp:3}),'critical');assert.equal(heroCombatState({...hero,isAlive:false}),'fallen');});
