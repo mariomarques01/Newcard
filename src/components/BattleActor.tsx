@@ -1,3 +1,4 @@
+import {CreatureArtwork} from './CreatureArtwork';
 import type {CSSProperties} from 'react';
 import {Shield} from 'lucide-react';
 import {ELEMENT_TONES,isElement} from '../game/spellPresentation';
@@ -9,11 +10,10 @@ export function BattleActor({effect:e}:{effect:BattleEffect}){
  const w=Math.min(window.innerWidth*.25,106),safe=w*.625+8;
  const x=Math.max(safe,Math.min(window.innerWidth-safe,e.from.x)),targetX=Math.max(safe,Math.min(window.innerWidth-safe,e.to.x));
  const y=Math.max(100,Math.min(window.innerHeight-130,e.from.y));
- const atlas=e.actor.id==='p_rainha_copas'||e.actor.id==='p_valete_paus';
  const vars={left:x,top:y,'--actor-tone':ELEMENT_TONES[e.actor.element],'--actor-dx':`${(targetX-x)*distance}px`,'--actor-dy':`${(e.to.y-y)*distance}px`,'--actor-width':`${w}px`,'--actor-aspect':.75} as CSSProperties;
  return <div className={`battle-actor actor-${action} actor-elemental`} data-battle-actor={e.actor.id} data-performance={action} data-school={e.actor.element} style={vars}>
   <div className="actor-spotlight"/><div className="actor-platform"/>
-  <div className="actor-sprite elemental-actor-art" style={{backgroundImage:`url("${e.actor.image}")`,backgroundSize:atlas?'300% 200%':'cover',backgroundPosition:atlas?(e.actor.id==='p_rainha_copas'?'50% 100%':'100% 100%'):'center 30%'}}/>
+  <div className="actor-sprite elemental-actor-art"><CreatureArtwork hero={e.actor}/></div>
   {action==='guard'?<Shield className="actor-great-shield"/>:<div className="actor-power-orb"/>}
  </div>;
 }
