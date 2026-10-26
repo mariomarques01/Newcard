@@ -1,20 +1,22 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Reinos do Destino — Ascensão Elemental
 
-# Run and deploy your AI Studio app
+O desenvolvimento está sendo migrado para **Unity 6.3 LTS**, mantendo o histórico e as artes do jogo.
 
-This contains everything you need to run your app locally.
+➡️ **Abra a pasta [`Unity/`](Unity/README.md) no Unity Hub.** Ela contém o motor de combate em C#, a arena nativa e os testes da migração.
 
-View your app in AI Studio: https://ai.studio/apps/53346eed-019d-445e-a0b4-644c5e6772c1
+O protótipo React/Vite continua na raiz como referência e para preservar a versão web já publicada. Ele não é usado para renderizar a versão Unity.
 
-## Run Locally
+Para executar a referência web:
 
-**Prerequisites:**  Node.js
+```sh
+npm ci
+npm run dev
+```
 
+Para validar o motor nativo com .NET 8:
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```sh
+dotnet run --project Unity/Verification/ReinosDoDestino.Verification.csproj -- Unity
+```
+
+As instruções de abertura, escopo implementado e próximos passos estão em [`Unity/README.md`](Unity/README.md).

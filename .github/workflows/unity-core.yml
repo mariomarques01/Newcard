@@ -1,0 +1,15 @@
+name: Unity C# combat core
+on:
+  push:
+    paths: ['Unity/**', 'scripts/export-unity-*.mjs', '.github/workflows/unity-core.yml']
+  pull_request:
+    paths: ['Unity/**', 'scripts/export-unity-*.mjs', '.github/workflows/unity-core.yml']
+jobs:
+  combat-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: dotnet run --project Unity/Verification/ReinosDoDestino.Verification.csproj -- Unity

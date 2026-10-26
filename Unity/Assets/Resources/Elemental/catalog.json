@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "deckSize": 34,
+  "openingHand": 4,
+  "maxHand": 5,
+  "maxEnergy": 5,
+  "gloryToWin": 12,
+  "players": [
+    {
+      "id": "p_rei_espadas",
+      "name": "Grifo do Vento",
+      "title": "Sentinela dos Céus",
+      "element": 3,
+      "artwork": "grifo",
+      "maxHp": 9,
+      "attack": 4,
+      "defense": 3,
+      "shield": 2,
+      "abilityName": "Investida Aérea",
+      "description": "Causa 3 de dano ao alvo e concede +1 de ataque a si mesmo por uma rodada.",
+      "powerDescription": "Causa 3 de dano ao alvo e concede +1 de ataque a si mesmo por uma rodada.",
+      "power": {
+        "damage": 3,
+        "attack": 1,
+        "temporary": true
+      }
+    },
+    {
+      "id": "p_rainha_copas",
+      "name": "Ent Ancestral",
+      "title": "Guardião da Floresta",
+      "element": 2,
+      "artwork": "creatures",
+      "maxHp": 12,
+      "attack": 3,
+      "defense": 5,
+      "shield": 2,
+      "abilityName": "Guardião da Floresta",
+      "description": "Ao entrar em campo, concede +2 de escudo a todas as suas criaturas. Restaura 2 de vida ao aliado mais ferido a cada rodada.",
+      "powerDescription": "Restaura até 4 de vida a todas as criaturas aliadas vivas.",
+      "power": {
+        "heal": 4,
+        "all": true
+      }
+    },
+    {
+      "id": "p_valete_paus",
+      "name": "Lobo Flamejante",
+      "title": "Caçador das Brasas",
+      "element": 0,
+      "artwork": "creatures",
+      "maxHp": 9,
+      "attack": 3,
+      "defense": 2,
+      "shield": 2,
+      "abilityName": "Ímpeto Flamejante",
+      "description": "Recebe +1 de energia ao defender.",
+      "powerDescription": "Causa 5 de dano direto ao alvo e recupera 1 de energia.",
+      "power": {
+        "damage": 5,
+        "energy": 1
+      }
+    }
+  ],
+  "rivals": [
+    {
+      "id": "r_rei_ouros",
+      "name": "Dragão Ígneo",
+      "title": "Soberano das Chamas",
+      "element": 0,
+      "artwork": "dragao",
+      "maxHp": 12,
+      "attack": 4,
+      "defense": 2,
+      "shield": 0,
+      "abilityName": "Sopro Flamejante",
+      "description": "Causa 4 de dano ao alvo e 1 de dano em todos os outros inimigos.",
+      "powerDescription": "Causa 4 de dano ao alvo e 1 de dano em todos os outros inimigos.",
+      "power": {
+        "damage": 4,
+        "splash": 1
+      }
+    },
+    {
+      "id": "r_rainha_paus",
+      "name": "Leviatã Aquático",
+      "title": "Terror das Profundezas",
+      "element": 1,
+      "artwork": "leviata",
+      "maxHp": 10,
+      "attack": 3,
+      "defense": 3,
+      "shield": 0,
+      "abilityName": "Maré Impactante",
+      "description": "Causa 3 de dano ao alvo e reduz em 1 o ataque de todos os inimigos por uma rodada.",
+      "powerDescription": "Causa 3 de dano ao alvo e reduz em 1 o ataque de todos os inimigos por uma rodada.",
+      "power": {
+        "damage": 3,
+        "attackDown": 1,
+        "attackDownAll": true
+      }
+    },
+    {
+      "id": "r_valete_copas",
+      "name": "Golem de Pedra",
+      "title": "Bastião da Montanha",
+      "element": 2,
+      "artwork": "golem",
+      "maxHp": 11,
+      "attack": 2,
+      "defense": 4,
+      "shield": 0,
+      "abilityName": "Baluarte Terreno",
+      "description": "Concede +2 de escudo a si mesmo e +1 de escudo a um aliado.",
+      "powerDescription": "Concede +2 de escudo a si mesmo e +1 de escudo a um aliado.",
+      "power": {
+        "shield": 2,
+        "allyShield": 1
+      }
+    }
+  ],
+  "spells": [
+    {
+      "id": "elemental_fire",
+      "name": "Explosão Ígnea",
+      "element": 0,
+      "cost": 1,
+      "artwork": "explosao",
+      "description": "Causa 4 de dano direto a um inimigo.",
+      "ability": {
+        "damage": 4
+      }
+    },
+    {
+      "id": "elemental_wave",
+      "name": "Onda Avassaladora",
+      "element": 1,
+      "cost": 2,
+      "artwork": "onda",
+      "description": "Causa 3 de dano a todos os inimigos e reduz seu ataque em 1 por uma rodada.",
+      "ability": {
+        "damage": 3,
+        "enemyAll": true,
+        "attackDown": 1
+      }
+    },
+    {
+      "id": "elemental_eruption",
+      "name": "Erupção Terrestre",
+      "element": 2,
+      "cost": 3,
+      "artwork": "erupcao",
+      "description": "Causa 4 de dano a um inimigo e reduz sua defesa em 2 por uma rodada.",
+      "ability": {
+        "damage": 4,
+        "defenseDown": 2
+      }
+    },
+    {
+      "id": "elemental_tornado",
+      "name": "Tornado Ventoso",
+      "element": 3,
+      "cost": 4,
+      "artwork": "tornado",
+      "description": "Causa 4 de dano a um inimigo e impede seu ataque por uma rodada.",
+      "ability": {
+        "damage": 4,
+        "stun": true
+      }
+    },
+    {
+      "id": "elemental_water",
+      "name": "Fonte de Cura",
+      "element": 1,
+      "cost": 2,
+      "artwork": "onda",
+      "description": "Restaura até 4 de vida à criatura aliada selecionada.",
+      "ability": {
+        "heal": 4
+      }
+    },
+    {
+      "id": "elemental_earth",
+      "name": "Armadura de Terra",
+      "element": 2,
+      "cost": 2,
+      "artwork": "erupcao",
+      "description": "Concede +4 de escudo e +1 de defesa à criatura aliada selecionada.",
+      "ability": {
+        "shield": 4,
+        "defense": 1
+      }
+    },
+    {
+      "id": "elemental_air",
+      "name": "Tempestade de Ventos",
+      "element": 3,
+      "cost": 4,
+      "artwork": "tornado",
+      "description": "Causa 6 de dano direto à criatura rival selecionada.",
+      "ability": {
+        "damage": 6
+      }
+    }
+  ]
+}
