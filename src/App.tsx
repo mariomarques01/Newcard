@@ -1,3 +1,5 @@
+import './arena.css';
+import './arena-elemental.css';
 import React, { useState, useEffect, useRef } from 'react';
 import { Hero, ActionCard, CombatLogEntry, FloatingNumber } from './types/game';
 import { INITIAL_PLAYER_HEROES, INITIAL_RIVAL_HEROES, DECK_TEMPLATES } from './data/gameData';
@@ -11,69 +13,14 @@ import { VictoryModal } from './components/VictoryModal';
 import { CombatParticleCanvas, CombatParticleCanvasRef } from './components/CombatParticleCanvas';
 import { TargetingArrow } from './components/TargetingArrow';
 import { Crown } from 'lucide-react';
-import { targetFor, makeDeck, resolveCard, abilityFor } from './game/cards';
+import { expireElementalEffects, creaturePower, targetFor, makeDeck, resolveCard, abilityFor } from './game/cards';
 import { ArenaHero, ArenaHand } from './components/MobileArena';
 import {advanceEvolution} from './game/evolution';
-import './arena-evolution.css';
-import {heroPowerPresentation,heroPowerTargets} from './game/heroPowerPresentation';
 import { PROJECTILE_IMPACT_MS, HIT_REACTION_MS } from './game/combatTiming';
-import './arena.css';
-import './arena-royal-v3.css';
-import './arena-mobile-v4.css';
-import './arena-buttons-v5.css';
-import './arena-status-v6.css';
-import './arena-premium-v7.css';
-import './arena-cinematics-v8.css';
-import './arena-damage-v9.css';
-import './arena-performance-v10.css';
-import './arena-selection-v13.css';
-import './arena-actions-v14.css';
-import './arena-turn-energy-v15.css';
-import './arena-hero-stats-v16.css';
-import './arena-hand-v17.css';
-import './arena-iphone-layout-v18.css';
-import './arena-drag-feedback-v20.css';
-import './arena-clarity-v29.css';
-import './arena-card-context-v30.css';
-import './arena-damage-forecast-v31.css';
-import './arena-effect-targets-v32.css';
-import './arena-combat-hud-v33.css';
-import './arena-hand-grid-fix-v34.css';
-import './arena-hand-fit-v36.css';
-import './arena-inline-selection-v37.css';
-import './arena-hand-states-v38.css';
-import './arena-turn-clarity-v39.css';
-import './arena-hand-vertical-fit-v40.css';
-import './arena-original-hand-v41.css';
-import './arena-combat-defeat-v42.css';
-import './arena-combat-readability-v43.css';
-import './arena-combat-outcomes-v44.css';
-import './arena-score-clip-fix-v46.css';
-import './arena-visual-polish-v47.css';
-import './arena-royal-reference-v48.css';
-import './arena-atmosphere-v49.css';
-import './arena-hero-hierarchy-v50.css';
-import './arena-hand-actions-v51.css';
-import './arena-effect-preview-v52.css';
-import './arena-target-preview-v53.css';
-import './arena-medieval-combat-v54.css';
-import './arena-arcane-finish-v55.css';
-import './arena-hand-artwork-v59.css';
-import './arena-hand-suit-finish-v61.css';
-import './arena-restore-art-v62.css';
-import './arena-direct-art-v63.css';
-import './arena-art-crop-v64.css';
-import './arena-art-framing-v65.css';
-import './arena-clean-battlefield-v66.css';
-import './arena-menu-portrait-v67.css';
-import './arena-menu-hud-fix-v68.css';
-import './arena-parchment-redesign-v69.css';
-import './arena-uploaded-background-v70.css';
-import './arena-alignment-fix-v71.css';
-import './arena-reference-clean-v72.css';
+import { ElementIcon } from './components/ElementIcon';
 
-const SAVE_KEY = 'newcard-match-v1';
-const TURN_CHECKPOINT_KEY = 'newcard-turn-checkpoint-v1';
+const SAVE_KEY = 'newcard-elemental-match-v1';
+const TURN_CHECKPOINT_KEY = 'newcard-elemental-turn-checkpoint-v1';
 const PROFILE_KEY = 'newcard-player-profile-v1';
 const CAMPAIGN_KEY = 'newcard-campaign-v1';
 const RELIC_KEY = 'newcard-campaign-relics-v1';
@@ -115,11 +62,11 @@ export default function App() {
   // Game State
   const [playerHeroes, setPlayerHeroes] = useState<Hero[]>(() => JSON.parse(JSON.stringify(INITIAL_PLAYER_HEROES)));
   const [rivalHeroes, setRivalHeroes] = useState<Hero[]>(() => JSON.parse(JSON.stringify(INITIAL_RIVAL_HEROES)));
-  const [activePlayerHeroId, setActivePlayerHeroId] = useState<string>('p_rei_espadas');
+  const [activePlayerHeroId, setActivePlayerHeroId] = useState<string>('p_rainha_copas');
   const [selectedRivalHeroId, setSelectedRivalHeroId] = useState<string | null>('r_valete_copas');
 
-  const [playerHand, setPlayerHand] = useState<ActionCard[]>(() => makeDeck(DECK_TEMPLATES).slice(0,3));
-  const [deck, setDeck] = useState<ActionCard[]>(() => makeDeck(DECK_TEMPLATES).slice(3));
+  const [playerHand, setPlayerHand] = useState<ActionCard[]>(() => makeDeck(DECK_TEMPLATES).slice(0,4));
+  const [deck, setDeck] = useState<ActionCard[]>(() => makeDeck(DECK_TEMPLATES).slice(4));
   const [showLog, setShowLog] = useState(false);
   const [showGameMenu, setShowGameMenu] = useState(false);
   const [menuPaused, setMenuPaused] = useState(false);
@@ -128,7 +75,7 @@ export default function App() {
   const matchToken = useRef(0);
   const [discardPile, setDiscardPile] = useState<ActionCard[]>([]);
 
-  const [playerPg, setPlayerPg] = useState<number>(1);
+  const [playerPg, setPlayerPg] = useState<number>(0);
   const [rivalPg, setRivalPg] = useState<number>(0);
   const [playerEnergy, setPlayerEnergy] = useState<number>(5);
   const [rivalEnergy, setRivalEnergy] = useState<number>(3);
@@ -143,7 +90,7 @@ export default function App() {
       timestamp: '09:00',
       type: 'system',
       speaker: 'Reinos do Destino',
-      text: 'O combate entre as cortes reais se inicia! Conquiste 12 PG ou derrote todos os heróis rivais.',
+      text: 'O combate entre os reinos elementais se inicia! Conquiste 12 PG ou derrote todos os heróis rivais.',
     },
   ]);
 
@@ -463,10 +410,7 @@ export default function App() {
       if(next.atk>before.atk||next.def>before.def) fx?.triggerCardBurst(id,'gold_blast',next.atk>before.atk?`+${next.atk-before.atk} ATQ`:`+${next.def-before.def} DEF`,card);
     });
     if(!a.damage&&!a.heal&&!a.shield&&!a.attack&&!a.defense) fx?.triggerCardBurst(`hero-card-${ally.id}`,'arcane',a.energy?`+${a.energy} ENERGIA`:a.draw?`+${a.draw} CARTAS`:'GLÓRIA',card);
-    if (a.damage && enemy) {
-      triggerHeroDamageHit(enemy.id);
-      showCombatOutcome(enemy.id,0,Math.min(enemy.currentHp,a.damage),enemy.currentHp<=a.damage);
-    }
+    if (a.damage) result.enemies.forEach((next,i)=>{const before=rivalHeroes[i];if(next.currentHp<before.currentHp){triggerHeroDamageHit(next.id);showCombatOutcome(next.id,0,before.currentHp-next.currentHp,!next.isAlive);if(next.id!==enemy?.id)fx?.triggerAttack(sourceId,`hero-card-${next.id}`,'pierce',`−${before.currentHp-next.currentHp} VIDA`,card);}});
     setHint(`${card.name} • ${card.description}`);
     addLog(card.name,card.description,'card');
     checkWinConditions(pg,rivalPg-stolen,progressedAllies,result.enemies);
@@ -483,7 +427,7 @@ export default function App() {
     const attacker = attackerParam || activePlayerHero;
     const target = targetRivalParam || targetedRivalHero;
 
-    if (combatBusy.current || gameOver || !attacker || !attacker.isAlive || attacker.hasAttacked || !target || !target.isAlive || currentTurn !== 'player') {
+    if (combatBusy.current || gameOver || !attacker || !attacker.isAlive || attacker.hasAttacked || attacker.stunned || !target || !target.isAlive || currentTurn !== 'player') {
       return;
     }
 
@@ -499,7 +443,7 @@ export default function App() {
     let damage = Math.max(1, attacker.atk - Math.floor(target.def / 2));
 
     // Passive bonus: Rei de Espadas deals +2 damage against shielded or defending targets!
-    if (attacker.id === 'p_rei_espadas' && (target.shield > 0 || target.isDefending)) {
+    if (!attacker.element && attacker.id === 'p_rei_espadas' && (target.shield > 0 || target.isDefending)) {
       damage += 2;
     }
 
@@ -534,7 +478,7 @@ export default function App() {
     // Mark player attacker as hasAttacked
     const updatedPlayerHeroes = playerHeroes.map((h) => {
       if (h.id === attacker.id) {
-        return { ...h, hasAttacked: true, atk: h.atk-(h.temporaryAttack||0), temporaryAttack: 0 };
+        return { ...h, hasAttacked: true, atk: h.atk, temporaryAttack: h.temporaryAttack };
       }
       return h;
     });
@@ -615,91 +559,22 @@ export default function App() {
       return;
     }
 
-    if(heroPowerPresentation(activePlayerHero).needsEnemy&&!targetedRivalHero?.isAlive){
-      setHint('Selecione um rival vivo para usar a Investida Titânica.');return;
-    }
-    beginCombat();
-    sound.playAcePower();
-    particleCanvasRef.current?.triggerHeroPower(activePlayerHero,heroPowerTargets(activePlayerHero,playerHeroes,targetedRivalHero));
-    // Royal powers use their caster and real recipients instead of a generic board flash.
-    setPlayerEnergy((e) => e - 2);
-
-    let updatedPlayerHeroes = [...playerHeroes];
-    let updatedRivalHeroes = [...rivalHeroes];
-    let newPlayerPg = playerPg;
-
-    if (activePlayerHero.rank === 'K') {
-      // King of Spades Ace: Draws 2 cards and gets +2 ATQ
-      const drawn = deck.slice(0, 2);
-      const nextHand = [...playerHand, ...drawn];
-      setPlayerHand(nextHand.slice(0,5));
-      setDiscardPile(prev=>[...nextHand.slice(5),...prev]);
-      setDeck(deck.slice(drawn.length));
-      if(nextHand.length>5) setHint('Mão cheia: as cartas excedentes foram para o descarte.');
-      updatedPlayerHeroes = updatedPlayerHeroes.map((h) => {
-        if (h.id === activePlayerHero.id) {
-          return { ...h, atk: h.atk + 2 };
-        }
-        return h;
-      });
-      const rect=document.getElementById(`hero-card-${activePlayerHero.id}`)?.getBoundingClientRect();
-      if(rect)addFloatingNumber(rect.left+rect.width/2,rect.top+rect.height/2,`+2 ATQ · ${drawn.length} CARTAS`,'pg');
-      addLog(activePlayerHero.name, 'ativou o Poder de Ás: Sacou 2 cartas de reforço e afiou sua espada (+2 ATQ)!', 'ace');
-    } else if (activePlayerHero.rank === 'Q') {
-      // Queen of Hearts Ace: Heals all player heroes by 4 HP
-      sound.playHeal();
-      updatedPlayerHeroes = updatedPlayerHeroes.map((h) => {
-        if (h.isAlive) {
-          return { ...h, currentHp: Math.min(h.maxHp, h.currentHp + 4) };
-        }
-        return h;
-      });
-      playerHeroes.filter(h=>h.isAlive&&h.currentHp<h.maxHp).forEach(h=>{
-        atImpact(()=>{
-          const rect=document.getElementById(`hero-card-${h.id}`)?.getBoundingClientRect();
-          if(rect)addFloatingNumber(rect.left+rect.width/2,rect.top+rect.height/2,`+${Math.min(4,h.maxHp-h.currentHp)} VIDA`,'heal');
-        },h.id===activePlayerHero.id?0:PROJECTILE_IMPACT_MS);
-      });
-      addLog(activePlayerHero.name, 'ergueu o Cálice de Copas: Restaurou 4 de Vida a toda a corte!', 'heal');
-    } else if (activePlayerHero.rank === 'J') {
-      // Jack of Clubs Ace: 5 direct damage + 1 energy
-      if (targetedRivalHero && targetedRivalHero.isAlive) {
-        triggerHeroDamageHit(targetedRivalHero.id);
-        const dmg = 5;
-        const newHp = Math.max(0, targetedRivalHero.currentHp - dmg);
-        const isDead = newHp === 0;
-
-        updatedRivalHeroes = updatedRivalHeroes.map((h) => {
-          if (h.id === targetedRivalHero.id) {
-            return { ...h, currentHp: newHp, isAlive: !isDead };
-          }
-          return h;
-        });
-
-        setPlayerEnergy((e) => Math.min(maxEnergy, e + 1));
-        showCombatOutcome(targetedRivalHero.id,0,Math.min(targetedRivalHero.currentHp,5),isDead);
-
-        if (isDead) {
-          newPlayerPg = Math.min(12, newPlayerPg + 2);
-          addLog(activePlayerHero.name, `desferiu Investida Titânica fulminando ${targetedRivalHero.name}!`, 'ace', undefined, 2);
-        } else {
-          addLog(activePlayerHero.name, `desferiu Investida Titânica de 5 de dano em ${targetedRivalHero.name}!`, 'ace');
-        }
-      }
-    }
-
-    updatedPlayerHeroes=evolveCourt(updatedPlayerHeroes,activePlayerHero.id,PROJECTILE_IMPACT_MS);
-    setPlayerHeroes(updatedPlayerHeroes);
-    setRivalHeroes(updatedRivalHeroes);
-    setPlayerPg(newPlayerPg);
-
-    checkWinConditions(newPlayerPg, rivalPg, updatedPlayerHeroes, updatedRivalHeroes);
+    if(!activePlayerHero.element&&activePlayerHero.id==='p_rei_espadas'&&!targetedRivalHero?.isAlive)return;
+    beginCombat();sound.playAcePower();
+    const result=creaturePower(activePlayerHero,playerHeroes,rivalHeroes,targetedRivalHero?.id);
+    setPlayerEnergy(e=>Math.min(maxEnergy,e-2+(result.ability.energy||0)));setPlayerHeroes(result.allies);setRivalHeroes(result.enemies);
+    const pg=Math.min(12,playerPg+result.killGlory);setPlayerPg(pg);
+    result.enemies.forEach((next,i)=>{const before=rivalHeroes[i];if(next.currentHp<before.currentHp){triggerHeroDamageHit(next.id);showCombatOutcome(next.id,0,before.currentHp-next.currentHp,!next.isAlive);particleCanvasRef.current?.triggerAttack(`hero-card-${activePlayerHero.id}`,`hero-card-${next.id}`,'pierce');}});
+    result.allies.forEach((next,i)=>{const before=playerHeroes[i];if(next.shield>before.shield)particleCanvasRef.current?.triggerCardBurst(`hero-card-${next.id}`,'shield',`+${next.shield-before.shield} ESCUDO`);if(next.currentHp>before.currentHp)particleCanvasRef.current?.triggerCardBurst(`hero-card-${next.id}`,'heal',`+${next.currentHp-before.currentHp} VIDA`);});
+    addLog(activePlayerHero.name,activePlayerHero.acePowerDescription,'ace');
+    checkWinConditions(pg,rivalPg,result.allies,result.enemies);
   };
 
   // 8. END TURN & AI RIVAL AUTOMATED PLAY
   const handleEndTurn = () => {
     if (combatBusy.current || gameOver || currentTurn !== 'player') return;
     const token=matchToken.current;
+    const playerCourt=playerHeroes.map(expireElementalEffects);
     try {
       localStorage.setItem(TURN_CHECKPOINT_KEY, JSON.stringify({
         version:1, matchId,playerHeroes,rivalHeroes,playerHand,deck,discardPile,
@@ -712,26 +587,25 @@ export default function App() {
     setTimeout(()=>{
       if (token!==matchToken.current) return;
       const livingRivals=rivalHeroes.filter(h=>h.isAlive);
-      const livingPlayers=playerHeroes.filter(h=>h.isAlive);
+      const livingPlayers=playerCourt.filter(h=>h.isAlive);
       if (!livingRivals.length || !livingPlayers.length) return;
       const attacker=livingRivals[Math.floor(Math.random()*livingRivals.length)];
       const target=[...livingPlayers].sort((a,b)=>a.currentHp-b.currentHp)[0];
       const bossRival=attacker.id==='r_rei_ouros';
       const bossBonus=bossRival&&chapter>=3?1:0;
-      const damage=Math.max(1,attacker.atk+bossBonus-Math.floor(target.def/2));
+      const usePower=!attacker.stunned&&rivalEnergy>=2;
+      const power=usePower?creaturePower(attacker,rivalHeroes,playerCourt,target.id):null;
+      const damage=attacker.stunned?0:Math.max(1,attacker.atk+bossBonus-Math.floor(target.def/2));
       const absorbed=Math.min(target.shield,damage);
       const hp=Math.max(0,target.currentHp-damage+absorbed);
-      const gained=hp===0?2:damage-absorbed>=3?1:0;
-      let nextPlayers=playerHeroes.map(h=>h.id===target.id?{...h,currentHp:hp,shield:h.shield-absorbed,isAlive:hp>0}:{...h});
-      const nextRivals=evolveCourt(rivalHeroes.map(h=>({...h,isDefending:false,def:h.def-(h.isDefending?1:0),shield:h.shield+(h.id===attacker.id&&h.id==='r_rei_ouros'?1:0)})),attacker.id,PROJECTILE_IMPACT_MS);
+      let nextPlayers=power?power.enemies:playerCourt.map(h=>h.id===target.id?{...h,currentHp:hp,shield:h.shield-absorbed,isAlive:hp>0}:{...h});
+      const gained=power?power.killGlory:hp===0?2:damage-absorbed>=3?1:0;
+      const nextRivals=evolveCourt((power?power.allies:rivalHeroes).map(expireElementalEffects).map(h=>({...h,isDefending:false,def:h.def-(h.isDefending?1:0)})),attacker.id,PROJECTILE_IMPACT_MS);
       const pg=Math.min(12,rivalPg+gained);
-      setPlayerHeroes(nextPlayers);setRivalHeroes(nextRivals);setRivalPg(pg);
-      showCombatOutcome(target.id, absorbed, Math.min(target.currentHp, damage-absorbed), hp===0, target.shield>0 && absorbed===target.shield);
-      sound.playAttack();triggerHeroDamageHit(target.id);
-      particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${target.id}`,'slash');
-      if(absorbed>0) atImpact(()=>particleCanvasRef.current?.triggerCardBurst(`hero-card-${target.id}`,'shield',`BLOQUEOU ${absorbed}`));
-      if(attacker.id==='r_rei_ouros') particleCanvasRef.current?.triggerCardBurst(`hero-card-${attacker.id}`,'shield','COFRE RÉGIO');
-      addLog(attacker.name,`Atacou ${target.name}: ${damage-absorbed} de dano.${bossBonus?' Poder do chefe: +1 ataque.':''}`,'attack');
+      setPlayerHeroes(nextPlayers);setRivalHeroes(nextRivals);setRivalPg(pg);setRivalEnergy(usePower?rivalEnergy-2:rivalEnergy);
+      nextPlayers.forEach((next,i)=>{const before=playerCourt[i];const lost=before.currentHp-next.currentHp;if(lost>0){showCombatOutcome(next.id,power?0:absorbed,lost,!next.isAlive);triggerHeroDamageHit(next.id);particleCanvasRef.current?.triggerAttack(`hero-card-${attacker.id}`,`hero-card-${next.id}`,power?'pierce':'slash');}});
+      sound.playAttack();
+      addLog(attacker.name,attacker.stunned?'Ataque impedido pelo Tornado Ventoso.':usePower?attacker.acePowerDescription:`Atacou ${target.name}: ${damage-absorbed} de dano.`,'attack');
       if(checkWinConditions(playerPg,pg,nextPlayers,nextRivals)) return;
       setTimeout(()=>{
         if(token!==matchToken.current) return;
@@ -748,9 +622,9 @@ export default function App() {
         const wounded=nextPlayers.filter(h=>h.isAlive).sort((a,b)=>(b.maxHp-b.currentHp)-(a.maxHp-a.currentHp))[0];
         nextPlayers=nextPlayers.map(h=>({...h,hasAttacked:false,isDefending:false,def:h.def-(h.isDefending?1:0),atk:h.atk-(h.temporaryAttack||0),temporaryAttack:0,currentHp:queenAlive&&h.id===wounded?.id?Math.min(h.maxHp,h.currentHp+2):h.currentHp}));
         setPlayerHeroes(nextPlayers);
-        if(queenAlive&&wounded&&wounded.currentHp<wounded.maxHp) particleCanvasRef.current?.triggerCardBurst(`hero-card-${wounded.id}`,'heal','GRAÇA SOBERANA');
+        if(queenAlive&&wounded&&wounded.currentHp<wounded.maxHp) particleCanvasRef.current?.triggerCardBurst(`hero-card-${wounded.id}`,'heal','RENOVAÇÃO DA FLORESTA');
         if(deck.length && playerHand.length<5){setPlayerHand([...playerHand,deck[0]]);setDeck(deck.slice(1));}
-        setPlayerEnergy(maxEnergy);setCurrentTurn('player');setRound(round+1);
+        setPlayerEnergy(maxEnergy);setRivalEnergy(maxEnergy);setCurrentTurn('player');setRound(round+1);
         setActivePlayerHeroId(nextPlayers.find(h=>h.id===activePlayerHeroId&&h.isAlive)?.id||nextPlayers.find(h=>h.isAlive)!.id);
         setHint('Seu turno. Arraste uma carta ou um herói até o alvo.');sound.playCardDraw();
       },PROJECTILE_IMPACT_MS+HIT_REACTION_MS+200);
@@ -768,7 +642,7 @@ export default function App() {
       setSelectedCardId(card.id); setHint(card.description);
       if (playerEnergy < card.cost) { setHint('Energia insuficiente para esta carta.'); return; }
     }
-    if (hero && (!hero.isAlive || hero.hasAttacked)) return;
+    if (hero && (!hero.isAlive || hero.hasAttacked || hero.stunned)) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     dragRef.current={card,hero,x:e.clientX,y:e.clientY,moved:false,pointerId:e.pointerId};
   };
@@ -815,12 +689,12 @@ export default function App() {
     setPlayerHeroes(prepareHeroes(equippedRelics.filter(id=>relics.includes(id)),leaderId));
     setRivalHeroes(campaignRivals(nextChapter));
     setChapter(nextChapter);
-    setActivePlayerHeroId('p_rei_espadas');
+    setActivePlayerHeroId('p_rainha_copas');
     setSelectedRivalHeroId('r_valete_copas');
-    setPlayerHand(makeDeck(DECK_TEMPLATES).slice(0,3));
-    setDeck(makeDeck(DECK_TEMPLATES).slice(3));
+    setPlayerHand(makeDeck(DECK_TEMPLATES).slice(0,4));
+    setDeck(makeDeck(DECK_TEMPLATES).slice(4));
     setDiscardPile([]);
-    setPlayerPg(1);
+    setPlayerPg(0);
     setRivalPg(0);
     setPlayerEnergy(5);
     setRivalEnergy(3);
@@ -848,10 +722,10 @@ export default function App() {
   const cardCanPlay = !!selectedCard && !gameOver && currentTurn==='player' && playerEnergy>=selectedCard.cost;
   const selectedAbility = selectedCard ? abilityFor(selectedCard) : null;
   const affectedAllies = cardCanPlay && selectedAbility ? playerHeroes.filter(hero=>hero.isAlive && (selectedAbility.all || (selectedAbility.weakest ? hero.id===playerHeroes.filter(h=>h.isAlive).sort((a,b)=>(b.maxHp-b.currentHp)-(a.maxHp-a.currentHp))[0]?.id : cardTarget==='ally' && hero.id===activePlayerHeroId))).map(hero=>hero.id) : [];
-  const affectedRivals = cardCanPlay && selectedAbility?.damage && targetedRivalHero?.isAlive ? [targetedRivalHero.id] : [];
+  const affectedRivals = cardCanPlay && selectedAbility?.damage ? rivalHeroes.filter(h=>h.isAlive&&(selectedAbility.enemyAll||h.id===targetedRivalHero?.id)).map(h=>h.id) : [];
   const effectSummary = selectedAbility ? [selectedAbility.damage&&`⚔ ${selectedAbility.damage} dano`,selectedAbility.heal&&`♥ +${selectedAbility.heal} vida`,selectedAbility.shield&&`🛡 +${selectedAbility.shield} escudo`,selectedAbility.attack&&`⚔ +${selectedAbility.attack} ATQ`,selectedAbility.energy&&`⚡ +${selectedAbility.energy} energia`,selectedAbility.draw&&`+${selectedAbility.draw} cartas`,selectedAbility.glory&&`+${selectedAbility.glory} PG`].filter(Boolean).join(' · ') : '';
-  const canAttack = !gameOver && currentTurn==='player' && !!activePlayerHero?.isAlive && !activePlayerHero.hasAttacked && !!targetedRivalHero?.isAlive;
-  const attackDamage = canAttack && targetedRivalHero ? Math.max(1,activePlayerHero.atk-Math.floor(targetedRivalHero.def/2))+(activePlayerHero.id==='p_rei_espadas'&&(targetedRivalHero.shield>0||targetedRivalHero.isDefending)?2:0) : 0;
+  const canAttack = !gameOver && currentTurn==='player' && !!activePlayerHero?.isAlive && !activePlayerHero.hasAttacked && !activePlayerHero.stunned && !!targetedRivalHero?.isAlive;
+  const attackDamage = canAttack && targetedRivalHero ? Math.max(1,activePlayerHero.atk-Math.floor(targetedRivalHero.def/2))+(!activePlayerHero.element&&activePlayerHero.id==='p_rei_espadas'&&(targetedRivalHero.shield>0||targetedRivalHero.isDefending)?2:0) : 0;
   const forecastCardDamage = cardCanPlay && cardTarget==='enemy' && selectedCard ? abilityFor(selectedCard).damage||0 : 0;
   const forecastDamage = forecastCardDamage || (selectedCard ? 0 : attackDamage);
   const forecastShield = targetedRivalHero && forecastDamage && !forecastCardDamage ? Math.min(targetedRivalHero.shield,forecastDamage) : 0;
@@ -862,7 +736,7 @@ export default function App() {
   return (
     <div className="mobile-game" data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} data-drag-state={dragKind?(dragValid?'valid':'invalid'):'idle'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
       <header className="arena-header">
-        <div className="arena-brand"><Crown size={18}/><span>REINOS <small>DO DESTINO</small></span></div>
+        <div className="arena-brand"><Crown size={18}/><span>REINOS DO DESTINO<small>ASCENSÃO ELEMENTAL</small></span></div>
         <nav className="arena-menu" aria-label="Menu do jogo">
           <button type="button" className="arena-menu-trigger" aria-expanded={showGameMenu} aria-controls="arena-menu-panel" aria-label="Abrir menu do jogo" onClick={()=>setShowGameMenu(v=>!v)}>⋮</button>
           {showGameMenu&&<><button type="button" className="arena-menu-dismiss" aria-label="Fechar menu" onClick={()=>setShowGameMenu(false)}></button><div id="arena-menu-panel" className="arena-menu-panel" role="group" aria-label="Opções do jogo">
@@ -908,7 +782,7 @@ export default function App() {
         <div className="row-caption"><span>SUA MÃO · {playerHand.length}/5</span><small>Toque para escolher · arraste para jogar</small></div>
         <div className="hand-cards" data-count={playerHand.length}>{playerHand.map((card,index)=><ArenaHand key={card.id} card={card} index={index} count={playerHand.length} missingEnergy={Math.max(0,card.cost-playerEnergy)} selected={card.id===selectedCardId} affordable={playerEnergy>=card.cost} onSelect={()=>{setSelectedCardId(card.id);setHint(card.description);}} onInspect={()=>setInspectingItem(card)} onStart={e=>startDrag(e,card)}/>)}</div>
       </section>
-      <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''} ${selectedCard?'has-card-selection':''}`} role="status">{selectedCard?<div className="arena-inline-selection"><strong>{selectedCard.name} · ⚡{selectedCard.cost}</strong><span className={cardCanPlay?'can-play':'cannot-play'} title={[effectSummary,cardInstruction].filter(Boolean).join(' · ')}>{cardCanPlay&&effectSummary ? `${effectSummary} · ${cardInstruction}` : cardInstruction}</span><button type="button" onClick={()=>setInspectingItem(selectedCard)} aria-label={`Ampliar ${selectedCard.name}`}>⤢</button><button type="button" onClick={()=>setSelectedCardId(null)} aria-label="Cancelar seleção">×</button></div>:<span>{combatResolving?'⚔ Golpe em curso…':hint}</span>}</div>
+      <div className={`arena-hint ${/insuficiente|inválid/i.test(hint)?'warn':''} ${selectedCard?'has-card-selection':''}`} role="status">{selectedCard?<div className="arena-inline-selection"><strong>{selectedCard.name} · ⚡{selectedCard.cost}</strong><span className={cardCanPlay?'can-play':'cannot-play'} title={[effectSummary,cardInstruction].filter(Boolean).join(' · ')}>{cardCanPlay&&effectSummary ? `${effectSummary} · ${cardInstruction}` : cardInstruction}</span><button type="button" onClick={()=>setInspectingItem(selectedCard)} aria-label={`Ampliar ${selectedCard.name}`}>⤢</button><button type="button" onClick={()=>setSelectedCardId(null)} aria-label="Cancelar seleção">×</button></div>:<div className="elemental-selection"><ElementIcon element={activePlayerHero.element}/><div><strong>{activePlayerHero.name} · {activePlayerHero.title}</strong><span>{combatResolving?'Golpe em curso…':activePlayerHero.passiveDescription}</span></div><button onClick={()=>setInspectingItem(activePlayerHero)} aria-label="Detalhes da criatura selecionada">i</button></div>}</div>
       <div className="arena-actions"><ActionBar resolving={combatResolving} selectedCard={selectedCard} activeHero={activePlayerHero} targetedRival={targetedRivalHero} playerEnergy={playerEnergy} currentTurn={gameOver?'rival':currentTurn} onUseCard={handleUseCard} onAttack={handleAttack} onDefend={handleDefend} onUseAce={handleUseAce} onEndTurn={handleEndTurn}/></div>
       <CombatParticleCanvas ref={particleCanvasRef}/><FloatingNumberOverlay items={floatingNumbers}/>
       {dragOrigin && dragCurrent && <TargetingArrow startX={dragOrigin.x} startY={dragOrigin.y} currentX={dragCurrent.x} currentY={dragCurrent.y} targetType={dragKind||'board'} isTargetValid={dragValid}/>}

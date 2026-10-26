@@ -150,7 +150,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ item, onClos
                     <div className="p-3 rounded-lg bg-slate-900/90 border border-slate-800">
                       <div className="flex items-center gap-1.5 font-bold text-amber-300 mb-1">
                         <Flame className="w-3.5 h-3.5 text-amber-400" />
-                        Habilidade Passiva: {item.passiveName}
+                        Habilidade: {item.passiveName}
                       </div>
                       <p className="text-slate-300 text-xs leading-relaxed">{item.passiveDescription}</p>
                     </div>
@@ -158,7 +158,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ item, onClos
                     <div className="p-3 rounded-lg bg-cyan-950/50 border border-cyan-800/60">
                       <div className="flex items-center gap-1.5 font-bold text-cyan-300 mb-1">
                         <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                        Poder de Ás (Custo: 2 Energia)
+                        Habilidade Elemental (Custo: 2 Energia)
                       </div>
                       <p className="text-cyan-100 text-xs leading-relaxed">{item.acePowerDescription}</p>
                     </div>
