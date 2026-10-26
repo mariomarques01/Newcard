@@ -31,9 +31,9 @@ export const ActionBar: React.FC<ActionBarProps> = ({
 }) => {
   const isPlayerTurn = currentTurn === 'player' && !resolving;
   const canUseCard = isPlayerTurn && selectedCard !== null && playerEnergy >= selectedCard.cost;
-  const canAttack = isPlayerTurn && activeHero?.isAlive && !activeHero?.hasAttacked && targetedRival?.isAlive;
+  const canAttack = isPlayerTurn && activeHero?.isAlive && !activeHero?.hasAttacked && !activeHero?.stunned && targetedRival?.isAlive;
   const canDefend = isPlayerTurn && activeHero?.isAlive && !activeHero?.isDefending;
-  const canUseAce = isPlayerTurn && activeHero?.isAlive && playerEnergy >= 2 && (activeHero.rank!=='J'||targetedRival?.isAlive);
+  const canUseAce = isPlayerTurn && activeHero?.isAlive && playerEnergy >= 2 && (!(activeHero.element?activeHero.id==='p_rei_espadas':activeHero.rank==='J')||targetedRival?.isAlive);
 
   return (
     <div className="w-full max-w-4xl mx-auto px-1 sm:px-2 py-1 sm:py-2">
@@ -105,7 +105,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
               ? 'bg-gradient-to-b from-blue-700 via-blue-800 to-blue-950 border-blue-400 text-blue-100 shadow-[0_0_15px_rgba(96,165,250,0.5)] hover:scale-[1.02] active:scale-95 active:brightness-125'
               : 'bg-slate-900/60 border-slate-800 text-slate-500 cursor-not-allowed opacity-50'
           }`}
-          title="Assumir postura defensiva (+2 DEF, +3 Escudo e bônus tático)"
+          title="Assumir postura defensiva (+1 DEF, +3 Escudo e bônus tático)"
         >
           <div className="flex items-center gap-1">
             <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -129,16 +129,16 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           }`}
           title={
             activeHero
-              ? `Poder Supremo de Ás de ${activeHero.name} (Custa 2 Energia): ${activeHero.acePowerDescription}`
-              : 'Poder Supremo do Ás'
+              ? `Habilidade Elemental de ${activeHero.name} (Custa 2 Energia): ${activeHero.acePowerDescription}`
+              : 'Habilidade Elemental'
           }
         >
           <div className="flex items-center gap-1">
             <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-yellow-300" />
-            <span>ÁS (2 ⚡)</span>
+            <span>HABILIDADE</span>
           </div>
           <span className="text-[9px] sm:text-[10px] font-sans font-normal opacity-90 truncate max-w-[120px]">
-            {resolving ? 'Em combate' : !isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : playerEnergy < 2 ? 'Sem energia' : activeHero.rank==='J'&&!targetedRival?.isAlive ? 'Escolha alvo' : activeHero.rank === 'K' ? 'Compra 2' : activeHero.rank === 'Q' ? 'Cura 4' : 'Ataque 5'}
+            {resolving ? 'Em combate' : !isPlayerTurn ? 'Aguarde' : !activeHero?.isAlive ? 'Indisponível' : playerEnergy < 2 ? 'Sem energia' : (activeHero.element?activeHero.id==='p_rei_espadas':activeHero.rank==='J')&&!targetedRival?.isAlive ? 'Escolha alvo' : '2 de energia'}
           </span>
         </button>
 

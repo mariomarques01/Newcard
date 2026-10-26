@@ -1,6 +1,12 @@
 export type Suit = 'espadas' | 'copas' | 'ouros' | 'paus' | 'coringa';
 
+export type Element = 'fogo' | 'agua' | 'terra' | 'ar';
+
 export interface Hero {
+  element?: Element;
+  temporaryAttackReduction?: number;
+  temporaryDefenseReduction?: number;
+  stunned?: boolean;
   evolutionCharge?: number;
   evolved?: boolean;
   id: string;
@@ -32,6 +38,7 @@ export interface Hero {
 export type ActionCardType = 'attack' | 'defense' | 'heal' | 'ace' | 'joker' | 'tactics';
 
 export interface ActionCard {
+  element?: Element;
   templateId?: string;
   id: string;
   name: string;

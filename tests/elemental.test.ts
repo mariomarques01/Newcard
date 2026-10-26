@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+import {abilityFor,resolveCard,creaturePower,expireElementalEffects,targetFor} from '../src/game/cards';
+import type {Hero,ActionCard} from '../src/types/game';
+const hero=(id:string,hp=12):Hero=>({id,currentHp:hp,maxHp:hp,atk:4,def:3,shield:0,isAlive:hp>0} as Hero);
+const card=(id:string):ActionCard=>({id,templateId:id} as ActionCard);
+test('fire spell matches the supplied card and damage does not mutate input',()=>{const enemies=[hero('a'),hero('b')];const r=resolveCard(card('elemental_fire'),[hero('p')],enemies,'p','a');assert.equal(r.enemies[0].currentHp,8);assert.equal(r.enemies[1].currentHp,12);assert.equal(enemies[0].currentHp,12);});
+test('water hits every living enemy and its debuff expires exactly once',()=>{const r=resolveCard(card('elemental_wave'),[hero('p')],[hero('a'),hero('b'),hero('dead',0)],'p');assert.equal(targetFor(card('elemental_wave')),'board');for(const h of r.enemies.slice(0,2)){assert.equal(h.currentHp,9);assert.equal(h.atk,3);const restored=expireElementalEffects(h);assert.equal(restored.atk,4);assert.deepEqual(expireElementalEffects(restored),restored);}assert.equal(r.enemies[2].isAlive,false);});
+test('earth reduction stacks only by the available defense and fully recovers',()=>{let enemy=hero('a');enemy.currentHp=100;enemy.maxHp=100;for(let i=0;i<3;i++)enemy=resolveCard(card('elemental_eruption'),[hero('p')],[enemy],'p','a').enemies[0];assert.equal(enemy.def,0);assert.equal(expireElementalEffects(enemy).def,3);});
+test('tornado blocks the next attack and the block expires',()=>{const h=resolveCard(card('elemental_tornado'),[hero('p')],[hero('a')],'p','a').enemies[0];assert.equal(h.currentHp,8);assert.equal(h.stunned,true);assert.equal(expireElementalEffects(h).stunned,false);});
+test('dragon breath splashes other living enemies and awards every defeat',()=>{const r=creaturePower(hero('r_rei_ouros'),[hero('r_rei_ouros')],[hero('a',4),hero('b',1),hero('c',0)],'a');assert.equal(r.enemies[0].currentHp,0);assert.equal(r.enemies[1].currentHp,0);assert.equal(r.killGlory,4);});
+test('golem gives itself two shields and one to one living ally',()=>{const r=creaturePower(hero('r_valete_copas'),[hero('r_valete_copas'),hero('ally'),hero('other')],[hero('enemy')],'enemy');assert.deepEqual(r.allies.map(h=>h.shield),[2,1,0]);});
+test('griffin hits for three and gives itself a temporary attack bonus',()=>{const r=creaturePower(hero('p_rei_espadas'),[hero('p_rei_espadas')],[hero('a')],'a');assert.equal(r.enemies[0].currentHp,9);assert.equal(r.allies[0].atk,5);assert.equal(r.allies[0].temporaryAttack,1);});
+test('leviathan damages one target and weakens all living enemies',()=>{const r=creaturePower(hero('r_rainha_paus'),[hero('r_rainha_paus')],[hero('a'),hero('b')],'a');assert.deepEqual(r.enemies.map(h=>h.currentHp),[9,12]);assert.deepEqual(r.enemies.map(h=>h.atk),[3,3]);});
