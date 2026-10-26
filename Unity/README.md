@@ -60,3 +60,7 @@ Os saves de `localStorage` não são lidos pelo Unity. O save nativo fica em `Ap
 - O teste PlayMode verifica Canvas, entrada, cinco botões dentro da área segura, ataque e avanço do Player Loop. Em modo lote, não faz captura de Game View.
 
 Para repetir os testes, use **Window → General → Test Runner**, abas EditMode e PlayMode. A validação em aparelhos Android/iOS continua necessária antes de distribuir uma versão mobile.
+
+Build Linux nativo gerado e aberto em 540 × 960. A captura abaixo mostra todas as áreas da arena e os cinco controles sem rolagem; o clique em Defender também foi conferido no executável. O ambiente não possui dispositivo de áudio, por isso essa sessão não valida som.
+
+![Arena nativa em 540 × 960](Docs/native-arena-540x960.png)

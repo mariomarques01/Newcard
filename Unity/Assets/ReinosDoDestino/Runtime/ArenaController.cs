@@ -75,7 +75,7 @@ namespace ReinosDoDestino.Unity
             safeArea=Panel(go.transform,"SafeArea",Color.clear);Stretch(safeArea,Vector2.zero,Vector2.one,12);
             var header=Panel(safeArea,"Header",Ink);Stretch(header,new Vector2(0,.945f),Vector2.one,4);
             var brand=Label(header,"REINOS DO DESTINO · ASCENSÃO ELEMENTAL",34,Gold);Stretch(brand.rectTransform,Vector2.zero,new Vector2(.9f,1),4);
-            var restart=Button(header,"↻",()=>{if(busy)return;engine.NewMatch();selectedCard=null;Save();Refresh();},new Color(.25f,.2f,.12f));Stretch(restart.GetComponent<RectTransform>(),new Vector2(.91f,0),Vector2.one,3);
+            var restart=Button(header,"NOVO",()=>{if(busy)return;engine.NewMatch();selectedCard=null;Save();Refresh();},new Color(.25f,.2f,.12f));Stretch(restart.GetComponent<RectTransform>(),new Vector2(.91f,0),Vector2.one,3);
             var hud=Panel(safeArea,"Score",new Color(.08f,.16f,.2f));Stretch(hud,new Vector2(0,.865f),new Vector2(1,.945f),4);score=Label(hud,"",32,Color.white);
             BuildCourt(true,.575f,.865f);BuildCourt(false,.245f,.535f);
             var divider=Panel(safeArea,"Divider",Ink);Stretch(divider,new Vector2(0,.535f),new Vector2(1,.575f),4);deckLabel=Label(divider,"",27,Gold);
@@ -99,11 +99,11 @@ namespace ReinosDoDestino.Unity
                 var button=Button(court,"",()=>{if(busy)return;if(rival)engine.SelectEnemy(d.id);else engine.SelectAlly(d.id);Refresh();},Ink);
                 view.root=button.GetComponent<RectTransform>();view.background=button.GetComponent<UnityEngine.UI.Image>();Stretch(view.root,new Vector2(i/3f,0),new Vector2((i+1)/3f,.9f),9);
                 view.art=Art(view.root,d.artwork,Crop(d.id,d.artwork));Stretch(view.art.rectTransform,new Vector2(0,.25f),Vector2.one,4);
-                view.hp=Label(view.root,"",42,Color.white);view.hp.color=new Color(1,.8f,.7f);Stretch(view.hp.rectTransform,new Vector2(0,.79f),new Vector2(.28f,1),2);
-                var element=Label(view.root,ElementName(d.element),23,Tone(d.element));Stretch(element.rectTransform,new Vector2(.58f,.85f),Vector2.one,2);
+                var hpBadge=Panel(view.root,"Life",new Color(.38f,.035f,.025f,.95f));Stretch(hpBadge,new Vector2(0,.79f),new Vector2(.28f,1),2);view.hp=Label(hpBadge,"",42,Color.white);
+                var elementBadge=Panel(view.root,"Element",Ink);Stretch(elementBadge,new Vector2(.58f,.85f),Vector2.one,2);Label(elementBadge,ElementName(d.element),23,Tone(d.element));
                 var name=Label(view.root,d.name,28,Gold);Stretch(name.rectTransform,new Vector2(0,.12f),new Vector2(1,.25f),3);
                 view.stats=Label(view.root,"",31,Color.white);Stretch(view.stats.rectTransform,Vector2.zero,new Vector2(1,.12f),2);
-                view.status=Label(view.root,"",22,Color.white);Stretch(view.status.rectTransform,new Vector2(0,.25f),new Vector2(1,.4f),2);
+                var statusBadge=Panel(view.root,"Status",new Color(.035f,.06f,.05f,.8f));Stretch(statusBadge,new Vector2(0,.25f),new Vector2(1,.4f),2);view.status=Label(statusBadge,"",22,Color.white);
                 views.Add(d.id,view);
             }
         }
@@ -116,8 +116,8 @@ namespace ReinosDoDestino.Unity
             {
                 var v=views[c.id];v.hp.text=c.hp.ToString();v.stats.text=$"ATQ {c.attack}    DEF {c.defense}";
                 var status=new List<string>();if(c.shield>0)status.Add($"+{c.shield} ESCUDO");if(c.stunned)status.Add("ATAQUE IMPEDIDO · 1T");if(c.attackReduction>0)status.Add($"−{c.attackReduction} ATQ · 1T");if(c.defenseReduction>0)status.Add($"−{c.defenseReduction} DEF · 1T");if(c.temporaryAttack>0)status.Add($"+{c.temporaryAttack} ATQ · 1T");
-                v.status.text=string.Join("\n",status);v.art.color=c.Alive?Color.white:new Color(.3f,.3f,.3f,.5f);
-                bool selected=c.id==s.selectedAlly||c.id==s.selectedEnemy;v.background.color=selected?Tone(engine.Definition(c.id).element):Ink;
+                v.status.transform.parent.gameObject.SetActive(status.Count>0);v.status.text=string.Join("\n",status);v.art.color=c.Alive?Color.white:new Color(.3f,.3f,.3f,.5f);
+                bool selected=c.id==s.selectedAlly||c.id==s.selectedEnemy;v.background.color=selected?Color.Lerp(Ink,Tone(engine.Definition(c.id).element),.35f):Ink;
             }
             foreach(Transform child in handRoot){child.gameObject.SetActive(false);Destroy(child.gameObject);}
             for(int i=0;i<s.hand.Count;i++)

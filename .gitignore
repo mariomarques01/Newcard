@@ -28,3 +28,4 @@ Unity/*.booproj
 Unity/*.opendb
 
 Unity/Screenshots/
+Unity/Assets/Resources/PerformanceTestRun*.json*
