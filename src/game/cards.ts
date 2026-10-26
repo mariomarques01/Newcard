@@ -1,29 +1,31 @@
 import type { ActionCard, Hero } from '../types/game';
 
 export type Ability = { enemyAll?: boolean; splash?: number; attackDown?: number; defenseDown?: number; stun?: boolean; damage?: number; heal?: number; shield?: number; energy?: number; draw?: number; attack?: number; defense?: number; glory?: number; steal?: number; all?: boolean; weakest?: boolean; temporary?: boolean };
-const abilities: Record<string, Ability[]> = {
-  espadas: [{damage:2},{shield:3},{draw:1,attack:1,temporary:true},{shield:4},{damage:3},{energy:2},{damage:4},{shield:5,defense:1},{draw:2},{damage:5}],
-  copas: [{heal:2,weakest:true},{heal:2,shield:2},{heal:2,all:true},{shield:3,heal:2},{heal:4},{heal:3,energy:1},{heal:4,draw:1},{shield:4,all:true},{heal:5},{heal:4,shield:3,all:true}],
-  paus: [{energy:1,attack:1,temporary:true},{shield:3},{energy:2},{shield:4},{damage:3},{damage:3,energy:1},{damage:4},{shield:5,defense:1},{energy:3},{damage:5,glory:1}],
+const ELEMENTAL_ABILITIES: Record<string, Ability> = {
+  elemental_fire:{damage:4}, elemental_water:{heal:4}, elemental_earth:{shield:4,defense:1},
+  elemental_air:{damage:6}, elemental_wave:{damage:3,enemyAll:true,attackDown:1},
+  elemental_eruption:{damage:4,defenseDown:2}, elemental_tornado:{damage:4,stun:true},
 };
 export function abilityFor(card: ActionCard): Ability {
-  const id = card.templateId || card.id;
-  const elemental: Record<string, Ability> = {elemental_fire:{damage:4},elemental_water:{heal:4},elemental_earth:{shield:4,defense:1},elemental_air:{damage:6},elemental_wave:{damage:3,enemyAll:true,attackDown:1},elemental_eruption:{damage:4,defenseDown:2},elemental_tornado:{damage:4,stun:true}};
-  if (elemental[id]) return elemental[id];
-  if (id === 'card_coringa_liberdade') return {attack:3,shield:3,steal:1};
-  if (id === 'card_coringa_oportunidade') return {heal:4,shield:4,glory:1};
-  if (card.rank === 'A') return ({espadas:{draw:2,energy:1},copas:{heal:3,shield:3,all:true},ouros:{glory:2},paus:{energy:3}} as Record<string,Ability>)[card.suit] || {};
-  return abilities[card.suit]?.[Number(card.rank)-1] || {};
+  return ELEMENTAL_ABILITIES[card.templateId || card.id] || {};
+}
+/** Only registered elemental templates can enter a new or restored deck. */
+export function elementalCards(cards: ActionCard[], templates: ActionCard[]): ActionCard[] {
+  const registered = new Map(templates.filter(c=>c.element && ELEMENTAL_ABILITIES[c.templateId||c.id]).map(c=>[c.templateId||c.id,c]));
+  return cards.flatMap(card=>{
+    const id=card?.templateId||card?.id;
+    const template=registered.get(id);
+    return template ? [{...template,templateId:id,id:card.id}] : [];
+  });
 }
 export function targetFor(card: ActionCard): 'enemy' | 'ally' | 'board' {
   const a = abilityFor(card);
   return a.enemyAll ? 'board' : a.damage ? 'enemy' : a.all || a.weakest || (!a.heal && !a.shield && !a.attack && !a.defense) ? 'board' : 'ally';
 }
 export function makeDeck(templates: ActionCard[]): ActionCard[] {
-  if (templates.length && templates.every(card => card.element)) return Array.from({length:34},(_,i)=>({...templates[i%templates.length],templateId:templates[i%templates.length].id,id:`${templates[i%templates.length].id}__${i}`}));
-  const opening = ['card_coringa_liberdade','card_5_espadas','card_2_copas'];
-  const ordered = [...opening.map(id=>templates.find(c=>c.id===id)!).filter(Boolean), ...templates.filter(c=>!opening.includes(c.id))];
-  return [...ordered, ...templates, ...templates].map((c,i)=>({...c,templateId:c.id,id:`${c.id}__${i}`}));
+  const pool=elementalCards(templates,templates);
+  if (!pool.length) return [];
+  return Array.from({length:34},(_,i)=>({...pool[i%pool.length],id:`${pool[i%pool.length].templateId}__${i}`}));
 }
 export function resolveCard(card: ActionCard, allies: Hero[], enemies: Hero[], allyId: string, enemyId?: string) {
   return resolveAbility(abilityFor(card),allies,enemies,allyId,enemyId);

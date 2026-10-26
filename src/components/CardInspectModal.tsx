@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Hero, ActionCard } from '../types/game';
 import {evolutionCharge,EVOLUTION_ACTIONS} from '../game/evolution';
-import { SuitIcon } from './SuitIcon';
+import { ElementIcon } from './ElementIcon';
 import { X, Heart, Swords, Shield, Sparkles, Flame, Zap, Eye, BookOpen, AlertTriangle } from 'lucide-react';
 
 interface CardInspectModalProps {
@@ -22,8 +22,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ item, onClos
         {/* Top Header */}
         <div className="px-3 sm:px-4 py-2 sm:py-3 bg-slate-950/90 border-b border-amber-900/40 flex items-center justify-between gap-1">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span className="font-royal text-base sm:text-lg font-black text-amber-300">{item.rank}</span>
-            <SuitIcon suit={item.suit} className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+            <ElementIcon element={item.element} />
             <h3 className="font-royal text-sm sm:text-base md:text-lg font-black text-amber-100 truncate max-w-[130px] sm:max-w-[240px]">
               {item.name}
             </h3>
@@ -44,7 +43,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ item, onClos
               ) : (
                 <>
                   <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  <span>Carta Real</span>
+                  <span>Carta Elemental</span>
                 </>
               )}
             </button>
@@ -65,7 +64,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ item, onClos
           {isHero&&<div className="evolution-detail" data-evolution-detail={item.evolved?'evolved':'charging'}>
             <strong>{item.evolved?'✦ CARTA EVOLUÍDA':`✧ EVOLUÇÃO · ${evolutionCharge(item)}/${EVOLUTION_ACTIONS}`}</strong>
             <div className="evolution-track" role="progressbar" aria-label="Ações para evoluir" aria-valuenow={evolutionCharge(item)} aria-valuemin={0} aria-valuemax={EVOLUTION_ACTIONS}>{Array.from({length:EVOLUTION_ACTIONS},(_,i)=><i key={i} className={i<evolutionCharge(item)?'filled':''}/>)}</div>
-            <p>{item.evolved?'Bônus já aplicado: +1 ATQ e +2 Escudo. A forma evoluída dura até o fim desta batalha.':'Ataque, defenda, jogue uma habilidade ou use o poder ÁS com esta carta. Na terceira ação, ela desperta com +1 ATQ e +2 Escudo.'}</p>
+            <p>{item.evolved?'Bônus já aplicado: +1 ATQ e +2 Escudo. A forma evoluída dura até o fim desta batalha.':'Ataque, defenda, jogue uma habilidade ou ative a habilidade elemental com esta carta. Na terceira ação, ela desperta com +1 ATQ e +2 Escudo.'}</p>
           </div>}
 
           {viewMode === 'card' ? (
