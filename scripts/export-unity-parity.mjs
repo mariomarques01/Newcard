@@ -1,0 +1,9 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {transformSync} from 'esbuild';
+function load(file){const mod={exports:{}};new Function('module','exports',transformSync(readFileSync(file,'utf8').replaceAll('import.meta.env.BASE_URL',"''"),{loader:'ts',format:'cjs'}).code)(mod,mod.exports);return mod.exports;}
+const {resolveCard}=load('src/game/cards.ts'),data=load('src/data/gameData.ts');
+const fixtures=[];
+const state=h=>({id:h.id,hp:h.currentHp,maxHp:h.maxHp,attack:h.atk,defense:h.def,shield:h.shield,temporaryAttack:h.temporaryAttack||0,attackReduction:h.temporaryAttackReduction||0,defenseReduction:h.temporaryDefenseReduction||0,stunned:!!h.stunned});
+for(const spell of data.DECK_TEMPLATES){const allies=structuredClone(data.INITIAL_PLAYER_HEROES),enemies=structuredClone(data.INITIAL_RIVAL_HEROES);allies[1].currentHp=3;enemies[2].shield=8;const r=resolveCard(spell,allies,enemies,allies[1].id,enemies[2].id);fixtures.push({name:spell.name,spellId:spell.id,allyId:allies[1].id,enemyId:enemies[2].id,alliesBefore:allies.map(state),enemiesBefore:enemies.map(state),alliesAfter:r.allies.map(state),enemiesAfter:r.enemies.map(state),killGlory:r.killGlory});}
+const spell=data.DECK_TEMPLATES[0],allies=structuredClone(data.INITIAL_PLAYER_HEROES),enemies=structuredClone(data.INITIAL_RIVAL_HEROES);enemies[2].currentHp=2;const r=resolveCard(spell,allies,enemies,allies[0].id,enemies[2].id);fixtures.push({name:'Dano letal',spellId:spell.id,allyId:allies[0].id,enemyId:enemies[2].id,alliesBefore:allies.map(state),enemiesBefore:enemies.map(state),alliesAfter:r.allies.map(state),enemiesAfter:r.enemies.map(state),killGlory:r.killGlory});
+writeFileSync('Unity/Verification/parity-fixtures.json',JSON.stringify({fixtures},null,2)+'\n');console.log(`${fixtures.length} cenários exportados do resolvedor TypeScript.`);

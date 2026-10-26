@@ -1,0 +1,1276 @@
+{
+  "fixtures": [
+    {
+      "name": "Explosão Ígnea",
+      "spellId": "elemental_fire",
+      "allyId": "p_rainha_copas",
+      "enemyId": "r_valete_copas",
+      "alliesBefore": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesBefore": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "alliesAfter": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesAfter": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 7,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "killGlory": 0
+    },
+    {
+      "name": "Onda Avassaladora",
+      "spellId": "elemental_wave",
+      "allyId": "p_rainha_copas",
+      "enemyId": "r_valete_copas",
+      "alliesBefore": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesBefore": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "alliesAfter": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesAfter": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 9,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 1,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 7,
+          "maxHp": 10,
+          "attack": 2,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 1,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 8,
+          "maxHp": 11,
+          "attack": 1,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 1,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "killGlory": 0
+    },
+    {
+      "name": "Erupção Terrestre",
+      "spellId": "elemental_eruption",
+      "allyId": "p_rainha_copas",
+      "enemyId": "r_valete_copas",
+      "alliesBefore": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesBefore": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "alliesAfter": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesAfter": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 7,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 2,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 2,
+          "stunned": false
+        }
+      ],
+      "killGlory": 0
+    },
+    {
+      "name": "Tornado Ventoso",
+      "spellId": "elemental_tornado",
+      "allyId": "p_rainha_copas",
+      "enemyId": "r_valete_copas",
+      "alliesBefore": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesBefore": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "alliesAfter": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesAfter": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 7,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": true
+        }
+      ],
+      "killGlory": 0
+    },
+    {
+      "name": "Fonte de Cura",
+      "spellId": "elemental_water",
+      "allyId": "p_rainha_copas",
+      "enemyId": "r_valete_copas",
+      "alliesBefore": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesBefore": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "alliesAfter": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 7,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesAfter": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "killGlory": 0
+    },
+    {
+      "name": "Armadura de Terra",
+      "spellId": "elemental_earth",
+      "allyId": "p_rainha_copas",
+      "enemyId": "r_valete_copas",
+      "alliesBefore": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesBefore": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "alliesAfter": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 6,
+          "shield": 6,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesAfter": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "killGlory": 0
+    },
+    {
+      "name": "Tempestade de Ventos",
+      "spellId": "elemental_air",
+      "allyId": "p_rainha_copas",
+      "enemyId": "r_valete_copas",
+      "alliesBefore": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesBefore": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 11,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "alliesAfter": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 3,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesAfter": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 5,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 8,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "killGlory": 0
+    },
+    {
+      "name": "Dano letal",
+      "spellId": "elemental_fire",
+      "allyId": "p_rei_espadas",
+      "enemyId": "r_valete_copas",
+      "alliesBefore": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesBefore": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 2,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "alliesAfter": [
+        {
+          "id": "p_rei_espadas",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 4,
+          "defense": 3,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_rainha_copas",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 3,
+          "defense": 5,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "p_valete_paus",
+          "hp": 9,
+          "maxHp": 9,
+          "attack": 3,
+          "defense": 2,
+          "shield": 2,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "enemiesAfter": [
+        {
+          "id": "r_rei_ouros",
+          "hp": 12,
+          "maxHp": 12,
+          "attack": 4,
+          "defense": 2,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_rainha_paus",
+          "hp": 10,
+          "maxHp": 10,
+          "attack": 3,
+          "defense": 3,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        },
+        {
+          "id": "r_valete_copas",
+          "hp": 0,
+          "maxHp": 11,
+          "attack": 2,
+          "defense": 4,
+          "shield": 0,
+          "temporaryAttack": 0,
+          "attackReduction": 0,
+          "defenseReduction": 0,
+          "stunned": false
+        }
+      ],
+      "killGlory": 2
+    }
+  ]
+}
