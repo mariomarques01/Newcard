@@ -14,6 +14,7 @@ import {PowerAnnouncement,type PowerAnnouncementData} from './PowerAnnouncement'
 import {heroPowerPresentation,type HeroPowerTarget} from '../game/heroPowerPresentation';
 import {ElementIcon} from './ElementIcon';
 import {abilityFor} from '../game/cards';
+import {elementalVariant,creatureVariantFor,type SpellVariant} from '../game/spellChoreography';
 import {SpellScene} from './SpellScene';
 import type {ActionCard,Hero,Element} from '../types/game';
 
@@ -30,7 +31,7 @@ export interface CombatParticleCanvasRef {
   clear: ()=>void;
 }
 type Point = {x:number;y:number};
-export type BattleEffect = {id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;school?:string;started:number;intensity?:'normal'|'legendary';impact?:ImpactKind;evolution?:boolean;scope?:'board';actor?:{id:string;name:string;image:string;element:Element;casting?:boolean}};
+export type BattleEffect = {variant?:SpellVariant;id:number;from:Point;to:Point;type:ParticleEffectType;label:string;travel:boolean;flavor?:string;school?:string;started:number;intensity?:'normal'|'legendary';impact?:ImpactKind;evolution?:boolean;scope?:'board';actor?:{id:string;name:string;image:string;element:Element;casting?:boolean}};
 const MAX_ACTIVE_EFFECTS = 6;
 // Projectile travel (900ms) + impact animation (1350ms) + cleanup margin.
 const EFFECT_LIFETIME_MS = 2400;
@@ -49,18 +50,19 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
     document.querySelectorAll('[data-hero-id]').forEach(el=>cueCharacter(el.id,'idle'));};
   useEffect(()=>()=>{timers.current.forEach(clearTimeout);timers.current.clear();},[]);
   useImperativeHandle(ref,()=>{
-    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string,scope?:'board',actor?:BattleEffect['actor'],school?:string,presentation:Pick<BattleEffect,'intensity'|'impact'|'evolution'>={})=>{
+    const emit=(from:Point,to:Point,type:ParticleEffectType,label?:string,travel=false,flavor?:string,scope?:'board',actor?:BattleEffect['actor'],school?:string,presentation:Pick<BattleEffect,'intensity'|'impact'|'evolution'|'variant'>={})=>{
       const id=++sequence.current;
-      setEffects(prev=>[...prev.slice(-(MAX_ACTIVE_EFFECTS - 1)),{id,from,to,type,label:label||labels[type],travel,flavor,scope,actor,school,...presentation,started:performance.now()}]);
+      setEffects(prev=>[...prev.slice(-(MAX_ACTIVE_EFFECTS - 1)),{id,from,to,type,label:label||labels[type],travel,flavor,scope,actor,school,variant:isElement(school)?elementalVariant(school,type):undefined,...presentation,started:performance.now()}]);
       const timer=setTimeout(()=>{setEffects(prev=>prev.filter(e=>e.id!==id));timers.current.delete(timer);},EFFECT_LIFETIME_MS);
       timers.current.add(timer);
     };
     const actorFor=(id:string)=>{const el=document.getElementById(id);const heroId=el?.dataset.heroId;const element=el?.dataset.element;return heroId&&isElement(element)?{id:heroId,name:el?.querySelector('.hero-name')?.textContent||'',image:el?.querySelector<HTMLImageElement>('.hero-original-art')?.src||'',element}:undefined;};
     const board=(type:ParticleEffectType,label:string,card?:ActionCard)=>{
-      const rect=document.querySelector('[data-battlefield]')?.getBoundingClientRect();
       if(!card)return;
+      const affectedCourt=abilityFor(card).enemyAll?'.enemy-row':'.player-row';
+      const rect=document.querySelector(affectedCourt)?.getBoundingClientRect();
       if(card&&(!isElement(card.element)||!Object.keys(abilityFor(card)).length))return;
-      if(rect){const p={x:rect.left+rect.width/2,y:rect.top+rect.height/2};emit(p,p,type,label,false,undefined,'board',undefined,card?spellPresentation(card).school:undefined,{intensity:card?spellPresentation(card).intensity:'normal'});}
+      if(rect){const p={x:rect.left+rect.width/2,y:rect.top+rect.height/2};emit(p,p,type,label,false,undefined,'board',undefined,card?spellPresentation(card).school:undefined,{intensity:card?spellPresentation(card).intensity:'normal',variant:card?spellPresentation(card).variant:undefined});}
     };
     const announce=(data:Omit<PowerAnnouncementData,'id'|'y'>)=>{
       const rect=document.querySelector('.battle-divider')?.getBoundingClientRect();
@@ -86,7 +88,7 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         cueCharacter(sourceId,'cast');
         for(const target of targets){
           const id=`hero-card-${target.id}`,to=center(id);if(!to)continue;
-          emit(from,to,target.type,target.label,hero.id!==target.id,hero.element,undefined,{id:hero.id,name:hero.name,image:hero.image,element:hero.element,casting:true},power.school,{intensity:'legendary'});
+          emit(from,to,target.type,target.label,hero.id!==target.id,hero.element,undefined,{id:hero.id,name:hero.name,image:hero.image,element:hero.element,casting:true},power.school,{intensity:'legendary',variant:creatureVariantFor(hero,target.type)});
           if(target.type==='pierce'){
             const timer=setTimeout(()=>{cueCharacter(id,'hurt');timers.current.delete(timer);},PROJECTILE_IMPACT_MS);timers.current.add(timer);
           }
@@ -103,12 +105,12 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         const presentation=spellPresentation(card);
         announce({title:presentation.title,summary:card.description,image:card.image,kind:'elemental',school:presentation.school});
       },
-      triggerBurst:(x,y,type,label,card)=>{if(!card||!isElement(card.element)||!Object.keys(abilityFor(card)).length)return;emit({x,y},{x,y},type,label,false,card.element,undefined,undefined,card.element);},
+      triggerBurst:(x,y,type,label,card)=>{if(!card||!isElement(card.element)||!Object.keys(abilityFor(card)).length)return;emit({x,y},{x,y},type,label,false,card.element,undefined,undefined,card.element,{variant:spellPresentation(card).variant});},
       triggerCardBurst:(id,type,label,card)=>{
         const p=center(id),actor=actorFor(id);if(!p||!actor)return;
         if(card&&(!isElement(card.element)||!Object.keys(abilityFor(card)).length))return;
         const element=card?.element||actor.element;
-        emit(p,p,type,label,false,element,undefined,actor,element,{intensity:'normal'});
+        emit(p,p,type,label,false,element,undefined,actor,element,{intensity:'normal',variant:card?spellPresentation(card).variant:elementalVariant(element,type)});
         cueCharacter(id,type==='shield'?'guard':'cast');
       },
       triggerAttack:(sourceId,targetId,type='slash',label,card)=>{
@@ -118,7 +120,7 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
         const element=card?.element||actor.element;
         const profile=CHARACTER_PERSONALITY[actor.id];
         const combatLabel=label||(type==='shield'?profile?.guard:type==='slash'||type==='pierce'?profile?.attack:undefined);
-        emit(from,to,type,combatLabel,sourceId!==targetId,element,undefined,{...actor,casting:!!card},element,{intensity:'normal'});
+        emit(from,to,type,combatLabel,sourceId!==targetId,element,undefined,{...actor,casting:!!card},element,{intensity:'normal',variant:card?spellPresentation(card).variant:elementalVariant(element,type)});
         cueCharacter(sourceId,card||type==='heal'||type==='arcane'?'cast':'attack');
         if(type==='slash'||type==='pierce'||type==='arcane'||type==='gold_blast'){
           const timer=setTimeout(()=>{cueCharacter(targetId,'hurt');timers.current.delete(timer);},PROJECTILE_IMPACT_MS);timers.current.add(timer);
@@ -130,7 +132,7 @@ export const CombatParticleCanvas=forwardRef<CombatParticleCanvasRef>(function C
     const dx=e.to.x-e.from.x,dy=e.to.y-e.from.y;
     const vars={'--fx-x':`${dx}px`,'--fx-y':`${dy}px`,'--fx-angle':`${Math.atan2(dy,dx)}rad`,'--fx-delay':e.travel?`${PROJECTILE_IMPACT_MS}ms`:'0ms'} as CSSProperties;
     if(e.impact)return <div key={e.id} className={`combat-outcome outcome-${e.impact}`} data-outcome={e.impact} style={{left:e.to.x,top:e.to.y}}><span className="outcome-seal">{e.impact==='blocked'?'⛨':e.impact==='shield-break'?'✧':e.impact==='lethal'?'✦':e.impact==='heavy'?'⚔':'✧'}</span></div>;
-    return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"} ${e.scope==='board'?'fx-board':''}`} data-evolution={e.evolution||undefined} data-intensity={e.intensity||'normal'} data-school={e.school} data-effect={e.type} data-travel={e.travel} data-scope={e.scope||'target'} style={vars}>
+    return <div key={e.id} className={`combat-fx fx-${e.type} flavor-${e.flavor||"spell"} ${e.scope==='board'?'fx-board':''}`} data-evolution={e.evolution||undefined} data-intensity={e.intensity||'normal'} data-school={e.school} data-variant={e.variant} data-effect={e.type} data-travel={e.travel} data-scope={e.scope||'target'} style={vars}>
       <div className="scene-light" style={{left:e.to.x,top:e.to.y}}/>
       {e.travel&&<div className="casting-seal" style={{left:e.from.x,top:e.from.y}}><i/><span>✧</span></div>}
       {e.travel&&<div className="fx-flight" style={{left:e.from.x,top:e.from.y}}><div className="fx-bolt"><i/><b>{isElement(e.school)&&<ElementIcon element={e.school}/>}</b></div></div>}

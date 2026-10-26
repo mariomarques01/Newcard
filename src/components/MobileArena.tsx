@@ -1,4 +1,5 @@
 import { ElementIcon, elementLabel } from './ElementIcon';
+import {creatureStatuses} from '../game/spellChoreography';
 import { Swords, Shield } from 'lucide-react';
 import {useEffect,useRef,useState} from 'react';
 import {evolutionCharge,EVOLUTION_ACTIONS} from '../game/evolution';
@@ -11,11 +12,11 @@ export function ArenaHero({hero:liveHero, active, targeted, valid, hovered, hit,
   onSelect:()=>void; onInspect:()=>void; onStart?:(e:PointerEvent)=>void;
 }) {
   // Keep target vitals visible during flight; gameplay still resolves immediately.
-  const [vitals,setVitals]=useState(()=>({currentHp:liveHero.currentHp,shield:liveHero.shield,isAlive:liveHero.isAlive}));
+  const [vitals,setVitals]=useState(()=>({currentHp:liveHero.currentHp,shield:liveHero.shield,isAlive:liveHero.isAlive,atk:liveHero.atk,def:liveHero.def,stunned:liveHero.stunned,temporaryAttackReduction:liveHero.temporaryAttackReduction,temporaryDefenseReduction:liveHero.temporaryDefenseReduction,temporaryAttack:liveHero.temporaryAttack}));
   const shown=useRef(vitals);
   const [defeatBurst,setDefeatBurst]=useState(false);
   useEffect(()=>{
-    const next={currentHp:liveHero.currentHp,shield:liveHero.shield,isAlive:liveHero.isAlive};
+    const next={currentHp:liveHero.currentHp,shield:liveHero.shield,isAlive:liveHero.isAlive,atk:liveHero.atk,def:liveHero.def,stunned:liveHero.stunned,temporaryAttackReduction:liveHero.temporaryAttackReduction,temporaryDefenseReduction:liveHero.temporaryDefenseReduction,temporaryAttack:liveHero.temporaryAttack};
     const damaged=next.currentHp<shown.current.currentHp||next.shield<shown.current.shield;
     const apply=()=>{
       setDefeatBurst(shown.current.isAlive&&!next.isAlive);
@@ -24,7 +25,7 @@ export function ArenaHero({hero:liveHero, active, targeted, valid, hovered, hit,
     if(!damaged){apply();return;}
     const timer=setTimeout(apply,PROJECTILE_IMPACT_MS);
     return()=>clearTimeout(timer);
-  },[liveHero.currentHp,liveHero.shield,liveHero.isAlive]);
+  },[liveHero.currentHp,liveHero.shield,liveHero.isAlive,liveHero.atk,liveHero.def,liveHero.stunned,liveHero.temporaryAttackReduction,liveHero.temporaryDefenseReduction,liveHero.temporaryAttack]);
   const [evolutionVisible,setEvolutionVisible]=useState(!!liveHero.evolved);
   const [evolutionFlash,setEvolutionFlash]=useState(false);
   useEffect(()=>{
@@ -34,10 +35,11 @@ export function ArenaHero({hero:liveHero, active, targeted, valid, hovered, hit,
     return()=>clearTimeout(timer);
   },[liveHero.evolved,evolutionVisible]);
   const hero={...liveHero,...vitals,evolved:evolutionVisible};
+  const statuses=creatureStatuses(hero);
   const charge=evolutionCharge(liveHero);
   const ratio=hero.maxHp>0?hero.currentHp/hero.maxHp:0;
   const hpState=ratio<=.34?'low':ratio<=.67?'mid':'high';
-  return <div id={`hero-card-${hero.id}`} data-stunned={!!hero.stunned} data-element={hero.element} data-evolved={evolutionVisible?'yes':'no'} data-evolution-charge={charge} data-hero-id={hero.id} data-suit={hero.suit} data-rank={hero.rank} data-hp={hpState} className={`arena-hero ${active?'active':''} ${targeted?'targeted':''} ${valid?'valid-target':''} ${hovered&&valid?'drop-target':''} ${!hero.isAlive?'fallen':''} ${defeatBurst?'defeat-fresh':''} ${evolutionFlash?'evolution-flash':''} ${hero.shield>0&&hero.isAlive?'protected':''} ${hit?'hero-under-attack':''}`}>
+  return <div id={`hero-card-${hero.id}`} data-status-count={statuses.length} data-stunned={!!hero.stunned} data-element={hero.element} data-evolved={evolutionVisible?'yes':'no'} data-evolution-charge={charge} data-hero-id={hero.id} data-suit={hero.suit} data-rank={hero.rank} data-hp={hpState} className={`arena-hero ${active?'active':''} ${targeted?'targeted':''} ${valid?'valid-target':''} ${hovered&&valid?'drop-target':''} ${!hero.isAlive?'fallen':''} ${defeatBurst?'defeat-fresh':''} ${evolutionFlash?'evolution-flash':''} ${hero.shield>0&&hero.isAlive?'protected':''} ${hit?'hero-under-attack':''}`}>
     <button className="hero-face" aria-pressed={!!(active||targeted)} aria-label={`Selecionar ${hero.name}`} onClick={onSelect} onPointerDown={onStart} disabled={!liveHero.isAlive}>
       <img className="hero-original-art" src={hero.image} alt="" draggable={false} loading="eager" decoding="async"/>
       <span className="hero-element" title={elementLabel(hero.element)}><ElementIcon element={hero.element}/></span>
@@ -47,8 +49,9 @@ export function ArenaHero({hero:liveHero, active, targeted, valid, hovered, hit,
       <span className="hero-hp" aria-label={`Vida ${hero.currentHp} de ${hero.maxHp}`}><b>{hero.currentHp}</b><small>/{hero.maxHp}</small></span>
       <span className="hero-condition">{!hero.isAlive?'ABATIDO':hero.isDefending?'DEFENDENDO':hero.hasAttacked?'AGIU':active?'ATIVO':targeted?'ALVO':''}</span>
       <span className="hero-name">{hero.name}</span>
-      <span className="hero-stats"><span className="atk-stat" aria-label={`Ataque ${hero.atk}`}><Swords size={16}/><b>{hero.atk}</b></span><span className="shield-stat" aria-label={`Escudo ${hero.shield}`}><Shield size={16}/><b>{hero.def}</b></span></span>
+      <span className="hero-stats"><span className="atk-stat" aria-label={`Ataque ${hero.atk}`}><Swords size={16}/><b>{hero.atk}</b></span><span className="shield-stat" aria-label={`Defesa ${hero.def}`}><Shield size={16}/><b>{hero.def}</b></span></span>
       {hero.shield>0&&<span className="elemental-shield" aria-label={`Escudo adicional ${hero.shield}`}>+{hero.shield} escudo</span>}
+      {statuses.length>0&&<span className="creature-statuses" aria-label="Efeitos temporários">{statuses.map(status=><span key={status.id} data-status={status.id} title={status.description} aria-label={`${status.label}. ${status.description}`}>{status.label}<small>1 turno</small></span>)}</span>}
       <span className="hero-health"><i style={{width:`${ratio*100}%`}}/></span>
     </button>
     {defeatBurst&&<div className="hero-defeat-burst" aria-hidden="true"><span className="defeat-flash"/>{Array.from({length:10},(_,i)=><i key={i} style={{'--piece':i} as CSSProperties}/>)}</div>}

@@ -32,3 +32,13 @@ As reduções temporárias expiram após o turno da corte afetada, sem restaurar
 Ataques, defesas, magias, habilidades e evolução usam o elemento da carta/criatura e as artes elementais atuais. A animação não carrega mais `royal-actions.webp`; símbolos, anúncios e falas do baralho tradicional foram removidos desse fluxo. Os anúncios de poderes leem os resultados da mesma resolução de combate, incluindo dano em área, escudos e cura efetivamente aplicados.
 
 Validação adicional em Chromium: as quatro magias produzem `data-school` do elemento correto e anunciam a arte da carta usada; ataque, defesa e habilidade do Grifo mostram sua arte elemental; o rival anuncia suas habilidades elementais. Nenhuma requisição a `royal-actions` ou `assets/aistudio`, sem erros de JavaScript. A compilação e os testes de regressão também passaram.
+
+## Evolução das magias e habilidades
+
+As sete magias agora possuem coreografias próprias: bola de fogo e brasas, onda em camadas, fonte de cura, armadura de placas rochosas, erupção com pilares e fissuras, tornado vertical e lâminas de vento. A renovação do Ent usa folhas ascendentes e cura; barreiras defensivas acompanham o elemento da criatura. Onda Avassaladora também marca a área da corte adversária, sem atingir visualmente os aliados.
+
+Criaturas exibem os modificadores reais ainda ativos: ataque/defesa reduzidos, ataque aumentado e ataque impedido, com duração de um turno e descrição acessível. Modificadores ofensivos e atributos chegam visualmente junto ao impacto. A seleção destaca todos os alvos de magias em área e informa efeitos secundários antes de jogar. Todas as magias protegem a resolução da animação contra novas ações simultâneas.
+
+Os números de dano ficam junto ao alvo, em vez de aparecerem no topo da tela. A preferência por movimento reduzido remove projéteis e animações intensas e mantém a informação do resultado. O custo, o dano, a cura, a defesa e as regras impressas nas cartas foram preservados.
+
+Validação: TypeScript, build e dez arquivos de teste passaram. Chromium verificou as sete magias, renovação do Ent, barreira do Grifo, chegada dos indicadores no impacto, término do bloqueio de ataque e movimento reduzido; sem erros de JavaScript. As capturas `wave-evolved.png` e `tornado-evolved.png` mostram cenários automatizados de teste.

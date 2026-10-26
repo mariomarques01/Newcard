@@ -386,7 +386,7 @@ export default function App() {
     if (targetFor(card) === 'enemy' && !enemy?.isAlive) return;
     const result = resolveCard(card, playerHeroes, rivalHeroes, ally.id, enemy?.id);
     const a = result.ability;
-    if(a.damage) beginCombat();
+    beginCombat();
     const stolen = Math.min(rivalPg, a.steal || 0);
     const pg = Math.min(12,playerPg+(a.glory||0)+stolen+result.killGlory);
     const draws = deck.slice(0,a.draw||0);
@@ -402,7 +402,7 @@ export default function App() {
     const sourceId=`hero-card-${ally.id}`;
     particleCanvasRef.current?.revealCard(card,sourceId);
     const fx=particleCanvasRef.current;
-    if(a.all) fx?.triggerBoard(a.heal?'heal':a.shield?'shield':'arcane',card.skillName||card.name,card);
+    if(a.all||a.enemyAll) fx?.triggerBoard(a.heal?'heal':a.shield?'shield':'arcane',card.skillName||card.name,card);
     if(a.damage&&enemy) fx?.triggerAttack(sourceId,`hero-card-${enemy.id}`,'pierce',`−${a.damage} VIDA`,card);
     result.allies.forEach((next,i)=>{
       const before=playerHeroes[i],id=`hero-card-${next.id}`;
@@ -726,7 +726,7 @@ export default function App() {
   const selectedAbility = selectedCard ? abilityFor(selectedCard) : null;
   const affectedAllies = cardCanPlay && selectedAbility ? playerHeroes.filter(hero=>hero.isAlive && (selectedAbility.all || (selectedAbility.weakest ? hero.id===playerHeroes.filter(h=>h.isAlive).sort((a,b)=>(b.maxHp-b.currentHp)-(a.maxHp-a.currentHp))[0]?.id : cardTarget==='ally' && hero.id===activePlayerHeroId))).map(hero=>hero.id) : [];
   const affectedRivals = cardCanPlay && selectedAbility?.damage ? rivalHeroes.filter(h=>h.isAlive&&(selectedAbility.enemyAll||h.id===targetedRivalHero?.id)).map(h=>h.id) : [];
-  const effectSummary = selectedAbility ? [selectedAbility.damage&&`⚔ ${selectedAbility.damage} dano`,selectedAbility.heal&&`♥ +${selectedAbility.heal} vida`,selectedAbility.shield&&`🛡 +${selectedAbility.shield} escudo`,selectedAbility.attack&&`⚔ +${selectedAbility.attack} ATQ`,selectedAbility.energy&&`⚡ +${selectedAbility.energy} energia`,selectedAbility.draw&&`+${selectedAbility.draw} cartas`,selectedAbility.glory&&`+${selectedAbility.glory} PG`].filter(Boolean).join(' · ') : '';
+  const effectSummary = selectedAbility ? [selectedAbility.damage&&`⚔ ${selectedAbility.damage} dano`,selectedAbility.heal&&`♥ +${selectedAbility.heal} vida`,selectedAbility.shield&&`🛡 +${selectedAbility.shield} escudo`,selectedAbility.defense&&`+${selectedAbility.defense} DEF`,selectedAbility.attack&&`⚔ +${selectedAbility.attack} ATQ`,selectedAbility.energy&&`⚡ +${selectedAbility.energy} energia`,selectedAbility.draw&&`+${selectedAbility.draw} cartas`,selectedAbility.glory&&`+${selectedAbility.glory} PG`,selectedAbility.attackDown&&`−${selectedAbility.attackDown} ATQ por 1 turno`,selectedAbility.defenseDown&&`−${selectedAbility.defenseDown} DEF por 1 turno`,selectedAbility.stun&&'Impede ataque por 1 turno'].filter(Boolean).join(' · ') : '';
   const canAttack = !gameOver && currentTurn==='player' && !!activePlayerHero?.isAlive && !activePlayerHero.hasAttacked && !activePlayerHero.stunned && !!targetedRivalHero?.isAlive;
   const attackDamage = canAttack && targetedRivalHero ? Math.max(1,activePlayerHero.atk-Math.floor(targetedRivalHero.def/2))+(!activePlayerHero.element&&activePlayerHero.id==='p_rei_espadas'&&(targetedRivalHero.shield>0||targetedRivalHero.isDefending)?2:0) : 0;
   const forecastCardDamage = cardCanPlay && cardTarget==='enemy' && selectedCard ? abilityFor(selectedCard).damage||0 : 0;
@@ -734,7 +734,7 @@ export default function App() {
   const forecastShield = targetedRivalHero && forecastDamage && !forecastCardDamage ? Math.min(targetedRivalHero.shield,forecastDamage) : 0;
   const forecastHp = forecastDamage-forecastShield;
   const forecastGlory = targetedRivalHero && forecastDamage ? targetedRivalHero.currentHp<=forecastHp?2:forecastCardDamage?0:forecastHp>=3?1:0 : 0;
-  const cardInstruction = !selectedCard ? '' : gameOver ? 'A partida terminou' : currentTurn!=='player' ? 'Aguarde seu turno' : playerEnergy<selectedCard.cost ? `Faltam ${selectedCard.cost-playerEnergy} de energia` : cardTarget==='enemy' ? 'Selecione um rival vivo e toque em JOGAR' : cardTarget==='ally' ? 'Selecione um aliado vivo e toque em JOGAR' : 'Toque em JOGAR para ativar o efeito';
+  const cardInstruction = !selectedCard ? '' : gameOver ? 'A partida terminou' : currentTurn!=='player' ? 'Aguarde seu turno' : playerEnergy<selectedCard.cost ? `Faltam ${selectedCard.cost-playerEnergy} de energia` : cardTarget==='enemy' ? 'Selecione um rival vivo e toque em JOGAR' : cardTarget==='ally' ? 'Selecione um aliado vivo e toque em JOGAR' : selectedAbility?.enemyAll ? 'Afeta todos os inimigos vivos · toque em JOGAR' : 'Toque em JOGAR para ativar o efeito';
   const validHero = (hero: Hero) => !!dragKind && hero.isAlive && (dragKind==='enemy' ? hero.id.startsWith('r_') : dragKind==='ally' && hero.id.startsWith('p_'));
   return (
     <div className="mobile-game" data-turn={gameOver?'over':currentTurn} data-selection-target={selectionTarget||'none'} data-drag-state={dragKind?(dragValid?'valid':'invalid'):'idle'} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={clearDrag}>
