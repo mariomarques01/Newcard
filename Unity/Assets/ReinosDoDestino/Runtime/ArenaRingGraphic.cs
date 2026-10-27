@@ -3,6 +3,7 @@ using UnityEngine;
 namespace ReinosDoDestino.Unity
 {
     // Native uGUI geometry; no custom shader or screen-sized transparent texture.
+    [RequireComponent(typeof(CanvasRenderer))]
     public sealed class ArenaRingGraphic : UnityEngine.UI.MaskableGraphic
     {
         public int segments=64;
