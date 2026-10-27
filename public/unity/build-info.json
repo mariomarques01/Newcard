@@ -1,0 +1,34 @@
+{
+  "editor": "6000.3.27f1",
+  "sourceCommit": "eeaddc4b3978dc565a595f8f8efd4c579e721ae0",
+  "sourceFingerprint": "2babe4e193d1522fe76e973d7f3ff92bd30266fafa5c2dee3c29331a8844325f",
+  "builtAt": "2026-10-27T02:00:54.421Z",
+  "totalBytes": 17689510,
+  "assets": [
+    {
+      "path": "Build/WebGL.data.unityweb",
+      "bytes": 9283640,
+      "sha256": "bf7c76f17af471ccf3fbe62e4dc2df72f069ae56b439058fffd242eabeb2ecb4"
+    },
+    {
+      "path": "Build/WebGL.framework.js.unityweb",
+      "bytes": 82601,
+      "sha256": "cf83ee0e974bd34308efd3da92b3d31118ec1c61e16d69f0bac844bae850e2c0"
+    },
+    {
+      "path": "Build/WebGL.loader.js",
+      "bytes": 47867,
+      "sha256": "d94cad5cd46bb02e4889bea3b8c444c6c1820ac32205ed567c55a9ea548c3a39"
+    },
+    {
+      "path": "Build/WebGL.wasm.unityweb",
+      "bytes": 8271404,
+      "sha256": "4d4734e189088d7e423d04bb8797cd70168ca06a0750284a2f5988fac08314a8"
+    },
+    {
+      "path": "index.html",
+      "bytes": 3998,
+      "sha256": "e921f70f0969a567d1d3be4cb73b38a7dea6b2d2f257b52e898231c7cffb3e2c"
+    }
+  ]
+}

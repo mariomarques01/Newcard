@@ -34,6 +34,9 @@ jobs:
           npm run lint
           node --import tsx --test tests/*.test.ts
 
+      - name: Verify published Unity build
+        run: node scripts/publish-unity-web.mjs --check
+
       - name: Build project
         run: npm run build
 

@@ -64,3 +64,38 @@ Para repetir os testes, use **Window → General → Test Runner**, abas EditMod
 Build Linux nativo gerado e aberto em 540 × 960. A captura abaixo mostra todas as áreas da arena e os cinco controles sem rolagem; o clique em Defender também foi conferido no executável. O ambiente não possui dispositivo de áudio, por isso essa sessão não valida som.
 
 ![Arena nativa em 540 × 960](Docs/native-arena-540x960.png)
+
+## Jogar no iPhone pelo Safari
+
+Abra https://mariomarques01.github.io/Newcard/unity/ e toque em **INICIAR JOGO**. O primeiro acesso baixa aproximadamente 17 MiB; os arquivos são armazenados em cache para os próximos acessos. No Safari, **Compartilhar → Adicionar à Tela de Início** oferece mais espaço para a arena. A versão React de referência continua no endereço principal.
+
+O template Web respeita a área segura, acompanha a altura disponível do Safari e não usa barras de rolagem. A renderização limita a densidade de pixels a 1,5. O save nativo é sincronizado automaticamente com IndexedDB; fica separado do save do protótipo React.
+
+### Atualizar a versão publicada
+
+1. Instale **Web Build Support** para o Editor 6000.3.27f1 pelo Hub.
+2. No Editor, execute **Reinos do Destino → Gerar versão Web**. O resultado fica em `Unity/Builds/WebGL/`. O build usa a cena já salva, sem regenerá-la.
+3. Na raiz do repositório, execute:
+
+```sh
+node scripts/publish-unity-web.mjs
+node scripts/publish-unity-web.mjs --check
+```
+
+4. Faça commit das fontes e do resultado em `public/unity/`. O workflow existente publica o conteúdo pelo GitHub Pages após o merge em `main`.
+
+Alternativa em modo lote:
+
+```sh
+Unity -batchmode -quit -projectPath /caminho/Newcard/Unity -buildTarget WebGL -executeMethod ReinosDoDestino.Editor.WebBuild.Build -logFile web-build.log
+```
+
+O menu **Aplicar configuração Web para iPhone** permite reaplicar os parâmetros: Gzip com descompressão no carregador (Pages não fornece cabeçalhos de compressão personalizados), cache, stripping High, exceções explícitas, memória inicial 128 MiB e máxima 512 MiB. O navegador controla o ritmo de renderização. O build não exige threads ou cabeçalhos de isolamento.
+
+`build-info.json` registra o hash das fontes e de cada arquivo publicado. O deploy rejeita arquivos incompletos ou uma versão WebGL desatualizada em relação ao projeto Unity. Os binários comprimidos são versionados em `public/unity/` para permitir deploy sem instalar o Editor ou disponibilizar credenciais Unity no GitHub Actions.
+
+### Validação do primeiro build Web
+
+Build de 16,9 MiB validado em Chromium e WebKit com entrada por toque em 390 × 700 e 390 × 600: carregamento real do WebAssembly, ausência de rolagem, ataque, defesa, persistência em IndexedDB, retomada após recarregar, troca de turno e magia de fogo (energia, dano e descarte). Nenhum erro JavaScript foi registrado. WebKit em Linux aproxima a execução do Safari; ainda é necessário conferir no iPhone físico do jogador.
+
+![Arena Unity WebGL em WebKit, 390 × 600](Docs/webgl-webkit-390x600.png)
