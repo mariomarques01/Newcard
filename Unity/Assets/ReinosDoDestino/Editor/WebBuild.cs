@@ -18,6 +18,7 @@ namespace ReinosDoDestino.Editor
             PlayerSettings.WebGL.decompressionFallback=true;
             PlayerSettings.WebGL.template="PROJECT:Elemental";
             PlayerSettings.WebGL.dataCaching=true;
+            PlayerSettings.WebGL.nameFilesAsHashes=true;
             PlayerSettings.WebGL.exceptionSupport=WebGLExceptionSupport.ExplicitlyThrownExceptionsOnly;
             PlayerSettings.WebGL.debugSymbolMode=WebGLDebugSymbolMode.Off;
             PlayerSettings.WebGL.initialMemorySize=128;

@@ -49,7 +49,7 @@ Esses exportadores são ferramentas da migração inicial. Depois da mudança de
 
 ## Continuar o desenvolvimento
 
-A primeira etapa cobre o combate local. Campanha, relíquias, estatísticas de perfil, drag-and-drop, som, acessibilidade nativa avançada e efeitos finais equivalentes ao protótipo ainda precisam de port dedicado. Não há compras, anúncios, multiplayer ou backend nesta etapa.
+A primeira etapa cobre o combate local. Campanha, relíquias, estatísticas de perfil, som, acessibilidade nativa avançada e efeitos finais equivalentes ao protótipo ainda precisam de port dedicado. Não há compras, anúncios, multiplayer ou backend nesta etapa.
 
 Os saves de `localStorage` não são lidos pelo Unity. O save nativo fica em `Application.persistentDataPath/elemental-unity-v1.json`; saves inválidos são rejeitados. Android e iOS são os alvos de continuidade. Para builds finais, instale os módulos correspondentes no Hub; gerar/assinar iOS requer macOS/Xcode e as credenciais do proprietário.
 
@@ -67,7 +67,7 @@ Build Linux nativo gerado e aberto em 540 × 960. A captura abaixo mostra todas 
 
 ## Jogar no iPhone pelo Safari
 
-Abra https://mariomarques01.github.io/Newcard/unity/ e toque em **INICIAR JOGO**. O primeiro acesso baixa aproximadamente 17 MiB; os arquivos são armazenados em cache para os próximos acessos. No Safari, **Compartilhar → Adicionar à Tela de Início** oferece mais espaço para a arena. A versão React de referência continua no endereço principal.
+Abra https://mariomarques01.github.io/Newcard/unity/ e toque em **INICIAR JOGO**. O primeiro acesso baixa aproximadamente 22 MiB; os arquivos são armazenados em cache para os próximos acessos. No Safari, **Compartilhar → Adicionar à Tela de Início** oferece mais espaço para a arena. A versão React de referência continua no endereço principal.
 
 O template Web respeita a área segura, acompanha a altura disponível do Safari e não usa barras de rolagem. A renderização limita a densidade de pixels a 1,5. O save nativo é sincronizado automaticamente com IndexedDB; fica separado do save do protótipo React.
 
@@ -99,3 +99,21 @@ O menu **Aplicar configuração Web para iPhone** permite reaplicar os parâmetr
 Build de 16,9 MiB validado em Chromium e WebKit com entrada por toque em 390 × 700 e 390 × 600: carregamento real do WebAssembly, ausência de rolagem, ataque, defesa, persistência em IndexedDB, retomada após recarregar, troca de turno e magia de fogo (energia, dano e descarte). Nenhum erro JavaScript foi registrado. WebKit em Linux aproxima a execução do Safari; ainda é necessário conferir no iPhone físico do jogador.
 
 ![Arena Unity WebGL em WebKit, 390 × 600](Docs/webgl-webkit-390x600.png)
+
+## Arrastar e efeitos elementais
+
+- Arraste uma magia da mão e solte sobre uma criatura do lado indicado: magias ofensivas atingem inimigos; cura e proteção usam aliados. Magias em área aplicam seus efeitos à corte correspondente.
+- Arraste uma criatura da sua corte até um inimigo para atacar. As restrições de ataque, bloqueio e energia continuam valendo.
+- A prévia acompanha o dedo e destaca os alvos válidos. Soltar fora de um alvo cancela sem consumir carta ou energia. Selecionar e usar os botões continua disponível.
+- Ataque, defesa, habilidade e magia possuem carga, projétil quando há deslocamento, impacto, partículas, título e valores flutuantes. Fogo, água, terra e ar têm apresentações distintas; cura, bloqueio, redução de atributos e derrota usam os eventos reais do combate.
+- As animações duram aproximadamente 1,75 s e bloqueiam novas ações durante a apresentação. O estado completo é salvo no início da ação para não perder a jogada ao sair durante o efeito.
+- A textura `Resources/Elemental/VFX/Novas.png` reutiliza o atlas visual do protótipo, convertido de WebP para PNG com transparência. Anéis, fragmentos e partículas são componentes uGUI nativos. Nenhum efeito intercepta os toques.
+- Os arquivos WebGL recebem nomes por hash de conteúdo para evitar mistura de versões em cache.
+
+Testes PlayMode cobrem cancelamento sem gasto, magia no alvo solto, criatura arrastada para atacar, presença e tamanho do efeito visual, bloqueio durante a animação e limpeza ao terminar.
+
+Validação Web deste ajuste: Chromium com gesto de toque via protocolo do navegador e WebKit com eventos de toque DOM; magias dos quatro elementos, cura, habilidade, ataque por arrasto, alvo inválido, energia insuficiente e viewport 390 × 600 sem rolagem. Foram conferidos energia, vida, descarte e bloqueio no estado persistido, sem erros JavaScript.
+
+![Prévia da magia arrastada e alvos válidos](Docs/drag-spell-preview.png)
+![Defesa elemental durante a animação](Docs/elemental-shield-impact.png)
+![Vórtice de ar durante a animação](Docs/elemental-wind-impact.png)
