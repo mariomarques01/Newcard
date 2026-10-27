@@ -28,7 +28,7 @@ if(process.argv.includes('--check')){
   fs.copyFileSync(path.join(build,'index.html'),path.join(output,'index.html'));
   for(const folder of ['Build','StreamingAssets'])if(fs.existsSync(path.join(build,folder)))fs.cpSync(path.join(build,folder),path.join(output,folder),{recursive:true});
   const assets=files(output).sort().map(name=>({path:path.relative(output,name).split(path.sep).join('/'),bytes:fs.statSync(name).size,sha256:digest(name)}));
-  const info={editor:fs.readFileSync(path.join(root,'Unity/ProjectSettings/ProjectVersion.txt'),'utf8').split('\n')[0].split(': ')[1],sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceFingerprint:sourceFingerprint(),builtAt:new Date().toISOString(),totalBytes:assets.reduce((sum,asset)=>sum+asset.bytes,0),assets};
+  const info={editor:fs.readFileSync(path.join(root,'Unity/ProjectSettings/ProjectVersion.txt'),'utf8').split('\n')[0].split(': ')[1],sourceCommit:execFileSync('git',['log','-1','--format=%H','--','Unity/Assets','Unity/Packages','Unity/ProjectSettings'],{cwd:root,encoding:'utf8'}).trim(),sourceFingerprint:sourceFingerprint(),builtAt:new Date().toISOString(),totalBytes:assets.reduce((sum,asset)=>sum+asset.bytes,0),assets};
   fs.writeFileSync(path.join(output,'build-info.json'),JSON.stringify(info,null,2)+'\n');
   console.log(`Build Unity publicado em public/unity: ${(info.totalBytes/1048576).toFixed(1)} MiB.`);
 }
