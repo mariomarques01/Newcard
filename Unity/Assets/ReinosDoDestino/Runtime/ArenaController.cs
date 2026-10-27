@@ -116,10 +116,11 @@ namespace ReinosDoDestino.Unity
             foreach(var c in s.players.Concat(s.rivals))
             {
                 var v=views[c.id];v.hp.text=c.hp.ToString();v.stats.text=$"ATQ {c.attack}    DEF {c.defense}";
-                var status=new List<string>();if(c.shield>0)status.Add($"+{c.shield} ESCUDO");if(c.stunned)status.Add("ATAQUE IMPEDIDO · 1T");if(c.attackReduction>0)status.Add($"−{c.attackReduction} ATQ · 1T");if(c.defenseReduction>0)status.Add($"−{c.defenseReduction} DEF · 1T");if(c.temporaryAttack>0)status.Add($"+{c.temporaryAttack} ATQ · 1T");
+                var status=new List<string>();if(c.defending)status.Add("DEFESA ATIVA");if(c.shield>0)status.Add($"+{c.shield} ESCUDO");if(c.stunned)status.Add("ATAQUE IMPEDIDO · 1T");if(c.attackReduction>0)status.Add($"−{c.attackReduction} ATQ · 1T");if(c.defenseReduction>0)status.Add($"−{c.defenseReduction} DEF · 1T");if(c.temporaryAttack>0)status.Add($"+{c.temporaryAttack} ATQ · 1T");
                 v.status.transform.parent.gameObject.SetActive(status.Count>0);v.status.text=string.Join("\n",status);v.art.color=c.Alive?Color.white:new Color(.3f,.3f,.3f,.5f);
                 bool selected=c.id==s.selectedAlly||c.id==s.selectedEnemy;v.background.color=selected?Color.Lerp(Ink,Tone(engine.Definition(c.id).element),.35f):Ink;
             }
+            RefreshElementalWards();
             foreach(Transform child in handRoot){child.gameObject.SetActive(false);Destroy(child.gameObject);}
             for(int i=0;i<s.hand.Count;i++)
             {
@@ -138,7 +139,7 @@ namespace ReinosDoDestino.Unity
         }
         public void StartNewMatch()
         {
-            if(busy)return;CancelCardDrag();engine.NewMatch();selectedCard=null;Save();Refresh();
+            if(busy)return;CancelCardDrag();ClearElementalPresentation();engine.NewMatch();selectedCard=null;Save();Refresh();
         }
         void UpdateButtons()
         {

@@ -23,10 +23,10 @@ namespace ReinosDoDestino.Tests
             Assert.IsTrue(arena.BeginCardDrag(id,true,Center(hand)));arena.MoveCardDrag(Center(rival.transform));arena.EndCardDrag(Center(rival.transform));
             Assert.IsTrue(arena.IsAnimating);Assert.AreEqual(4,arena.Battle.State.playerEnergy);Assert.AreEqual(1,arena.Battle.State.discard.Count);Assert.AreEqual(hp-4,arena.Battle.State.rivals[0].hp);
             yield return new WaitForSecondsRealtime(.85f);
-            var impact=canvas.transform.Find("ElementalEffects/ElementalImpact_Fire");Assert.IsNotNull(impact);
-            var nova=impact.GetComponentInChildren<UnityEngine.UI.RawImage>();Assert.IsNotNull(nova.texture);Assert.Greater(nova.rectTransform.rect.width,200);
-            yield return new WaitForSecondsRealtime(1.1f);Assert.IsFalse(arena.IsAnimating);
-            Assert.IsNull(canvas.transform.Find("ElementalEffects/DragPreview"));Assert.IsNull(canvas.transform.Find("ElementalEffects/ElementalImpact_Fire"));
+            var impact=canvas.transform.Find("ElementalEffects/Fire_Strike_Impact");Assert.IsNotNull(impact);
+            var visual=impact.GetComponent<ElementalVfxGraphic>();Assert.AreEqual(ElementalVfxPhase.Impact,visual.Phase);Assert.AreEqual(ReinosDoDestino.Core.Element.Fire,visual.Element);Assert.Greater(visual.rectTransform.rect.height,200);
+            yield return new WaitForSecondsRealtime(3.2f);Assert.IsFalse(arena.IsAnimating);
+            Assert.IsNull(canvas.transform.Find("ElementalEffects/DragPreview"));Assert.IsNull(canvas.transform.Find("ElementalEffects/Fire_Strike_Impact"));
             LogAssert.NoUnexpectedReceived();
         }
         [UnityTest] public IEnumerator DraggingOwnCreatureAttacksDroppedEnemy()
@@ -39,7 +39,7 @@ namespace ReinosDoDestino.Tests
             Assert.IsTrue(arena.BeginCardDrag(ally,false,Vector2.zero));arena.EndCardDrag(Center(rival.transform));
             Assert.IsTrue(arena.Battle.State.players[0].hasAttacked);Assert.AreEqual(ally,arena.Battle.State.selectedAlly);Assert.Less(arena.Battle.State.rivals[1].hp,hp);
             Assert.IsFalse(arena.BeginCardDrag(ally,false,Vector2.zero));
-            yield return new WaitForSecondsRealtime(1.95f);Assert.IsFalse(arena.IsAnimating);LogAssert.NoUnexpectedReceived();
+            yield return new WaitForSecondsRealtime(3f);Assert.IsFalse(arena.IsAnimating);LogAssert.NoUnexpectedReceived();
         }
     }
 }

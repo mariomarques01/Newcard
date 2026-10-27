@@ -106,8 +106,8 @@ Build de 16,9 MiB validado em Chromium e WebKit com entrada por toque em 390 × 
 - Arraste uma criatura da sua corte até um inimigo para atacar. As restrições de ataque, bloqueio e energia continuam valendo.
 - A prévia acompanha o dedo e destaca os alvos válidos. Soltar fora de um alvo cancela sem consumir carta ou energia. Selecionar e usar os botões continua disponível.
 - Ataque, defesa, habilidade e magia possuem carga, projétil quando há deslocamento, impacto, partículas, título e valores flutuantes. Fogo, água, terra e ar têm apresentações distintas; cura, bloqueio, redução de atributos e derrota usam os eventos reais do combate.
-- As animações duram aproximadamente 1,75 s e bloqueiam novas ações durante a apresentação. O estado completo é salvo no início da ação para não perder a jogada ao sair durante o efeito.
-- A textura `Resources/Elemental/VFX/Novas.png` reutiliza o atlas visual do protótipo, convertido de WebP para PNG com transparência. Anéis, fragmentos e partículas são componentes uGUI nativos. Nenhum efeito intercepta os toques.
+- As ações bloqueiam novas entradas por aproximadamente 2,25 s durante a apresentação. O estado completo é salvo no início da ação para não perder a jogada ao sair durante o efeito.
+- Os efeitos atuais usam malhas uGUI com formas e movimentos próprios por elemento. O atlas antigo permanece como referência, mas não é o efeito compartilhado das ações. Nenhum efeito intercepta os toques.
 - Os arquivos WebGL recebem nomes por hash de conteúdo para evitar mistura de versões em cache.
 
 Testes PlayMode cobrem cancelamento sem gasto, magia no alvo solto, criatura arrastada para atacar, presença e tamanho do efeito visual, bloqueio durante a animação e limpeza ao terminar.
@@ -117,3 +117,35 @@ Validação Web deste ajuste: Chromium com gesto de toque via protocolo do naveg
 ![Prévia da magia arrastada e alvos válidos](Docs/drag-spell-preview.png)
 ![Defesa elemental durante a animação](Docs/elemental-shield-impact.png)
 ![Vórtice de ar durante a animação](Docs/elemental-wind-impact.png)
+
+## Reações por elemento e por ação
+
+| Elemento | Origem e trajeto ofensivo | Reação ao impacto | Defesa |
+| --- | --- | --- | --- |
+| Fogo | Chamas na origem, projétil e cauda flamejante | Chamas sobre o corpo, brasas e fumaça durante alguns segundos | Escudo incandescente com bordas de brasas e crista de fogo |
+| Água | Fonte na origem, fitas líquidas e crista de espuma | Jatos, gotas em queda e ondas na base | Bolha azul com reflexos e bolhas menores em movimento |
+| Terra | Pedras na origem, blocos em arco com poeira | Espigões de rocha, fissuras verdes e detritos | Contrafortes de pedra nas laterais e muralha na base |
+| Ar | Correntes na origem, lâminas e plumas no trajeto | Coluna de vento e redemoinho sobre o alvo | Correntes cruzadas e plumas orbitando a criatura |
+
+As barreiras persistem enquanto a criatura estiver viva, defendendo e com escudo disponível; desaparecem após o fim da guarda ou esgotamento do escudo. As reações visuais de ataque duram um pouco além do bloqueio dos comandos. Chamas, respingos e detritos são apresentação: não acrescentam dano, estados ou bônus ao motor de combate. Cura e evolução usam apresentações de apoio em vez de simular um ataque ao aliado.
+
+Os eventos são separados por ação, origem, alvo e elemento, preservando efeitos distintos quando o turno rival também provoca cura ou evolução. Os valores reais de um mesmo alvo são agrupados para evitar números sobrepostos. Reiniciar limpa os resíduos da apresentação anterior.
+
+`ElementalVfxGraphic` possui `CanvasRenderer` obrigatório e renderiza geometria móvel diretamente com o material padrão da UI. Defesas persistentes atualizam a até 20 fps e reações temporárias a até 30 fps. Cinco testes PlayMode verificam geometria diferente nos oito casos (ataque/defesa × quatro elementos), barreiras de fogo e água, remoção da guarda, arrastar e limpeza de efeitos.
+
+O relógio visual limita saltos de tempo entre quadros para que uma pausa de renderização do navegador não pule a preparação ou o trajeto. Em um aparelho com poucos quadros por segundo, a apresentação pode levar um pouco mais de tempo; os valores do combate e o save permanecem os mesmos.
+
+Capturas da sequência de fogo em uma gravação do navegador (sem montagem de efeitos):
+
+![Chamas na carta de origem](Docs/fire-action-origin.jpg)
+![Rastro de fogo durante o trajeto](Docs/fire-action-trail.jpg)
+![Chamas permanecendo no alvo após o impacto](Docs/fire-action-burning-target.jpg)
+
+Validação desta versão: cinco testes PlayMode aprovados no Unity; execução em Chromium e WebKit (inclusive densidade de tela 3, limitada internamente pelo template a 1,5), com ataques e magias dos quatro elementos e as quatro defesas. Vida, energia e escudo foram conferidos no IndexedDB; viewport 390 × 600 sem rolagem e nenhum erro JavaScript nos testes. A gravação quadro a quadro confirmou a origem, o trajeto e a reação de fogo no build WebGL.
+
+Defesas persistentes do build final no Chromium:
+
+![Barreira de brasas](Docs/fire-ward.png)
+![Bolha protetora](Docs/water-ward.png)
+![Muralha de pedra](Docs/earth-ward.png)
+![Ciclone defensivo](Docs/air-ward.png)
