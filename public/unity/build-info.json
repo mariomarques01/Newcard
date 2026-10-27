@@ -1,34 +1,34 @@
 {
   "editor": "6000.3.27f1",
-  "sourceCommit": "eeaddc4b3978dc565a595f8f8efd4c579e721ae0",
-  "sourceFingerprint": "2babe4e193d1522fe76e973d7f3ff92bd30266fafa5c2dee3c29331a8844325f",
-  "builtAt": "2026-10-27T02:00:54.421Z",
-  "totalBytes": 17689510,
+  "sourceCommit": "fb4f98d93bd2f1b3c13c35c433b82abbb1519869",
+  "sourceFingerprint": "d6a6832130824c21917a6ce1ca79328dbcdc573516daf874ac983ecd992a64ca",
+  "builtAt": "2026-10-27T02:46:19.011Z",
+  "totalBytes": 22613285,
   "assets": [
     {
-      "path": "Build/WebGL.data.unityweb",
-      "bytes": 9283640,
-      "sha256": "bf7c76f17af471ccf3fbe62e4dc2df72f069ae56b439058fffd242eabeb2ecb4"
+      "path": "Build/5126dd3b859061f56f990fe4e56506c3.wasm.unityweb",
+      "bytes": 8280028,
+      "sha256": "6d686501800b13817e75b99cb67637cd3dc1e2145e3e213072a0f6f7336d8ef5"
     },
     {
-      "path": "Build/WebGL.framework.js.unityweb",
-      "bytes": 82601,
-      "sha256": "cf83ee0e974bd34308efd3da92b3d31118ec1c61e16d69f0bac844bae850e2c0"
+      "path": "Build/7bb1a1b17168ed28a9cc09202d87e308.framework.js.unityweb",
+      "bytes": 82595,
+      "sha256": "8b87e40b43daa572b28eb2db5130c8165f54faf82ac9094bf23e6bbb4c0a4772"
     },
     {
-      "path": "Build/WebGL.loader.js",
+      "path": "Build/8c9197294010c0b910b2ec55bd2f35db.data.unityweb",
+      "bytes": 14198689,
+      "sha256": "b94cae4cc0a951cbc846bf6c9900d6f57e333aaa3d5c82cfab77aef5785b7cd0"
+    },
+    {
+      "path": "Build/a76e23599f56ac546ad1e88af0540257.loader.js",
       "bytes": 47867,
-      "sha256": "d94cad5cd46bb02e4889bea3b8c444c6c1820ac32205ed567c55a9ea548c3a39"
-    },
-    {
-      "path": "Build/WebGL.wasm.unityweb",
-      "bytes": 8271404,
-      "sha256": "4d4734e189088d7e423d04bb8797cd70168ca06a0750284a2f5988fac08314a8"
+      "sha256": "f0fbb381b07e354d5831b0bda3c2ff85c3b46375759e8712683d2b7976f57141"
     },
     {
       "path": "index.html",
-      "bytes": 3998,
-      "sha256": "e921f70f0969a567d1d3be4cb73b38a7dea6b2d2f257b52e898231c7cffb3e2c"
+      "bytes": 4106,
+      "sha256": "560c083ad6dda2e121020aad10ab06260335a46f0dc3e3409314dce44dabaead"
     }
   ]
 }

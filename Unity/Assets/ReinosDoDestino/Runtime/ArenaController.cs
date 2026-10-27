@@ -14,7 +14,7 @@ using UnityEngine.InputSystem.UI;
 namespace ReinosDoDestino.Unity
 {
     // First native vertical slice. The battle model never depends on scene objects.
-    public sealed class ArenaController : MonoBehaviour
+    public sealed partial class ArenaController : MonoBehaviour
     {
         BattleEngine engine;
         public BattleEngine Battle { get { return engine; } }
@@ -75,7 +75,7 @@ namespace ReinosDoDestino.Unity
             safeArea=Panel(go.transform,"SafeArea",Color.clear);Stretch(safeArea,Vector2.zero,Vector2.one,12);
             var header=Panel(safeArea,"Header",Ink);Stretch(header,new Vector2(0,.945f),Vector2.one,4);
             var brand=Label(header,"REINOS DO DESTINO · ASCENSÃO ELEMENTAL",34,Gold);Stretch(brand.rectTransform,Vector2.zero,new Vector2(.9f,1),4);
-            var restart=Button(header,"NOVO",()=>{if(busy)return;engine.NewMatch();selectedCard=null;Save();Refresh();},new Color(.25f,.2f,.12f));Stretch(restart.GetComponent<RectTransform>(),new Vector2(.91f,0),Vector2.one,3);
+            var restart=Button(header,"NOVO",StartNewMatch,new Color(.25f,.2f,.12f));Stretch(restart.GetComponent<RectTransform>(),new Vector2(.91f,0),Vector2.one,3);
             var hud=Panel(safeArea,"Score",new Color(.08f,.16f,.2f));Stretch(hud,new Vector2(0,.865f),new Vector2(1,.945f),4);score=Label(hud,"",32,Color.white);
             BuildCourt(true,.575f,.865f);BuildCourt(false,.245f,.535f);
             var divider=Panel(safeArea,"Divider",Ink);Stretch(divider,new Vector2(0,.535f),new Vector2(1,.575f),4);deckLabel=Label(divider,"",27,Gold);
@@ -91,12 +91,12 @@ namespace ReinosDoDestino.Unity
         void BuildCourt(bool rival,float bottom,float top)
         {
             var court=Panel(safeArea,rival?"RivalCourt":"PlayerCourt",Color.clear);Stretch(court,new Vector2(0,bottom),new Vector2(1,top),2);
-            var caption=Label(court,rival?"REINO ADVERSÁRIO":"SUA CORTE",32,Ink);Stretch(caption.rectTransform,new Vector2(0,.9f),Vector2.one,0);
+            var caption=Label(court,rival?"REINO ADVERSÁRIO":"SUA CORTE · ARRASTE PARA ATACAR",32,Ink);Stretch(caption.rectTransform,new Vector2(0,.9f),Vector2.one,0);
             var definitions=rival?engine.Catalog.rivals:engine.Catalog.players;
             for(int i=0;i<definitions.Length;i++)
             {
                 var d=definitions[i];var view=new CreatureView();
-                var button=Button(court,"",()=>{if(busy)return;if(rival)engine.SelectEnemy(d.id);else engine.SelectAlly(d.id);Refresh();},Ink);
+                var button=Button(court,"",()=>{if(busy||dragId!=null)return;if(rival)engine.SelectEnemy(d.id);else engine.SelectAlly(d.id);Refresh();},Ink);
                 view.root=button.GetComponent<RectTransform>();view.background=button.GetComponent<UnityEngine.UI.Image>();Stretch(view.root,new Vector2(i/3f,0),new Vector2((i+1)/3f,.9f),9);
                 view.art=Art(view.root,d.artwork,Crop(d.id,d.artwork));Stretch(view.art.rectTransform,new Vector2(0,.25f),Vector2.one,4);
                 var hpBadge=Panel(view.root,"Life",new Color(.38f,.035f,.025f,.95f));Stretch(hpBadge,new Vector2(0,.79f),new Vector2(.28f,1),2);view.hp=Label(hpBadge,"",42,Color.white);
@@ -105,13 +105,14 @@ namespace ReinosDoDestino.Unity
                 view.stats=Label(view.root,"",31,Color.white);Stretch(view.stats.rectTransform,Vector2.zero,new Vector2(1,.12f),2);
                 var statusBadge=Panel(view.root,"Status",new Color(.035f,.06f,.05f,.8f));Stretch(statusBadge,new Vector2(0,.25f),new Vector2(1,.4f),2);view.status=Label(statusBadge,"",22,Color.white);
                 views.Add(d.id,view);
+                if(!rival)button.gameObject.AddComponent<ArenaCardGesture>().Bind(this,d.id,false);
             }
         }
         void Refresh()
         {
             var s=engine.State;
             score.text=$"VOCÊ {s.playerGlory}/12 PG · {s.playerEnergy}/5 ENERGIA\nRODADA {s.round} · {(s.result==MatchResult.Playing?"SUA VEZ":s.result==MatchResult.Victory?"VITÓRIA":"DERROTA")} · RIVAL {s.rivalGlory}/12 PG";
-            deckLabel.text=$"BARALHO {s.deck.Count}       ARENA DOS REINOS       DESCARTE {s.discard.Count}";
+            deckLabel.text=$"BARALHO {s.deck.Count}       ARRASTE MAGIAS AO ALVO       DESCARTE {s.discard.Count}";
             foreach(var c in s.players.Concat(s.rivals))
             {
                 var v=views[c.id];v.hp.text=c.hp.ToString();v.stats.text=$"ATQ {c.attack}    DEF {c.defense}";
@@ -123,16 +124,21 @@ namespace ReinosDoDestino.Unity
             for(int i=0;i<s.hand.Count;i++)
             {
                 var card=s.hand[i];var d=engine.Spell(card.templateId);var instance=card.id;
-                var button=Button(handRoot,"",()=>{if(busy)return;selectedCard=selectedCard==instance?null:instance;Refresh();},selectedCard==instance?Tone(d.element):Ink);
+                var button=Button(handRoot,"",()=>{if(busy||dragId!=null)return;selectedCard=selectedCard==instance?null:instance;Refresh();},selectedCard==instance?Tone(d.element):Ink);
                 var r=button.GetComponent<RectTransform>();Stretch(r,new Vector2(i/(float)s.hand.Count,0),new Vector2((i+1)/(float)s.hand.Count,1),7);
                 var art=Art(r,d.artwork,new Rect(.12f,.47f,.76f,.42f));Stretch(art.rectTransform,new Vector2(0,.22f),Vector2.one,4);if(s.playerEnergy<d.cost)art.color=new Color(.45f,.45f,.45f);
                 var name=Label(r,d.name,23,Color.white);Stretch(name.rectTransform,Vector2.zero,new Vector2(1,.25f),3);
+                button.gameObject.AddComponent<ArenaCardGesture>().Bind(this,instance,true);
                 var cost=Label(r,d.cost.ToString(),33,Color.white);Stretch(cost.rectTransform,new Vector2(0,.69f),new Vector2(.23f,1),1);
             }
             if(!s.hand.Any(c=>c.id==selectedCard))selectedCard=null;
             var active=s.players.Find(c=>c.id==s.selectedAlly);
             hint.text=selectedCard!=null?engine.Spell(s.hand.Find(c=>c.id==selectedCard).templateId).description:active!=null?engine.Definition(active.id).description:"Partida encerrada";
             UpdateButtons();
+        }
+        public void StartNewMatch()
+        {
+            if(busy)return;CancelCardDrag();engine.NewMatch();selectedCard=null;Save();Refresh();
         }
         void UpdateButtons()
         {
@@ -146,31 +152,12 @@ namespace ReinosDoDestino.Unity
         }
         void Act(Func<ActionResult> command)
         {
-            if(busy)return;var result=command();if(!result.success){hint.text=result.message;return;}
-            selectedCard=null;StartCoroutine(Animate(result));
-        }
-        IEnumerator Animate(ActionResult result)
-        {
-            busy=true;UpdateButtons();hint.text=result.message;
-            foreach(var e in result.events)StartCoroutine(AnimateEvent(e));
-            yield return new WaitForSeconds(.72f);
-            Refresh();busy=false;UpdateButtons();Save();
-        }
-        IEnumerator AnimateEvent(CombatEvent e)
-        {
-            if(!views.ContainsKey(e.targetId)||!views.ContainsKey(e.sourceId))yield break;
-            Vector3 from=views[e.sourceId].root.position,to=views[e.targetId].root.position;
-            var effect=Panel(effectsRoot,"Spell_"+e.element,Tone(e.element));effect.sizeDelta=new Vector2(30,30);
-            for(float t=0;t<.38f;t+=Time.unscaledDeltaTime){effect.position=Vector3.Lerp(from,to,t/.38f)+Vector3.up*Mathf.Sin(t/.38f*Mathf.PI)*35;effect.localRotation=Quaternion.Euler(0,0,t*600);yield return null;}
-            Destroy(effect.gameObject);
-            string message=e.hpLost>0?$"−{e.hpLost} VIDA":e.healed>0?$"+{e.healed} VIDA":e.shieldGained>0?$"+{e.shieldGained} ESCUDO":e.stunned?"ATAQUE IMPEDIDO":e.attackChange!=0?$"{e.attackChange:+#;-#} ATQ":e.defenseChange!=0?$"{e.defenseChange:+#;-#} DEF":e.title;
-            var text=Label(effectsRoot,message,32,Tone(e.element));text.rectTransform.sizeDelta=new Vector2(330,70);text.rectTransform.position=to;
-            for(float t=0;t<.3f;t+=Time.unscaledDeltaTime){text.rectTransform.position=to+Vector3.up*t*80;yield return null;}
-            Destroy(text.gameObject);
+            if(busy||dragId!=null)return;var result=command();if(!result.success){hint.text=result.message;return;}
+            selectedCard=null;Save();StartCoroutine(Animate(result));
         }
         void Save(){if(busy||engine.State.turn!=Side.Player)return;try{File.WriteAllText(SavePath,JsonUtility.ToJson(engine.State));}catch(Exception e){Debug.LogWarning("Save indisponível: "+e.Message);}}
         void Load(){try{if(File.Exists(SavePath))engine.Restore(JsonUtility.FromJson<BattleState>(File.ReadAllText(SavePath)));}catch(Exception e){Debug.LogWarning("Save ignorado: "+e.Message);}}
-        void OnApplicationPause(bool paused){if(paused)Save();}
+        void OnApplicationPause(bool paused){if(paused){CancelCardDrag();Save();}}
         void OnApplicationQuit(){Save();}
         UnityEngine.UI.RawImage Art(Transform parent,string artwork,Rect uv)
         {
