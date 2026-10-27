@@ -4,6 +4,10 @@ O desenvolvimento está sendo migrado para **Unity 6.3 LTS**, mantendo o histór
 
 ➡️ **Abra a pasta [`Unity/`](Unity/README.md) no Unity Hub.** Ela contém o motor de combate em C#, a arena nativa e os testes da migração.
 
+**Jogar a versão Unity no Safari:** https://mariomarques01.github.io/Newcard/unity/
+
+No iPhone, abra o link no Safari e toque em **INICIAR JOGO**. Para aproveitar mais espaço, use **Compartilhar → Adicionar à Tela de Início**.
+
 O protótipo React/Vite continua na raiz como referência e para preservar a versão web já publicada. Ele não é usado para renderizar a versão Unity.
 
 Para executar a referência web:

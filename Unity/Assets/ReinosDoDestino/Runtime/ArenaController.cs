@@ -46,7 +46,7 @@ namespace ReinosDoDestino.Unity
             if (font == null) font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
             if (font == null) font = TMP_FontAsset.CreateFontAsset(Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"));
             BuildUI(); Refresh();
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = Application.platform == RuntimePlatform.WebGLPlayer ? -1 : 60;
         }
         void Update()
         {
