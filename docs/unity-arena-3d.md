@@ -28,3 +28,11 @@ Antes de fazer merge, usar Unity 6000.3.27f1 com módulo WebGL e licença válid
 5. Executar `node scripts/publish-unity-web.mjs`, que copia o novo build e atualiza seu fingerprint.
 6. Executar `node scripts/publish-unity-web.mjs --check`; testar Safari/iPhone, incluindo arrasto, combate, magias, efeitos, salvamento e rotação.
 7. Incluir o build atualizado na mesma branch antes do merge. A verificação do Pages rejeita código Unity modificado sem o build correspondente.
+
+## Build pelo GitHub, inclusive pelo celular
+
+O workflow `.github/workflows/unity-webgl-preview.yml` executa no PR, sem publicar no Pages. Primeiro verifica apenas a presença de `UNITY_LICENSE`, `UNITY_EMAIL` e `UNITY_PASSWORD` nos **Repository secrets**; não imprime valores. Se estiverem ausentes, termina com mensagem clara antes de baixar o Editor. Com os secrets configurados, executa os testes Node, a paridade .NET, os testes Unity PlayMode, gera WebGL e disponibiliza um artifact para revisão. A validade da licença e a disponibilidade da imagem Unity 6000.3.27f1 ainda serão verificadas pelo serviço ao executar.
+
+O dono configura a licença ativada e as credenciais diretamente em GitHub → Settings → Secrets and variables → Actions. Não enviar senha ou licença no chat. Referências do provedor: https://game.ci/docs/github/activation/ e https://game.ci/docs/github/builder/.
+
+Depois da configuração, reexecutar o workflow do PR pelo GitHub Actions. O artifact gerado precisa ser validado no Safari antes de integrar os arquivos em `public/unity` e fazer merge. Esse workflow tem somente `contents: read`: não faz commit, merge ou deploy automaticamente.
