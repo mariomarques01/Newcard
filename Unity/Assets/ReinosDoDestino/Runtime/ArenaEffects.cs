@@ -100,7 +100,9 @@ namespace ReinosDoDestino.Unity
             float duration=action==ElementalVfxAction.Strike?(first.element==Element.Fire?2.7f:2.3f):1.4f;
             string key=first.targetId+"/"+action;
             if(reactions.TryGetValue(key,out var previous)&&previous!=null)Destroy(previous.gameObject);
-            var reaction=Visual(effectsRoot,first.element,ElementalVfxPhase.Impact,action,target.art.rectTransform.rect.size,duration);
+            var targetSize=target.art.rectTransform.rect.size;
+            var impactSize=new Vector2(Mathf.Max(targetSize.x,240),Mathf.Max(targetSize.y,240));
+            var reaction=Visual(effectsRoot,first.element,ElementalVfxPhase.Impact,action,impactSize,duration);
             reaction.rectTransform.position=to;reactions[key]=reaction;
             if(action==ElementalVfxAction.Strike)StartCoroutine(ElementalHitMotion(target,first.element));
         }
