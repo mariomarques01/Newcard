@@ -71,14 +71,15 @@ namespace ReinosDoDestino.Unity
                 events.AddComponent<StandaloneInputModule>();
 #endif
             }
-            var background=Panel(go.transform,"Background",Paper);Stretch(background,Vector2.zero,Vector2.one,0);
+            var background=Panel(go.transform,"Background",Ink);Stretch(background,Vector2.zero,Vector2.one,0);
             safeArea=Panel(go.transform,"SafeArea",Color.clear);Stretch(safeArea,Vector2.zero,Vector2.one,12);
             var header=Panel(safeArea,"Header",Ink);Stretch(header,new Vector2(0,.945f),Vector2.one,4);
             var brand=Label(header,"REINOS DO DESTINO · ASCENSÃO ELEMENTAL",34,Gold);Stretch(brand.rectTransform,Vector2.zero,new Vector2(.9f,1),4);
             var restart=Button(header,"NOVO",StartNewMatch,new Color(.25f,.2f,.12f));Stretch(restart.GetComponent<RectTransform>(),new Vector2(.91f,0),Vector2.one,3);
             var hud=Panel(safeArea,"Score",new Color(.08f,.16f,.2f));Stretch(hud,new Vector2(0,.865f),new Vector2(1,.945f),4);score=Label(hud,"",32,Color.white);
-            BuildCourt(true,.575f,.865f);BuildCourt(false,.245f,.535f);
-            var divider=Panel(safeArea,"Divider",Ink);Stretch(divider,new Vector2(0,.535f),new Vector2(1,.575f),4);deckLabel=Label(divider,"",27,Gold);
+            gameObject.AddComponent<ArenaScenery3D>().Initialize(safeArea);
+            BuildCourt(true,.755f,.865f);BuildCourt(false,.245f,.355f);
+            var divider=Panel(safeArea,"Divider",Ink);Stretch(divider,new Vector2(0,.535f),new Vector2(1,.565f),4);deckLabel=Label(divider,"",27,Gold);
             handRoot=Panel(safeArea,"Hand",new Color(.38f,.28f,.13f));Stretch(handRoot,new Vector2(0,.12f),new Vector2(1,.245f),4);
             var note=Panel(safeArea,"Description",new Color(.9f,.77f,.51f));Stretch(note,new Vector2(0,.08f),new Vector2(1,.12f),4);hint=Label(note,"",25,Ink);
             var bar=Panel(safeArea,"Actions",Ink);Stretch(bar,Vector2.zero,new Vector2(1,.08f),4);
@@ -91,21 +92,27 @@ namespace ReinosDoDestino.Unity
         void BuildCourt(bool rival,float bottom,float top)
         {
             var court=Panel(safeArea,rival?"RivalCourt":"PlayerCourt",Color.clear);Stretch(court,new Vector2(0,bottom),new Vector2(1,top),2);
-            var caption=Label(court,rival?"REINO ADVERSÁRIO":"SUA CORTE · ARRASTE PARA ATACAR",32,Ink);Stretch(caption.rectTransform,new Vector2(0,.9f),Vector2.one,0);
+            var caption=Label(court,rival?"REINO ADVERSÁRIO":"SUA CORTE · ARRASTE PARA ATACAR",25,Gold);Stretch(caption.rectTransform,new Vector2(0,.9f),Vector2.one,0);
             var definitions=rival?engine.Catalog.rivals:engine.Catalog.players;
             for(int i=0;i<definitions.Length;i++)
             {
                 var d=definitions[i];var view=new CreatureView();
                 var button=Button(court,"",()=>{if(busy||dragId!=null)return;if(rival)engine.SelectEnemy(d.id);else engine.SelectAlly(d.id);Refresh();},Ink);
-                view.root=button.GetComponent<RectTransform>();view.background=button.GetComponent<UnityEngine.UI.Image>();Stretch(view.root,new Vector2(i/3f,0),new Vector2((i+1)/3f,.9f),9);
+                view.root=button.GetComponent<RectTransform>();view.background=button.GetComponent<UnityEngine.UI.Image>();Stretch(view.root,new Vector2(.1f+i*.16f,0),new Vector2(.1f+(i+1)*.16f,.88f),3);
                 view.art=Art(view.root,d.artwork,Crop(d.id,d.artwork));Stretch(view.art.rectTransform,new Vector2(0,.25f),Vector2.one,4);
-                var hpBadge=Panel(view.root,"Life",new Color(.38f,.035f,.025f,.95f));Stretch(hpBadge,new Vector2(0,.79f),new Vector2(.28f,1),2);view.hp=Label(hpBadge,"",42,Color.white);
-                var elementBadge=Panel(view.root,"Element",Ink);Stretch(elementBadge,new Vector2(.58f,.85f),Vector2.one,2);Label(elementBadge,ElementName(d.element),23,Tone(d.element));
-                var name=Label(view.root,d.name,28,Gold);Stretch(name.rectTransform,new Vector2(0,.12f),new Vector2(1,.25f),3);
-                view.stats=Label(view.root,"",31,Color.white);Stretch(view.stats.rectTransform,Vector2.zero,new Vector2(1,.12f),2);
-                var statusBadge=Panel(view.root,"Status",new Color(.035f,.06f,.05f,.8f));Stretch(statusBadge,new Vector2(0,.25f),new Vector2(1,.4f),2);view.status=Label(statusBadge,"",22,Color.white);
+                var hpBadge=Panel(view.root,"Life",new Color(.38f,.035f,.025f,.95f));Stretch(hpBadge,new Vector2(0,.79f),new Vector2(.28f,1),2);view.hp=Label(hpBadge,"",32,Color.white);
+                var elementBadge=Panel(view.root,"Element",Ink);Stretch(elementBadge,new Vector2(.58f,.85f),Vector2.one,2);Label(elementBadge,ElementName(d.element),16,Tone(d.element));
+                var name=Label(view.root,d.name,19,Gold);Stretch(name.rectTransform,new Vector2(0,.12f),new Vector2(1,.25f),3);
+                view.stats=Label(view.root,"",22,Color.white);Stretch(view.stats.rectTransform,Vector2.zero,new Vector2(1,.12f),2);
+                var statusBadge=Panel(view.root,"Status",new Color(.035f,.06f,.05f,.8f));Stretch(statusBadge,new Vector2(0,.25f),new Vector2(1,.4f),2);view.status=Label(statusBadge,"",16,Color.white);
                 views.Add(d.id,view);
                 if(!rival)button.gameObject.AddComponent<ArenaCardGesture>().Bind(this,d.id,false);
+            }
+            for(int i=definitions.Length;i<5;i++)
+            {
+                var slot=Panel(court,"EmptySlot_"+i,new Color(.04f,.07f,.08f,.7f));
+                Stretch(slot,new Vector2(.1f+i*.16f,0),new Vector2(.1f+(i+1)*.16f,.88f),3);
+                Label(slot,"◇",38,Gold);
             }
         }
         void Refresh()
