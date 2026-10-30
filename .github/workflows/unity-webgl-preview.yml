@@ -84,7 +84,9 @@ jobs:
           key: Unity-WebGL-${{ hashFiles('Unity/Assets/**', 'Unity/Packages/**', 'Unity/ProjectSettings/**') }}
           restore-keys: Unity-WebGL-
       - name: Run native PlayMode tests
-        uses: game-ci/unity-test-runner@v4
+        # v4.3.2 runs the Editor directly; v4.4.0 queries a separate CLI release
+        # and currently fails with HTTP 403 before starting Unity on this repo.
+        uses: game-ci/unity-test-runner@fa6ced25861c16ef56187828c43f76d00df43a23
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -95,7 +97,7 @@ jobs:
           testMode: playmode
           artifactsPath: unity-test-results
       - name: Build native Unity WebGL
-        uses: game-ci/unity-builder@v4
+        uses: game-ci/unity-builder@4423ee75828dff56037d1d1cfdac6b68e3a6ba00 # v4.8.2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
