@@ -1,0 +1,130 @@
+name: Unity WebGL arena preview
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Unity/**'
+      - 'scripts/export-unity-arena.mjs'
+      - 'scripts/publish-unity-web.mjs'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/unity-webgl-preview.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unity-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate arena data and combat parity (no Unity license)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Validate game and exported mesh data
+        run: |
+          npm ci --legacy-peer-deps
+          node scripts/export-unity-arena.mjs
+          git diff --exit-code -- Unity/Assets/Resources/Elemental/Arena/arena.json
+          npm run lint
+          node --import tsx --test tests/*.test.ts
+          dotnet run --project Unity/Verification/ReinosDoDestino.Verification.csproj -- Unity
+
+  license:
+    name: Verify Unity build credentials
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require an activated Unity license
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os, sys
+          missing = [key for key in ('UNITY_LICENSE', 'UNITY_EMAIL', 'UNITY_PASSWORD') if not os.environ.get(key)]
+          if missing:
+              print('::error::Build Unity bloqueado. Configure os Repository secrets: ' + ', '.join(missing) + '. Não envie credenciais pelo chat.')
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as report:
+                  report.write('## Build não iniciado\nFaltam os secrets Unity: ' + ', '.join(missing) + '.\nO jogo publicado não foi alterado.\n')
+              sys.exit(1)
+          print('Unity secrets disponíveis. O Editor verificará a validade da licença.')
+          PY
+
+  build:
+    name: Test Unity and build WebGL artifact
+    needs: [license, validate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/cache@v4
+        with:
+          path: Unity/Library
+          key: Unity-WebGL-${{ hashFiles('Unity/Assets/**', 'Unity/Packages/**', 'Unity/ProjectSettings/**') }}
+          restore-keys: Unity-WebGL-
+      - name: Run native PlayMode tests
+        # v4.3.2 runs the Editor directly; v4.4.0 queries a separate CLI release
+        # and currently fails with HTTP 403 before starting Unity on this repo.
+        uses: game-ci/unity-test-runner@fa6ced25861c16ef56187828c43f76d00df43a23
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: Unity
+          unityVersion: 6000.6.7f1
+          testMode: playmode
+          artifactsPath: unity-test-results
+      - name: Build native Unity WebGL
+        uses: game-ci/unity-builder@4423ee75828dff56037d1d1cfdac6b68e3a6ba00 # v4.8.2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: Unity
+          unityVersion: 6000.6.7f1
+          targetPlatform: WebGL
+          buildMethod: ReinosDoDestino.Editor.WebBuild.Build
+          allowDirtyBuild: true
+      - name: Package and verify published-build files
+        run: |
+          node scripts/publish-unity-web.mjs
+          node scripts/publish-unity-web.mjs --check
+          printf 'Commit de origem: %s\n' "$GITHUB_SHA" > public/unity/preview-source.txt
+      - name: Upload WebGL for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-arena-3d-${{ github.sha }}
+          path: public/unity
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload native test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-playmode-${{ github.sha }}
+          path: unity-test-results
+          if-no-files-found: ignore
+          retention-days: 14

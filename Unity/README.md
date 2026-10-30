@@ -1,10 +1,10 @@
 # Reinos do Destino — Unity
 
-Migração nativa iniciada para **Unity 6000.3.27f1 (6.3 LTS)**, URP 2D, uGUI e TextMeshPro. Abra **esta pasta `Unity/`** no Unity Hub; não abra a raiz do repositório como projeto Unity.
+Migração nativa atualizada para **Unity 6000.6.7f1**, URP 2D, uGUI e TextMeshPro. Abra **esta pasta `Unity/`** no Unity Hub; não abra a raiz do repositório como projeto Unity.
 
 ## Iniciar
 
-1. Instale o Editor 6000.3.27f1 pelo Unity Hub e autentique sua conta/licença.
+1. Instale o Editor 6000.6.7f1 pelo Unity Hub e autentique sua conta/licença.
 2. Adicione a pasta `Unity/` ao Hub e abra o projeto. Aguarde a resolução de pacotes.
 3. Use **Reinos do Destino → Preparar arena mobile** para criar/atualizar a cena principal e as configurações de retrato. Esse comando substitui a cena de arena gerada; salve outras cenas antes de usá-lo.
 4. Abra **Reinos do Destino → Abrir arena** e pressione **Play**.
@@ -29,7 +29,7 @@ A arena é construída por componentes Unity, sem navegador ou WebView. O bootst
 - `Assets/Resources/Elemental/`: catálogo serializado e artes.
 - `Verification/`: runner .NET de paridade com os cenários do protótipo TypeScript.
 
-O projeto parte dos assets/configurações oficiais do template Universal 2D. As dependências foram resolvidas pelo Unity Package Manager para o Editor escolhido: URP 17.3.0, Input System 1.20.1, uGUI 2.0.0 e Test Framework 1.6.0. O pacote Pipeline permite continuar o trabalho pelo Unity CLI.
+O projeto parte dos assets/configurações oficiais do template Universal 2D. As dependências foram resolvidas pelo Unity Package Manager para o Editor escolhido: URP 17.6.0, Input System 1.20.1, uGUI 2.6.0 e Test Framework 1.8.0. O pacote Pipeline permite continuar o trabalho pelo Unity CLI.
 
 ## Validar as regras sem abrir o Editor
 
@@ -56,7 +56,7 @@ Os saves de `localStorage` não são lidos pelo Unity. O save nativo fica em `Ap
 ## Verificação desta migração
 
 - 98 verificações do núcleo C#, incluindo oito cenários comparados ao resolvedor TypeScript.
-- Unity Test Framework: oito testes EditMode e um teste PlayMode aprovados no Editor 6000.3.27f1.
+- Unity Test Framework: seis testes PlayMode aprovados no Editor 6000.6.7f1, incluindo arena 3D, área segura, combate, arrasto e efeitos.
 - O teste PlayMode verifica Canvas, entrada, cinco botões dentro da área segura, ataque e avanço do Player Loop. Em modo lote, não faz captura de Game View.
 
 Para repetir os testes, use **Window → General → Test Runner**, abas EditMode e PlayMode. A validação em aparelhos Android/iOS continua necessária antes de distribuir uma versão mobile.
@@ -73,7 +73,7 @@ O template Web respeita a área segura, acompanha a altura disponível do Safari
 
 ### Atualizar a versão publicada
 
-1. Instale **Web Build Support** para o Editor 6000.3.27f1 pelo Hub.
+1. Instale **Web Build Support** para o Editor 6000.6.7f1 pelo Hub.
 2. No Editor, execute **Reinos do Destino → Gerar versão Web**. O resultado fica em `Unity/Builds/WebGL/`. O build usa a cena já salva, sem regenerá-la.
 3. Na raiz do repositório, execute:
 

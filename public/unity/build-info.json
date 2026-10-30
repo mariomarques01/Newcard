@@ -1,34 +1,34 @@
 {
-  "editor": "6000.3.27f1",
-  "sourceCommit": "916987f1fab80ec9ee6027d8766e27bbab9794aa",
-  "sourceFingerprint": "eee704f33ffbf225c4713790713507908ebb6e751e9af8323646fb2ba969877a",
-  "builtAt": "2026-10-27T11:08:09.611Z",
-  "totalBytes": 22625495,
+  "editor": "6000.6.7f1",
+  "sourceCommit": "3e42770fe9bc03aa133d8d5b97008e8c789c66a6",
+  "sourceFingerprint": "fcc3e5cb40727da71b18439953c79f836b7c8928dcb442f66b855e01c60f905e",
+  "builtAt": "2026-10-30T01:43:44.054Z",
+  "totalBytes": 22490541,
   "assets": [
     {
-      "path": "Build/7f7fb71249a87b87ff842cb3c259be18.framework.js.unityweb",
-      "bytes": 82640,
-      "sha256": "f1e3b24d424ca381356c50117f946d7b4bd13146bd503b706baaf5acd8f392f3"
+      "path": "Build/8eb81d511039f33ced8a6e0680afb430.data.unityweb",
+      "bytes": 14492268,
+      "sha256": "125acefd514dd27189e9a0078e237357d604f1f28429130307ed43f01d28e91f"
     },
     {
-      "path": "Build/84ec1841c26c20140f780d829ca1b068.wasm.unityweb",
-      "bytes": 8291330,
-      "sha256": "e2718d730a557088f6cf2f13a7f75803b47e84147c9eab9f7d946c43a82396c9"
+      "path": "Build/b14412d2d0af97d620213f86b9c1a6f8.wasm.unityweb",
+      "bytes": 7869736,
+      "sha256": "630a2c6b5ec3da57523a376d4124da75001c48c9098beca111cae6bc05446a3a"
     },
     {
-      "path": "Build/8d05453c3284b901b9be0f25ea07cfcf.loader.js",
-      "bytes": 47867,
-      "sha256": "bdfc09b7f80e07d9d40cc16d7c8a9172875907d4e0653ced50bbb7b48732e4ae"
+      "path": "Build/b21e85ddaf2e39a521aff932110909a7.framework.js.unityweb",
+      "bytes": 75858,
+      "sha256": "18e153b7bec330569f066951a1bed31fcbf034f4510fe84a68f225c8171d5dea"
     },
     {
-      "path": "Build/c50aba78377ad561129be5c48c76b2d5.data.unityweb",
-      "bytes": 14199552,
-      "sha256": "89bcc4993c985a49b2c17c1d0d711ae5971e3bd7eec0f1003a1565d94fb721fa"
+      "path": "Build/dcc0c7f789f9c68515044a5d9040fbe1.loader.js",
+      "bytes": 48540,
+      "sha256": "69072f63537970a5a09210520a8dc6eb01924fca32d41f3719373ed4f832b3ab"
     },
     {
       "path": "index.html",
-      "bytes": 4106,
-      "sha256": "9639d82661b7c5edab4c04156387542f4762560fabb0aea2cb90a3be82c541c5"
+      "bytes": 4139,
+      "sha256": "d03c126c1f9c5cfc5bd96e08c7c82ce2c480c26fe9e4af588c59eb63442318dc"
     }
   ]
 }
