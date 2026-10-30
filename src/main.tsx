@@ -3,5 +3,6 @@ import App from './App.tsx';
 import './index.css';
 import './arena-elemental.css';
 import './arena-creature-layout.css';
+import './arena-3d.css';
 
 createRoot(document.getElementById('root')!).render(<App />);

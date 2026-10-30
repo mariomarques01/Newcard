@@ -1,0 +1,35 @@
+/* Final layout layer: preserve six HUD rows and give the battlefield the remaining viewport. */
+.mobile-game.arena-3d-game{height:100dvh!important;min-height:0!important;max-width:900px!important;padding:max(4px,env(safe-area-inset-top)) 8px max(5px,env(safe-area-inset-bottom))!important;border:2px solid #8c6c3c!important;gap:4px!important;grid-template-rows:44px 56px minmax(0,1fr) 90px 48px 64px!important;background:#101b22!important;color:#f6e7c5!important;overflow:hidden!important}
+.arena-3d-game .arena-board{position:relative!important;isolation:isolate;display:grid!important;grid-template-rows:82px minmax(50px,1fr) 82px!important;padding:10px 6px!important;overflow:hidden!important;background:radial-gradient(ellipse,#7d694c,#24363a)!important;border:1px solid #8c6c3c!important;border-radius:10px!important}
+.arena-3d{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(#061b2a22,#24180511),url('./assets/arena-fallback.webp') center/contain no-repeat}
+.arena-3d canvas{display:block;width:100%;height:100%}.arena-3d[data-status=fallback] canvas{visibility:hidden}
+.arena-3d-game .arena-board .arena-row{padding:0!important;grid-template-rows:16px minmax(0,1fr)!important;z-index:1;min-height:0!important}
+.arena-3d-game .arena-board .row-caption span{font:700 10px Georgia!important;color:#ffe9af!important;text-shadow:0 1px 3px #000}
+.arena-3d-game .arena-board .hero-row{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;width:80%!important;max-width:430px!important;margin:0 auto!important;align-items:stretch!important}
+.arena-3d-game .arena-board .arena-effect-target,.arena-3d-game .arena-empty-slot{width:100%!important;height:100%!important;max-height:100%!important;min-width:0!important;position:relative}
+.arena-empty-slot{border:1px solid #b8955288;border-radius:6px;background:#101c2580;display:grid;place-items:center;color:#c29c5c99;font-size:22px;box-shadow:inset 0 0 10px #000}
+.arena-3d-game .arena-board .arena-hero{border-width:1px!important;border-radius:6px!important}.arena-3d-game .arena-board .hero-face{border-radius:5px!important}
+.arena-3d-game .arena-board .hero-hp{font:700 11px Georgia!important;padding:2px 3px!important;top:-3px!important;left:-3px!important;border-width:1px!important}
+.arena-3d-game .hero-element{right:-3px;top:-3px}.arena-3d-game .hero-element .element-icon{width:17px;height:17px;border-width:1px}.arena-3d-game .hero-element svg{width:12px;height:12px}
+.arena-3d-game .arena-board .hero-name{font-size:7px!important;bottom:15px!important;padding:2px!important;overflow:hidden;text-overflow:ellipsis}
+.arena-3d-game .arena-board .hero-stats>span{font-size:10px!important;gap:2px!important;padding:0!important;border-radius:3px!important}
+.arena-3d-game .arena-board .battle-divider{align-self:center!important;background:#101c22b3!important;height:30px!important;border-width:1px!important;z-index:1}.arena-3d-game .battle-divider p{font-size:10px!important}.arena-3d-game .battle-divider .pile{font-size:8px!important}.arena-3d-game .battle-divider .pile b{font-size:12px!important}
+.arena-3d-game .arena-hand{border-top-width:1px!important;padding:0 4px!important}.arena-3d-game .arena-hand>.row-caption{height:18px!important;min-height:18px!important;flex-basis:18px!important}.arena-3d-game .arena-hand .row-caption span{font-size:11px!important;color:#eac88c!important}.arena-3d-game .arena-hand .hand-cards{height:calc(100% - 18px)!important;gap:8px!important;padding:5px!important}.arena-3d-game .arena-hand .hand-name{font-size:8px!important;padding:2px!important}.arena-3d-game .arena-hand .energy-cost{width:22px!important;height:22px!important;font-size:15px!important}
+.arena-3d-game .arena-actions button{font-size:9px!important;border-width:2px!important}.arena-3d-game .arena-actions button svg{width:20px!important;height:20px!important}.arena-3d-game .arena-actions button>span{font-size:8px!important}.arena-3d-game .elemental-selection strong{font-size:11px}.arena-3d-game .elemental-selection div>span{font-size:9px}.arena-3d-game .arena-hint{padding:3px 6px!important;border-width:1px!important}
+.arena-3d-game .arena-brand{font-size:15px!important}.arena-3d-game .arena-brand small{font-size:7px!important}.arena-3d-game .arena-header{padding:0 6px!important}
+@media(min-width:650px) and (min-height:750px){.mobile-game.arena-3d-game{grid-template-rows:50px 65px minmax(0,1fr) 110px 52px 70px!important}.arena-3d-game .arena-board{grid-template-rows:100px minmax(60px,1fr) 100px!important}.arena-3d-game .arena-board .hero-name{font-size:9px!important}}
+@media(max-height:650px){.mobile-game.arena-3d-game{grid-template-rows:36px 48px minmax(0,1fr) 65px 38px 52px!important;gap:2px!important}.arena-3d-game .arena-board{grid-template-rows:64px minmax(20px,1fr) 64px!important;padding:3px!important}}
+html,body,#root{height:100%;overflow:hidden}
+.mobile-game.arena-3d-game{grid-template-columns:minmax(0,1fr)!important}
+.mobile-game.arena-3d-game>.arena-actions{position:relative!important;inset:auto!important;transform:none!important;width:100%!important;height:100%!important;grid-row:6!important;margin:0!important}
+.mobile-game.arena-3d-game>.arena-board{grid-template-columns:minmax(0,1fr)!important;gap:0!important}
+.arena-3d-game .arena-3d{z-index:0!important;display:block!important;background:linear-gradient(#061b2a22,#24180511),url('./assets/arena-fallback.webp') center/contain no-repeat!important}
+.arena-3d-game .arena-board .arena-effect-target{aspect-ratio:auto!important}
+.arena-3d-game .arena-board .hero-name{height:15px!important;line-height:1!important;white-space:nowrap!important}
+.arena-3d-game .arena-board .hero-stats{height:15px!important}
+.arena-3d-game .arena-board .creature-artwork{inset:0 0 30px!important;z-index:1!important;display:block!important}
+.arena-3d-game .arena-board .hero-info{bottom:30px!important;right:0!important;width:18px!important;height:18px!important;font-size:11px!important}
+.arena-3d-game .arena-board .elemental-shield{bottom:32px!important;left:0!important;top:auto!important;font-size:7px!important;padding:1px 2px!important;z-index:10}
+.arena-3d-game .arena-board .hero-hp{min-width:0!important}
+.arena-3d-game .arena-board .hero-element{top:0!important;right:0!important}
+.arena-3d-game .creature-statuses{top:20px!important;left:0!important;right:0!important}.arena-3d-game .creature-statuses>span{font-size:6px!important;padding:1px!important}.arena-3d-game .creature-statuses small{display:none!important}
