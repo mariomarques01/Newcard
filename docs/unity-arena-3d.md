@@ -52,3 +52,13 @@ Depois da configuração, reexecutar o workflow do PR pelo GitHub Actions. O art
 **Computador já licenciado:** instalar Unity **6000.3.27f1 (672d562a42a7)** com **WebGL Build Support** pelo Hub, abrir `Unity/`, executar PlayMode e gerar o build pelo menu indicado acima. Essa alternativa evita armazenar credenciais Unity no GitHub. Na raiz do repositório, executar os dois comandos `publish-unity-web.mjs`, servir `public/` por HTTP e testar `/unity/` antes de enviar o build e seu fingerprint para a branch do PR. Compartilhar somente o build, nunca arquivos de licença ou credenciais.
 
 A prévia do workflow é um artifact para baixar e servir via HTTP; não é uma URL hospedada. A URL pública `https://mariomarques01.github.io/Newcard/unity/` continua correspondendo ao build anterior até a publicação efetiva. Um parâmetro `?v=` não gera nem substitui o build.
+
+## Credenciais cadastradas — tentativa seguinte
+
+Os três secrets passaram a estar disponíveis. O run [40984753013](https://github.com/mariomarques01/Newcard/actions/runs/40984753013) confirmou sua presença, aprovou dados/paridade e iniciou Unity **6000.3.27f1 (672d562a42a7)** no runner Linux.
+
+Antes disso, o test runner `@v4` falhou ao consultar a versão de seu CLI (HTTP 403). O commit `60cded7` fixa o test runner em v4.3.2 e o builder em v4.8.2 por SHA, evitando essa consulta variável.
+
+O bloqueio atual é **autenticação Unity HTTP 401**, com `UnityConnectLoginRequest: Failed to login - please check your username or password`, seguido de `Access token is unavailable` e falha na ativação após cinco tentativas. Não houve importação/compilação do projeto, execução PlayMode ou build. A disponibilidade do Editor está confirmada; a validade do arquivo de licença ainda não foi estabelecida.
+
+Ação mínima: o titular deve conferir que consegue entrar no site Unity com **e-mail e senha digitados**, da mesma conta licenciada no Hub, e atualizar `UNITY_EMAIL`/`UNITY_PASSWORD` diretamente nos Repository secrets. Se o acesso habitual usa Google/Apple, confirmar que existe senha própria da conta Unity. Não alterar nem compartilhar o arquivo de licença com base apenas nesse erro. Após corrigir o login, reexecutar os jobs falhos do run acima.
