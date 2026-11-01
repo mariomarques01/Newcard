@@ -120,6 +120,21 @@ jobs:
           path: public/unity
           if-no-files-found: error
           retention-days: 14
+      - name: Capture source used by the Editor
+        if: always()
+        run: |
+          mkdir -p unity-source-report
+          git status --short -- Unity/Assets Unity/Packages Unity/ProjectSettings > unity-source-report/status.txt
+          git diff --binary -- Unity/Assets Unity/Packages Unity/ProjectSettings > unity-source-report/editor-changes.patch
+          tar -czf unity-source-report/compiled-source.tar.gz Unity/Assets Unity/Packages Unity/ProjectSettings
+      - name: Upload compiled source for fingerprint review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-compiled-source-${{ github.sha }}
+          path: unity-source-report
+          if-no-files-found: error
+          retention-days: 14
       - name: Upload native test reports
         if: always()
         uses: actions/upload-artifact@v4
