@@ -90,7 +90,9 @@ namespace ReinosDoDestino.Unity
             needsRender=false;
             sceneryCamera.enabled=false;
             if(target!=null){sceneryCamera.targetTexture=null;target.Release();Destroy(target);}
-            target=new RenderTexture(width,height,16,RenderTextureFormat.ARGB32){name="Arena3DPreview",antiAliasing=1};target.Create();
+            // The source camera has a 1000-unit far plane. 16-bit depth visibly
+            // aliases the closely spaced floor tiles; retain at least 24 bits.
+            target=new RenderTexture(width,height,24,RenderTextureFormat.ARGB32){name="Arena3DPreview",antiAliasing=1};target.Create();
             display.texture=target;sceneryCamera.targetTexture=target;sceneryCamera.aspect=(float)width/height;
             sceneryCamera.orthographicSize=Mathf.Max(sourceHalfHeight,sourceHalfWidth/sceneryCamera.aspect);
             // Camera is enabled for one frame after resize. Static scenery has no ongoing GPU loop.

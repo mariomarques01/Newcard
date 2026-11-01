@@ -16,6 +16,8 @@ public class ArenaSceneryTests
         var camera=world.Find("ArenaSceneryCamera").GetComponent<Camera>();
         Assert.Less(Vector3.Distance(camera.transform.localPosition,new Vector3(0,35,-24)),.001f);
         Assert.AreEqual(1000,camera.farClipPlane);
+        Assert.IsNotNull(camera.targetTexture);
+        Assert.GreaterOrEqual(camera.targetTexture.depth,24,"A câmera original exige profundidade suficiente para não produzir faixas no piso.");
         Assert.AreEqual(4,world.GetComponentsInChildren<Light>().Length);
         Assert.AreEqual(LightShadows.Soft,world.Find("Web_sun").GetComponent<Light>().shadows);
         var gold=world.Find("Gold trim").GetComponent<MeshRenderer>();
