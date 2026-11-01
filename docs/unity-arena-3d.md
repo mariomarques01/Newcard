@@ -62,3 +62,11 @@ Antes disso, o test runner `@v4` falhou ao consultar a versão de seu CLI (HTTP 
 O bloqueio atual é **autenticação Unity HTTP 401**, com `UnityConnectLoginRequest: Failed to login - please check your username or password`, seguido de `Access token is unavailable` e falha na ativação após cinco tentativas. Não houve importação/compilação do projeto, execução PlayMode ou build. A disponibilidade do Editor está confirmada; a validade do arquivo de licença ainda não foi estabelecida.
 
 Ação mínima: o titular deve conferir que consegue entrar no site Unity com **e-mail e senha digitados**, da mesma conta licenciada no Hub, e atualizar `UNITY_EMAIL`/`UNITY_PASSWORD` diretamente nos Repository secrets. Se o acesso habitual usa Google/Apple, confirmar que existe senha própria da conta Unity. Não alterar nem compartilhar o arquivo de licença com base apenas nesse erro. Após corrigir o login, reexecutar os jobs falhos do run acima.
+
+## Correção de publicação e preservação da cena
+
+A captura do aparelho continua compatível com o build público antigo: o manifesto servido informa Unity 6000.3.27f1 e fonte `916987f1`. O run `41154350653` compilou a main com Unity 6000.6.7f1, aprovou PlayMode e gerou um artifact; o workflow de prévia não publica esse artifact no Pages. O deploy do merge `b37ec60` foi bloqueado pela divergência de fingerprint. Portanto merge e sucesso da prévia não comprovam publicação.
+
+A nova correção preserva também a câmera, quatro luzes KHR_lights_punctual, metal/roughness, força de emissão e faces duplas do GLB. A câmera da arena usa um renderer URP 3D separado; o renderer 2D da interface permanece. A geometria mantém 13 lotes e 53.228 triângulos e a arena permanece nativa Unity. Nenhuma textura externa é inventada: o GLB de origem não contém imagens.
+
+O CI agora captura `Unity/Assets`, `Unity/Packages` e `Unity/ProjectSettings` após o Editor, além do diff e status. Esses arquivos permitem conferir e incluir alterações efetivamente usadas pela compilação, em vez de editar o fingerprint para contornar o bloqueio. O renderer 3D criado pelo Editor deverá ser incluído com os arquivos gerados após validar esse snapshot. Não publicar antes de conferir o novo render e a correspondência entre fontes e build.

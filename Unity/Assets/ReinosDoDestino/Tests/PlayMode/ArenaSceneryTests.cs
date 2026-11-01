@@ -7,6 +7,26 @@ using ReinosDoDestino.Unity;
 public class ArenaSceneryTests
 {
     [UnityTest]
+    public IEnumerator NativeArenaUsesTheImportedCameraLightsAndPbrMaterials()
+    {
+        var arena=Object.FindFirstObjectByType<ArenaController>();
+        if(arena==null)arena=new GameObject("ArenaSceneryTest").AddComponent<ArenaController>();
+        yield return null;
+        var world=arena.transform.Find("Arena3DWorld");Assert.IsNotNull(world);
+        var camera=world.Find("ArenaSceneryCamera").GetComponent<Camera>();
+        Assert.Less(Vector3.Distance(camera.transform.localPosition,new Vector3(0,35,-24)),.001f);
+        Assert.AreEqual(1000,camera.farClipPlane);
+        Assert.AreEqual(4,world.GetComponentsInChildren<Light>().Length);
+        Assert.AreEqual(LightShadows.Soft,world.Find("Web_sun").GetComponent<Light>().shadows);
+        var gold=world.Find("Gold trim").GetComponent<MeshRenderer>();
+        Assert.IsTrue(gold.sharedMaterial.shader.isSupported);
+        Assert.AreEqual(.65f,gold.sharedMaterial.GetFloat("_Metallic"),.0001f);
+        Assert.AreEqual(.2f,gold.sharedMaterial.GetFloat("_Smoothness"),.0001f);
+        Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.TwoSided,gold.shadowCastingMode);
+        Assert.IsTrue(gold.receiveShadows);
+    }
+
+    [UnityTest]
     public IEnumerator NativeArenaRetainsTenSlotsAndAFreeBattlefield()
     {
         var arena=Object.FindFirstObjectByType<ArenaController>();

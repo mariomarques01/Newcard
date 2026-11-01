@@ -25,9 +25,22 @@ const meshes=[...batches].map(([material,geometries])=>{
  for(let i=2;i<positions.length;i+=3){positions[i]=-positions[i];normals[i]=-normals[i];}
  const triangles=Array.from(geometry.index.array);
  for(let i=0;i<triangles.length;i+=3)[triangles[i+1],triangles[i+2]]=[triangles[i+2],triangles[i+1]];
- return {name:material.name,positions,normals,triangles,color:[...material.color.toArray(),material.opacity],emission:material.emissive?.toArray()||[0,0,0]};
+ return {name:material.name,positions,normals,triangles,color:[...material.color.toArray(),material.opacity],emission:(material.emissive?.clone().multiplyScalar(material.emissiveIntensity??1).toArray()||[0,0,0]),metallic:material.metalness,roughness:material.roughness,doubleSided:material.side===THREE.DoubleSide};
 });
-const result={sourceSha256:crypto.createHash('sha256').update(bytes).digest('hex'),slots,meshes};
+// Reflect the world across Z, including camera/light rotations. A glTF camera
+// looks along -Z; Unity cameras look along +Z, so C * R * C preserves its view.
+function pose(object){
+ const p=object.getWorldPosition(new THREE.Vector3()),q=object.getWorldQuaternion(new THREE.Quaternion());
+ return {position:[p.x,p.y,-p.z].map(round),rotation:[-q.x,-q.y,q.z,q.w].map(round)};
+}
+const camera=gltf.cameras[0];if(!camera?.isOrthographicCamera)throw Error('Expected the original orthographic arena camera');
+const lights=[];
+gltf.scene.traverse(object=>{
+ if(!object.isLight)return;
+ if(!object.isPointLight&&!object.isDirectionalLight)throw Error('Unsupported source light: '+object.type);
+ lights.push({name:object.name,...pose(object),type:object.isDirectionalLight?'directional':'point',color:object.color.toArray(),intensity:object.intensity,range:object.distance||0,shadows:!!(object.isDirectionalLight&&object.userData.hf_cast_shadow===true)});
+});
+const result={sourceSha256:crypto.createHash('sha256').update(bytes).digest('hex'),slots,meshes,camera:{name:camera.name,...pose(camera),halfHeight:camera.top,halfWidth:camera.right,near:camera.near,far:camera.far},lights};
 if(slots!==10||meshes.length>16)throw Error('Arena budget or slot count violated');
 const output='Unity/Assets/Resources/Elemental/Arena/arena.json';
 fs.mkdirSync('Unity/Assets/Resources/Elemental/Arena',{recursive:true});
