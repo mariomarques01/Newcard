@@ -1,1 +1,1 @@
-{"name":"ReinosDoDestino.Runtime","rootNamespace":"ReinosDoDestino.Unity","references":["ReinosDoDestino.Core","UnityEngine.UI","Unity.TextMeshPro","Unity.InputSystem"],"autoReferenced":true}
+{"name":"ReinosDoDestino.Runtime","rootNamespace":"ReinosDoDestino.Unity","references":["ReinosDoDestino.Core","UnityEngine.UI","Unity.TextMeshPro","Unity.InputSystem","Unity.RenderPipelines.Universal.Runtime","Unity.RenderPipelines.Core.Runtime"],"autoReferenced":true}

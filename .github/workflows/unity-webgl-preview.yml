@@ -83,7 +83,7 @@ jobs:
           path: Unity/Library
           key: Unity-WebGL-${{ hashFiles('Unity/Assets/**', 'Unity/Packages/**', 'Unity/ProjectSettings/**') }}
           restore-keys: Unity-WebGL-
-      - name: Run native PlayMode tests
+      - name: Run native EditMode and PlayMode tests
         # v4.3.2 runs the Editor directly; v4.4.0 queries a separate CLI release
         # and currently fails with HTTP 403 before starting Unity on this repo.
         uses: game-ci/unity-test-runner@fa6ced25861c16ef56187828c43f76d00df43a23
@@ -94,7 +94,7 @@ jobs:
         with:
           projectPath: Unity
           unityVersion: 6000.6.7f1
-          testMode: playmode
+          testMode: all
           artifactsPath: unity-test-results
       - name: Build native Unity WebGL
         uses: game-ci/unity-builder@4423ee75828dff56037d1d1cfdac6b68e3a6ba00 # v4.8.2
@@ -118,6 +118,21 @@ jobs:
         with:
           name: unity-arena-3d-${{ github.sha }}
           path: public/unity
+          if-no-files-found: error
+          retention-days: 14
+      - name: Capture source used by the Editor
+        if: always()
+        run: |
+          mkdir -p unity-source-report
+          git status --short -- Unity/Assets Unity/Packages Unity/ProjectSettings > unity-source-report/status.txt
+          git diff --binary -- Unity/Assets Unity/Packages Unity/ProjectSettings > unity-source-report/editor-changes.patch
+          tar -czf unity-source-report/compiled-source.tar.gz Unity/Assets Unity/Packages Unity/ProjectSettings
+      - name: Upload compiled source for fingerprint review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-compiled-source-${{ github.sha }}
+          path: unity-source-report
           if-no-files-found: error
           retention-days: 14
       - name: Upload native test reports

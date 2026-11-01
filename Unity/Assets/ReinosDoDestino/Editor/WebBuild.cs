@@ -36,6 +36,7 @@ namespace ReinosDoDestino.Editor
         public static void Build()
         {
             Debug.Log($"WebGL salvo em disco: compression={PlayerSettings.WebGL.compressionFormat}; fallback={PlayerSettings.WebGL.decompressionFallback}; memory={PlayerSettings.WebGL.initialMemorySize}; stripping={PlayerSettings.GetManagedStrippingLevel(NamedBuildTarget.WebGL)}");
+            ArenaRenderingSetup.Ensure();
             Configure();
             const string scene="Assets/ReinosDoDestino/Scenes/ElementalArena.unity";
             var report=BuildPipeline.BuildPlayer(new[]{scene},"Builds/WebGL",BuildTarget.WebGL,BuildOptions.None);
